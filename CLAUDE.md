@@ -82,15 +82,18 @@ Note: the Guide tab's internal id is `"skills"` for historical reasons; its labe
   Backup/restore is manual copy-paste JSON in Setup → Data.
 
 `store` shape: `{bodyweight, theme, palette, level, skillDays, skillSteps{}, exLevels{},
-overrides{}, anim, program, location, gear{}, emphasis, schedule, logProgram{}, logs{}}`
+overrides{}, anim, program, location, gear{}, emphasis, schedule, logProgram{}, setupDone,
+logs{}}`
 
 - `theme` is the light/dark **mode** only (`"dark"|"light"`); `palette` is the colour theme id.
 - `logProgram[date]` = the program id that was active the first time that date was logged.
   Written by `stampProgram()`, read by `logDayInfo()` so the Log tab can label an old session
   with the program you actually trained. Dates missing from it (logs from before this existed)
   fall back to the current program.
+- `setupDone` gates the first-run wizard — see **First-run wizard** below.
 - The "Erase all logs" handler rebuilds `store` field by field. **Add new non-log fields there
-  too**, or erasing logs will silently reset them.
+  too**, or erasing logs will silently reset them (this already nearly shipped a bug where
+  erasing logs reset the theme, and another where it relaunched onboarding).
 
 Log shapes inside `logs[date]`:
 - lifts → `exId: {sets:[{v, w, done}]}`
@@ -104,22 +107,57 @@ Log shapes inside `logs[date]`:
 
 Two independent axes: **mode** (`store.theme` = dark/light) and **colour theme**
 (`store.palette`). `applyTheme()` stamps `data-theme` and `data-palette` on `<html>`, then reads
-the resolved `--bg` back out with `getComputedStyle` to set the `theme-color` meta — so palettes
+the resolved `--bg2` back out with `getComputedStyle` to set the `theme-color` meta — so palettes
 never need their background duplicated in JS.
 
+A palette tints exactly **three** things, and nothing else:
+
+| var | what it colours |
+|---|---|
+| `--bg2` | the top of the page gradient |
+| `--line` | every border, including the card borders |
+| `--amber` | the accent |
+
+**Card and text neutrals are mode-level, never per-palette.** `--surface` is `#0A0A0C` in dark
+and `#FFFFFF` in light, so cards read black/white in every theme; `--surface2`, `--ink`,
+`--muted`, `--faint` and the `--bg` gradient base are likewise fixed per mode. Don't move them
+into a palette block — that was the original design and it made every theme tint the cards.
+
+The page gradient is painted by `body::before`: `position:fixed; inset:0; z-index:-1`, running
+`--bg2` → `--bg` top to bottom. Fixed to the viewport so the tint stays at the top of the screen
+regardless of page length or scroll — `background-attachment:fixed` is unreliable in iOS Safari.
+It's a **linear** gradient, not radial, so every pixel of the top row is exactly `--bg2` and the
+sticky `header` (which fades from `--bg2`) meets it with no seam. Change one, change the other.
+
 CSS lives in blocks like `html[data-palette="zora"][data-theme="dark"]`. The two-attribute
-selector outranks the base `:root` / `html[data-theme="..."]` block, so a palette only needs to
-override what it changes: the neutrals (`--bg --surface --surface2 --line --ink --muted --faint
---barbg`) plus the accent `--amber`. `default` has no block at all — it *is* the base.
+selector outranks the base `:root` / `html[data-theme="..."]` block. `default` has no block at
+all — it *is* the base.
+
+`--onacc` is the text colour for anything sitting **on** an `--amber` background (`.cb`,
+`.logtoggle.on`): dark in dark mode, white in light mode, because light-mode accents are dark.
+Backgrounds that use the fixed `--go`/`--gold` instead keep a literal dark label — don't switch
+those to `--onacc` or they turn white-on-green in light mode.
 
 What deliberately does **not** change per palette: `--go`, `--gold`, `--red`, `--blue` and the
 per-muscle-group colours. Those are semantic — "done", "rest", "skip" and each muscle keep one
 meaning everywhere. Several glows/tints are also hardcoded rgba of those colours, so re-huing
-them per palette would desync the border from its glow.
+them per palette would desync a border from its glow.
 
 In the base blocks, `--arms: var(--amber)` and `--rest: var(--faint)` so they follow the palette.
 `PALETTES` in JS holds only the picker label and one accent swatch hex per mode — adding a
 palette means a CSS block pair **and** a `PALETTES` entry.
+
+## First-run wizard
+
+`store.setupDone` gates it. `renderWelcome()` runs a 3-step flow (program → gear → theme) and
+`render()` short-circuits to it while the flag is false, with `html[data-wiz="on"]` hiding the
+tab bar. The steps reuse `progBtnsHTML()` / `locBtnsHTML()` / `gearAccHTML()` / `modeBtnsHTML()`
+/ `palChipsHTML()`, which the Setup tab also uses — so the wizard's controls are the *same*
+controls and fire the same `data-a` actions. Nothing wizard-specific persists.
+
+`setupDone` is backfilled to **true** in both `load()` and `hydrate()`, so an existing save or a
+restored backup never sees onboarding — only a genuinely empty localStorage does. It is also
+carried through the erase handler; forgetting that would relaunch onboarding on "Erase all logs".
 
 ## Level ladders
 
@@ -161,6 +199,18 @@ harness's own source; and this Chrome clamps the headless viewport to ~500px wid
 pinning `document.documentElement.style.width` instead.
 
 ## iOS gotchas learned the hard way
+
+- **Bind gestures to `#app`, not to elements a render replaces.** The week-rail swipe used to
+  re-attach `touchstart`/`touchend` to `.rail` at the end of every `renderToday()`. It stopped
+  responding after scrolling: the chips are composited layers (`perspective` + `preserve-3d`)
+  inside a `position:sticky` header, and WebKit hit-testing through that stack after a scroll
+  stops delivering touches to the element you attached to. `initRailSwipe()` now binds **once**
+  to `#app` (which survives every render) and matches the gesture start **geometrically** against
+  the `.railwrap` rect, so it doesn't matter which descendant the browser thinks was touched.
+- A swipe handler needs `touchmove` with `{passive:false}` and a direction lock: `preventDefault()`
+  once the gesture is horizontal (otherwise iOS steals it and you get `touchcancel` instead of
+  `touchend`), and stay passive when it's vertical so the page can still scroll. Handle
+  `touchcancel` by resetting, never by committing.
 
 - Use `style="fill:var(--x)"` in SVG, **not** presentation attributes like `fill="var(--x)"`.
   Safari ignores `var()` in presentation attributes.
