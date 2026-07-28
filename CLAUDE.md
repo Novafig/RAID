@@ -83,7 +83,7 @@ Note: the Guide tab's internal id is `"skills"` for historical reasons; its labe
 
 `store` shape: `{bodyweight, theme, palette, level, skillDays, skillSteps{}, exLevels{},
 overrides{}, anim, program, location, gear{}, emphasis, schedule, logProgram{}, setupDone,
-logs{}}`
+restSec, restBeep, logs{}}`
 
 - `theme` is the light/dark **mode** only (`"dark"|"light"`); `palette` is the colour theme id.
 - `logProgram[date]` = the program id that was active the first time that date was logged.
@@ -147,6 +147,36 @@ In the base blocks, `--arms: var(--amber)` and `--rest: var(--faint)` so they fo
 `PALETTES` in JS holds only the picker label and one accent swatch hex per mode — adding a
 palette means a CSS block pair **and** a `PALETTES` entry.
 
+## Rest timer
+
+`store.restSec` (0 = off, default 90) and `store.restBeep`. Ticking a set starts a countdown in
+`#restbar`, which lives **outside `#app`** in the static markup and is painted by `paintRest()`
+on an interval — never through `render()`, which rebuilds all of `#app` and would fight the
+number inputs every second. It has its own click listener for the same reason.
+
+The end time is stored **absolutely** (`_restEnd = Date.now() + …`), so backgrounding the app and
+returning re-derives the remaining time instead of drifting.
+
+The beep is **scheduled ahead** via `osc.start(ctx.currentTime + delay)` at the moment of the tap,
+not played when the countdown reaches zero: the tap is the user gesture that unlocks the
+AudioContext on iOS, so scheduling inside it is far more reliable. Adjusting or dismissing has to
+`cancelBeeps()` and re-schedule. Beeps are generated with an OscillatorNode — no audio file,
+which would break the no-network rule.
+
+**This is foreground-only and that is a platform limit, not an oversight.** iOS suspends timers
+once the app is backgrounded, and no offline web app can schedule a real notification: the
+Notification Triggers API was never shipped by Safari, and Web Push (incl. iOS 18.4's Declarative
+Web Push) needs a live server to send each message. A service worker is doubly impossible here —
+its script must be a real same-origin URL, and `blob:` is rejected, so a one-file app cannot
+register one. Don't "fix" this by adding a server or a second file. Say so plainly in the UI.
+
+## Auto-scroll
+
+`scrollToNextEx(id)` runs after `render()` in the `done` handler, but only when a set-tick just
+*completed* an exercise (never on unticking). Cards carry `data-ex="<exId>"` as anchors; the
+scroll target is offset by `header.offsetHeight` because the sticky header would otherwise cover
+the next card's title. Honours the animations toggle by falling back to `behavior:"auto"`.
+
 ## First-run wizard
 
 `store.setupDone` gates it. `renderWelcome()` runs a 3-step flow (program → gear → theme) and
@@ -207,6 +237,12 @@ pinning `document.documentElement.style.width` instead.
   stops delivering touches to the element you attached to. `initRailSwipe()` now binds **once**
   to `#app` (which survives every render) and matches the gesture start **geometrically** against
   the `.railwrap` rect, so it doesn't matter which descendant the browser thinks was touched.
+- **`position:fixed; bottom:0` is not the bug you think it is.** The tab bar looks like it lifts
+  off the bottom on the Log tab; it doesn't move at all (measured: identical rect on every tab).
+  Safari keeps its bottom toolbar expanded on pages that can't scroll, so the bar sits above it,
+  while scrollable tabs auto-collapse the toolbar. Nothing in CSS fixes that — and the pinned
+  home-screen app has no toolbar, so it never happens there. `.empty` now fills the viewport
+  (`dvh`, flex-centred) so short pages at least look deliberate.
 - A swipe handler needs `touchmove` with `{passive:false}` and a direction lock: `preventDefault()`
   once the gesture is horizontal (otherwise iOS steals it and you get `touchcancel` instead of
   `touchend`), and stay passive when it's vertical so the page can still scroll. Handle

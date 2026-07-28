@@ -199,7 +199,12 @@
   .hdetail.open{display:block;}
   .hex{display:flex; justify-content:space-between; font-size:13px; padding:4px 0; color:var(--ink);}
   .hex .v{color:var(--muted);}
-  .empty{text-align:center; color:var(--faint); padding:60px 20px; font-size:14px; line-height:1.5;}
+  /* Empty states fill the remaining screen instead of sitting as a short stub in a
+     tall blank area. dvh so it tracks Safari's collapsing toolbar; the plain vh line
+     first is the fallback for anything that doesn't know dvh. */
+  .empty{text-align:center; color:var(--faint); padding:40px 20px; font-size:14px; line-height:1.5;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:calc(100vh - 260px); min-height:calc(100dvh - 260px);}
   .set-item{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px;}
   .set-item label{font-size:13px; color:var(--muted); display:block; margin-bottom:10px; letter-spacing:.02em;}
   .set-item .capnote{font-size:12px; color:var(--faint); margin-top:10px; line-height:1.5;}
@@ -227,9 +232,12 @@
   .gearchip{font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.03em; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--muted);}
   .gearchip.on{border-color:var(--go); color:var(--go); background:rgba(123,201,111,.1);}
   .palgrid{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
-  .palchip{display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--muted); font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.03em;}
+  /* .palchip is specifically the palette swatch chip; .optchip is the same look for
+     any other small option row. Keep them separate so "how many palettes are shown"
+     stays an unambiguous question. */
+  .palchip,.optchip{display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--muted); font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.03em;}
   .palchip .sw{width:14px; height:14px; border-radius:50%; flex:0 0 auto; border:1px solid var(--line);}
-  .palchip.on{border-color:var(--amber); color:var(--amber);}
+  .palchip.on,.optchip.on{border-color:var(--amber); color:var(--amber);}
   /* first-run wizard */
   .wiz{padding-top:calc(env(safe-area-inset-top) + 22px); padding-bottom:32px;}
   .wizhero{text-align:center; margin-bottom:20px;}
@@ -242,6 +250,23 @@
   .wiznav{display:flex; gap:8px; margin-top:6px;}
   html[data-wiz="on"] nav.tabs{display:none;}
   html[data-wiz="on"] body{padding-bottom:24px;}
+  /* rest timer — lives OUTSIDE #app so ticking it never triggers a full render() */
+  .restbar{position:fixed; left:0; right:0; bottom:calc(58px + env(safe-area-inset-bottom)); z-index:29;
+    margin:0 12px; border-radius:12px; border:1px solid var(--amber); background:var(--barbg);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:10px 12px;
+    display:flex; align-items:center; gap:10px; box-shadow:0 8px 24px rgba(0,0,0,.35);}
+  .restbar[hidden]{display:none;}
+  .restbar .rb-t{flex:0 0 auto; width:54px; text-align:center; font-family:var(--display); font-weight:700; font-size:21px; color:var(--amber); font-variant-numeric:tabular-nums; line-height:1;}
+  .restbar .rb-m{flex:1; min-width:0;}
+  .restbar .rb-l{font-family:var(--display); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .restbar .rb-n{font-size:12px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px;}
+  .restbar .rb-trk{height:4px; border-radius:3px; background:var(--surface2); margin-top:6px; overflow:hidden;}
+  .restbar .rb-fill{height:100%; background:var(--amber); border-radius:3px;}
+  .restbar button{flex:0 0 auto; width:36px; height:36px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--ink); font-family:var(--display); font-size:11px; font-weight:700; padding:0;}
+  .restbar.done{border-color:var(--go);}
+  .restbar.done .rb-t{color:var(--go); font-size:17px;}
+  .restbar.done .rb-fill{background:var(--go);}
+  html[data-wiz="on"] .restbar{display:none;}
   .impbox{width:100%; min-height:80px; margin-top:8px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; color:var(--ink); font-family:-apple-system,monospace; font-size:12px; padding:10px; resize:vertical; box-sizing:border-box;}
   .impbox:focus{outline:none; border-color:var(--amber);}
   .btn{flex:1; padding:14px; border-radius:12px; border:1px solid var(--line); background:var(--surface2); color:var(--ink); font-size:14px; font-weight:600; margin-top:8px;}
@@ -349,6 +374,7 @@
   <button data-tab="history"><span class="ic">≡</span>Log</button>
   <button data-tab="settings"><span class="ic">⚙</span>Setup</button>
 </nav>
+<div id="restbar" class="restbar" hidden></div>
 
 <script>
 /* ============ Lift program ============ */
@@ -755,10 +781,12 @@ function load(){
     if(!r.logProgram)r.logProgram={};
     /* an existing save means an existing user — never show them onboarding */
     if(r.setupDone===undefined)r.setupDone=true;
+    if(r.restSec===undefined)r.restSec=90;
+    if(r.restBeep===undefined)r.restBeep=true;
     if(r.handstandStep&&!r.skillSteps.handstand){r.skillSteps.handstand=r.handstandStep;}
     return r;
   }}catch(e){}
-  return {bodyweight:175,theme:"dark",palette:"default",level:"beginner",skillDays:2,skillSteps:{},exLevels:{},overrides:{},anim:true,program:"recomp",location:"home",gear:Object.assign({},GEAR_HOME),emphasis:"balanced",schedule:"ampm",logProgram:{},setupDone:false,logs:{}};
+  return {bodyweight:175,theme:"dark",palette:"default",level:"beginner",skillDays:2,skillSteps:{},exLevels:{},overrides:{},anim:true,program:"recomp",location:"home",gear:Object.assign({},GEAR_HOME),emphasis:"balanced",schedule:"ampm",logProgram:{},setupDone:false,restSec:90,restBeep:true,logs:{}};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 function hydrate(r){
@@ -768,6 +796,7 @@ function hydrate(r){
   if(!r.gear)r.gear=Object.assign({},GEAR_HOME); if(!r.emphasis)r.emphasis="balanced"; if(!r.schedule)r.schedule="ampm";
   if(!r.palette)r.palette="default"; if(!r.logProgram)r.logProgram={};
   if(r.setupDone===undefined)r.setupDone=true;   /* restoring a backup = existing user */
+  if(r.restSec===undefined)r.restSec=90; if(r.restBeep===undefined)r.restBeep=true;
   if(!r.logs)r.logs={}; if(!r.bodyweight)r.bodyweight=175; return r;
 }
 /* Colour themes. The CSS holds the actual palettes (html[data-palette][data-theme]);
@@ -1040,6 +1069,7 @@ function exerciseCard(ex,dateISO){
   const ready=isReady(ex,log),unit=ex.cardio?"min":(ex.kind==="time"?"sec":"reps");
   const hasLv=Array.isArray(ex.lv)&&ex.lv.length>0, lvl=exLevel(ex), maxlv=hasLv?ex.lv.length-1:0, atMax=hasLv&&lvl>=maxlv;
   const el=document.createElement("div"); el.className="card"+(ready&&!atMax?" ready":"");
+  el.dataset.ex=ex.id;                       /* anchor for scrollToNextEx */
   const avail=exAvailable(ex);
   if(!avail)el.style.opacity=".6";
   const needG=(!avail&&ex.gear)?ex.gear.filter(g=>!(g==="bw"||g==="mat"||(store.gear&&store.gear[g]))).map(gearName).join(", "):"";
@@ -1190,7 +1220,7 @@ function manItemCard(it,dateISO){
   const dl=dayLog(dateISO);
   if(!dl[it.key])dl[it.key]={sets:Array.from({length:3},()=>({v:10,w:0,done:false}))};
   const log=dl[it.key],isW=it.kind==="weight";
-  const el=document.createElement("div");el.className="card";
+  const el=document.createElement("div");el.className="card";el.dataset.ex=it.key;
   let rows=`<div class="setrow sethead"><span class="setlbl"></span><span class="sh">reps</span>${isW?`<span class="sh">lb</span>`:""}<span class="shpad"></span></div>`;
   log.sets.forEach((s,i)=>{rows+=`<div class="setrow"><span class="setlbl">Set ${i+1}</span>
     <div class="stepper"><button data-a="dec" data-id="${it.key}" data-i="${i}" data-f="v">−</button>
@@ -1355,6 +1385,97 @@ function renderHistory(){
   });
 }
 
+/* ============ Rest timer ============
+   Foreground-only by design: iOS suspends background timers, and an offline web app
+   cannot schedule a real notification (that needs a live server pushing to the
+   device). So this is a visible countdown plus an optional beep, nothing more.
+   The bar sits outside #app and is updated directly rather than through render(),
+   because render() rebuilds all of #app and would fight the number inputs every
+   second. End time is stored absolutely, so backgrounding and returning self-corrects
+   instead of drifting. */
+const REST_OPTS=[[0,"Off"],[60,"60s"],[90,"90s"],[120,"2 min"],[180,"3 min"]];
+let _restEnd=0,_restTotal=0,_restName="",_restTick=null,_restOsc=[],_actx=null;
+const restEl=()=>document.getElementById("restbar");
+function beepIn(delaySec){
+  /* Scheduled ahead of time, inside the tap that started the timer — the gesture is
+     what unlocks the AudioContext on iOS, so scheduling now is far more reliable
+     than trying to start a sound when the countdown hits zero. */
+  if(store.restBeep===false)return;
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
+    if(!_actx)_actx=new AC();
+    if(_actx.state==="suspended")_actx.resume();
+    [0,0.28].forEach(off=>{
+      const t=_actx.currentTime+Math.max(0,delaySec)+off;
+      const o=_actx.createOscillator(),g=_actx.createGain();
+      o.type="sine"; o.frequency.value=880;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(.22,t+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.22);
+      o.connect(g); g.connect(_actx.destination);
+      o.start(t); o.stop(t+.26); _restOsc.push(o);
+    });
+  }catch(e){}
+}
+function cancelBeeps(){_restOsc.forEach(o=>{try{o.stop();}catch(e){}});_restOsc=[];}
+function restStart(name){
+  const sec=Number(store.restSec||0); if(!sec)return;
+  cancelBeeps();
+  _restTotal=sec; _restEnd=Date.now()+sec*1000; _restName=name||"";
+  beepIn(sec);
+  if(_restTick)clearInterval(_restTick);
+  _restTick=setInterval(paintRest,250);
+  paintRest();
+}
+function restStop(){
+  cancelBeeps();
+  if(_restTick){clearInterval(_restTick);_restTick=null;}
+  _restEnd=0; const el=restEl(); if(el){el.hidden=true;el.classList.remove("done");}
+}
+function restAdjust(delta){
+  if(!_restEnd)return;
+  const left=Math.max(0,_restEnd-Date.now())/1000, next=Math.max(5,left+delta);
+  cancelBeeps();
+  _restTotal=Math.max(_restTotal,Math.ceil(next));
+  _restEnd=Date.now()+next*1000;
+  beepIn(next); paintRest();
+}
+function paintRest(){
+  const el=restEl(); if(!el)return;
+  if(!_restEnd){el.hidden=true;return;}
+  const leftMs=_restEnd-Date.now(), left=Math.ceil(leftMs/1000);
+  if(leftMs<=-4000){restStop();return;}                       /* linger, then clear */
+  const done=leftMs<=0;
+  el.hidden=false; el.classList.toggle("done",done);
+  const mm=Math.floor(Math.max(0,left)/60),ss=Math.max(0,left)%60;
+  const pct=done?100:Math.min(100,Math.max(0,(1-leftMs/(_restTotal*1000))*100));
+  el.innerHTML=`<div class="rb-t">${done?"GO":mm+":"+String(ss).padStart(2,"0")}</div>
+    <div class="rb-m"><div class="rb-l">${done?"Rest complete":"Resting"}</div>
+      <div class="rb-n">${_restName||"Next set"}</div>
+      <div class="rb-trk"><div class="rb-fill" style="width:${pct.toFixed(1)}%"></div></div></div>
+    <button data-r="minus">−15</button><button data-r="plus">+15</button><button data-r="stop">✕</button>`;
+}
+function exDisplayName(id){
+  if(String(id).startsWith("man_")){
+    const ov=store.overrides[state.dateISO];
+    const it=ov&&ov.items&&ov.items.find(x=>x.key===id);
+    return (it&&it.name)||"Manual exercise";
+  }
+  const ex=exMeta(id); return (ex&&ex.name)||"Next set";
+}
+/* Smooth-scroll the Today list to the next exercise once one is fully logged.
+   Offsets by the sticky header, which would otherwise cover the card's title. */
+function scrollToNextEx(id){
+  const cards=[...document.querySelectorAll("#main [data-ex]")];
+  const i=cards.findIndex(c=>c.dataset.ex===String(id));
+  if(i<0||i+1>=cards.length)return;
+  const hdr=document.querySelector("header");
+  const off=(hdr?hdr.offsetHeight:0)+10;
+  const y=cards[i+1].getBoundingClientRect().top+window.pageYOffset-off;
+  try{window.scrollTo({top:Math.max(0,y),behavior:store.anim===false?"auto":"smooth"});}
+  catch(e){window.scrollTo(0,Math.max(0,y));}
+}
+
 /* ---- Setup controls, shared by the Setup tab and the first-run wizard ---- */
 function selStyle(v){return v?"border-color:var(--amber); color:var(--amber)":"";}
 function progBtnsHTML(){
@@ -1490,8 +1611,12 @@ function renderSettings(){
       <button class="btn" style="margin-top:0; ${on(store.anim!==false)}" data-a="anim" data-v="on">On</button>
       <button class="btn" style="margin-top:0; ${on(store.anim===false)}" data-a="anim" data-v="off">Off</button></div>
       <div class="capnote">Overrides your phone's Reduce Motion setting — animations play unless you switch them off here.</div></div>
-    <div class="set-item"><label>Reminders</label>
-      <div class="capnote">A home-screen web app can't send scheduled iOS notifications (that needs a live server this offline app deliberately isn't). Ask me for a calendar (.ics) file to get real alerts.</div></div>
+    <div class="set-item"><label>Rest timer</label>
+      <div class="palgrid">${REST_OPTS.map(([v,t])=>`<button class="optchip ${Number(store.restSec||0)===v?"on":""}" data-a="restsec" data-v="${v}">${t}</button>`).join("")}</div>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn" style="margin-top:0; ${on(store.restBeep!==false)}" data-a="restbeep" data-v="on">Beep on</button>
+        <button class="btn" style="margin-top:0; ${on(store.restBeep===false)}" data-a="restbeep" data-v="off">Silent</button></div>
+      <div class="capnote">Ticking a set starts a countdown in a bar above the tabs, with ±15s and a dismiss. It runs <b>only while RAID is open</b> — iOS suspends timers once you switch apps, and an offline web app can't schedule a real notification (that needs a live server, which this deliberately isn't). For a nudge when the app is closed, set a repeating iOS Reminder or a Shortcuts "Time of Day" automation.</div></div>
     <div class="set-item"><label>Data</label><button class="btn" data-a="export">Copy my data (backup)</button>
       ${state.expMsg?`<div class="capnote" style="margin-top:6px; color:${state.expMsg==="ok"?"var(--go)":"var(--red)"}">${state.expMsg==="ok"?"Backup copied to clipboard — paste it somewhere safe.":"Copy failed — the clipboard is blocked here. Try again, or screenshot your data as a last resort."}</div>`:""}
       <button class="btn" data-a="restoretoggle">Restore from a backup</button>
@@ -1543,7 +1668,15 @@ app.addEventListener("click",e=>{
     if(!dl[id]){ if(id.startsWith("sk_"))skLog(id.slice(3),state.dateISO); }
     if(i!==undefined){const s=dl[id].sets[+i];s[f]=Math.max(0,(Number(s[f])||0)+delta);}else{dl[id][f]=Math.max(0,(Number(dl[id][f])||0)+delta);}
     save();return render();}
-  if(a==="done"){const dl=dayLog(state.dateISO),s=dl[b.dataset.id].sets[+b.dataset.i];s.done=!s.done;save();return render();}
+  if(a==="done"){
+    const id=b.dataset.id,dl=dayLog(state.dateISO),s=dl[id].sets[+b.dataset.i];
+    const checking=!s.done;                                   /* unticking must not start a rest */
+    s.done=!s.done; save();
+    const nowComplete=checking&&dl[id].sets.every(x=>x.done);
+    if(checking)restStart(exDisplayName(id));
+    render();
+    if(nowComplete)scrollToNextEx(id);
+    return;}
   if(a==="ruckdone"){const dl=dayLog(state.dateISO);dl[b.dataset.id].done=!dl[b.dataset.id].done;save();return render();}
   if(a==="skadv"||a==="skback"){const id=b.dataset.id,max=SKILLS[id].steps.length;store.skillSteps[id]=clamp((store.skillSteps[id]||1)+(a==="skadv"?1:-1),1,max);
     const dl=dayLog(state.dateISO),k="sk_"+id;if(dl[k]&&dl[k].rounds===0){dl[k].step=store.skillSteps[id];dl[k].result=SKILLS[id].steps[store.skillSteps[id]-1].def;}save();return render();}
@@ -1569,7 +1702,7 @@ app.addEventListener("click",e=>{
   if(a==="erase"){
     if(!state.armErase){state.armErase=true; if(_eraseTimer)clearTimeout(_eraseTimer); _eraseTimer=setTimeout(()=>{state.armErase=false;render();},4000); return render();}
     state.armErase=false; if(_eraseTimer)clearTimeout(_eraseTimer);
-    store={bodyweight:store.bodyweight,theme:store.theme,palette:store.palette,level:store.level,skillDays:store.skillDays,skillSteps:store.skillSteps,exLevels:store.exLevels,overrides:{},anim:store.anim,program:store.program,location:store.location,gear:store.gear,emphasis:store.emphasis,schedule:store.schedule,logProgram:{},setupDone:store.setupDone,logs:{}};
+    store={bodyweight:store.bodyweight,theme:store.theme,palette:store.palette,level:store.level,skillDays:store.skillDays,skillSteps:store.skillSteps,exLevels:store.exLevels,overrides:{},anim:store.anim,program:store.program,location:store.location,gear:store.gear,emphasis:store.emphasis,schedule:store.schedule,logProgram:{},setupDone:store.setupDone,restSec:store.restSec,restBeep:store.restBeep,logs:{}};
     save(); return render();}
   if(a==="schedule"){store.schedule=b.dataset.s; applyProgram(); save(); return render();}
   if(a==="gearcat"){const c=b.dataset.c; if(!state.gearOpen)state.gearOpen={}; state.gearOpen[c]=!state.gearOpen[c]; return render();}
@@ -1578,6 +1711,8 @@ app.addEventListener("click",e=>{
   if(a==="level"){store.level=b.dataset.l;save();return render();}
   if(a==="theme"){store.theme=b.dataset.t;save();applyTheme();return render();}
   if(a==="palette"){store.palette=b.dataset.p;save();applyTheme();return render();}
+  if(a==="restsec"){store.restSec=parseInt(b.dataset.v,10)||0;if(!store.restSec)restStop();save();return render();}
+  if(a==="restbeep"){store.restBeep=b.dataset.v!=="off";if(store.restBeep===false)cancelBeeps();save();return render();}
   if(a==="anim"){store.anim=b.dataset.v!=="off";save();applyTheme();return render();}
 });
 app.addEventListener("change",e=>{
@@ -1587,6 +1722,14 @@ app.addEventListener("change",e=>{
   const id=inp.dataset.id,f=inp.dataset.f,i=inp.dataset.i,dl=dayLog(state.dateISO),val=Math.max(0,parseInt(inp.value)||0);
   if(!dl[id]&&id.startsWith("sk_"))skLog(id.slice(3),state.dateISO);
   if(i!==undefined)dl[id].sets[+i][f]=val;else dl[id][f]=val;save();render();
+});
+/* the rest bar is outside #app, so it needs its own listener */
+document.getElementById("restbar").addEventListener("click",e=>{
+  const b=e.target.closest("[data-r]"); if(!b)return;
+  const r=b.dataset.r;
+  if(r==="stop")restStop();
+  else if(r==="plus")restAdjust(15);
+  else if(r==="minus")restAdjust(-15);
 });
 document.querySelectorAll("nav.tabs button").forEach(btn=>btn.addEventListener("click",()=>{state.tab=btn.dataset.tab;state.openSkill=null;state.editDay=null;state.armLevel=null;state.lvlPick=null;state.armErase=false;state.expMsg=null;render();}));
 
