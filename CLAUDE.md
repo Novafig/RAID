@@ -36,19 +36,35 @@ Read these before changing anything.
 5. `LIB` — shared exercise library (~74 entries) used by all non-flagship programs.
    Each entry: `{name, gear:[tokens], fig, kind, form, tip?, side?, cardio?, lv:[6 levels]}`
 6. `PROGRAMS` — 7 selectable programs keyed by id. `recomp` is the flagship (`flagship:true`,
-   `skills:true`) and uses `RECOMP_DAYS` verbatim. The other 6 are built from `LIB` via
+   `skills:true`) and is built from `RECOMP_DAYS`. The other 6 are built from `LIB` via
    `buildEx([libId, sets, lo, hi, weight])`.
 7. `GEAR_CATS` — gear options in 4 categories (Free weights, Machines, Cardio, Bands & bodyweight),
    plus `GEAR_HOME` / `GEAR_GYM` presets
-8. `applyProgram()` — **the engine.** Repopulates the mutable globals `DAYS` and `PROG` from
+8. `EMPH_UPPER` / `EMPH_LOWER` / `bonusFor()` — the emphasis engine. `bonusFor` returns up to
+   `EMPH_N` (2) accessories to append to a day, rotated by weekday so different days get
+   different pairs. It is **additive only** — nothing is ever removed, because dropping an
+   exercise would make `exLog()` truncate sets the user already logged. It skips gear the user
+   doesn't own and any id already on that day (duplicate ids share one log entry and fight over
+   the set count). Everything it returns is tagged `bonus:"upper"|"lower"`, which the Today card
+   and the Setup note use to show what the emphasis added. `UPPER_KEYS`/`LOWER_KEYS` both
+   include `"full"`, so full-body programs (Toning, Endurance) count as both.
+9. `applyProgram()` — **the engine.** Repopulates the mutable globals `DAYS` and `PROG` from
    `store.program`. All render code reads `DAYS` / `PROG`, never `PROGRAMS` directly.
-   Must be called after any change to `store.program`, `store.emphasis`, or `store.schedule`.
-9. `figure()` / `exFigure()` — inline SVG movement sketches, shared by movement pattern
-10. Render functions: `renderHome`, `renderToday`, `renderSkills` (the "Guide" tab),
+   Must be called after any change to `store.program`, `store.emphasis`, `store.schedule`,
+   **or `store.gear` / `store.location`** (emphasis bonuses are gear-filtered).
+   It always builds fresh day objects — never assign `DAYS = RECOMP_DAYS`, or appending a bonus
+   would mutate that constant for the rest of the session.
+10. `PALETTES` + `applyTheme()` — the theme system (see **Themes** below)
+11. `exMeta()` / `logDayInfo()` / `stampProgram()` — resolve exercises and day labels for logs
+    that were recorded under a program you've since switched away from
+12. `figure()` / `exFigure()` — inline SVG movement sketches, shared by movement pattern
+13. Render functions: `renderHome`, `renderToday`, `renderSkills` (the "Guide" tab),
     `renderHistory`, `renderSettings`
-11. `render()` — dispatcher. Only scrolls to top on tab change or Today date change.
-12. A single delegated click handler keyed on `data-a="..."` attributes
-13. Boot: `store = load()` → `applyProgram()` → `applyTheme()` → `render()`
+14. `render()` — dispatcher. Only scrolls to top on tab change or Today date change.
+15. A single delegated click handler keyed on `data-a="..."` attributes. `LOG_ACTS` lists the
+    actions that write to `logs[date]`; they call `stampProgram()` first. **Add new
+    log-mutating actions to `LOG_ACTS`.**
+16. Boot: `store = load()` → `applyProgram()` → `applyTheme()` → `render()`
 
 ## Tabs
 
@@ -65,8 +81,16 @@ Note: the Guide tab's internal id is `"skills"` for historical reasons; its labe
 - Progress is **per-device, not per-user, and never synced.** No accounts, no server.
   Backup/restore is manual copy-paste JSON in Setup → Data.
 
-`store` shape: `{bodyweight, theme, level, skillDays, skillSteps{}, exLevels{}, overrides{},
-anim, program, location, gear{}, emphasis, schedule, logs{}}`
+`store` shape: `{bodyweight, theme, palette, level, skillDays, skillSteps{}, exLevels{},
+overrides{}, anim, program, location, gear{}, emphasis, schedule, logProgram{}, logs{}}`
+
+- `theme` is the light/dark **mode** only (`"dark"|"light"`); `palette` is the colour theme id.
+- `logProgram[date]` = the program id that was active the first time that date was logged.
+  Written by `stampProgram()`, read by `logDayInfo()` so the Log tab can label an old session
+  with the program you actually trained. Dates missing from it (logs from before this existed)
+  fall back to the current program.
+- The "Erase all logs" handler rebuilds `store` field by field. **Add new non-log fields there
+  too**, or erasing logs will silently reset them.
 
 Log shapes inside `logs[date]`:
 - lifts → `exId: {sets:[{v, w, done}]}`
@@ -75,6 +99,27 @@ Log shapes inside `logs[date]`:
 - manual days → `man_<id>: {sets}`
 
 `overrides[date]` = `{type:"skip"}` or `{type:"manual", items:[...]}`
+
+## Themes
+
+Two independent axes: **mode** (`store.theme` = dark/light) and **colour theme**
+(`store.palette`). `applyTheme()` stamps `data-theme` and `data-palette` on `<html>`, then reads
+the resolved `--bg` back out with `getComputedStyle` to set the `theme-color` meta — so palettes
+never need their background duplicated in JS.
+
+CSS lives in blocks like `html[data-palette="zora"][data-theme="dark"]`. The two-attribute
+selector outranks the base `:root` / `html[data-theme="..."]` block, so a palette only needs to
+override what it changes: the neutrals (`--bg --surface --surface2 --line --ink --muted --faint
+--barbg`) plus the accent `--amber`. `default` has no block at all — it *is* the base.
+
+What deliberately does **not** change per palette: `--go`, `--gold`, `--red`, `--blue` and the
+per-muscle-group colours. Those are semantic — "done", "rest", "skip" and each muscle keep one
+meaning everywhere. Several glows/tints are also hardcoded rgba of those colours, so re-huing
+them per palette would desync the border from its glow.
+
+In the base blocks, `--arms: var(--amber)` and `--rest: var(--faint)` so they follow the palette.
+`PALETTES` in JS holds only the picker label and one accent swatch hex per mode — adding a
+palette means a CSS block pair **and** a `PALETTES` entry.
 
 ## Level ladders
 
@@ -91,9 +136,29 @@ There is no test framework. To sanity-check a change:
 2. Open the file in a browser and click through **all five tabs**, then switch through **all seven
    programs** in Setup, since program switching rebuilds `DAYS` and is the most common source of
    breakage.
-3. Check both `ampm` and `eve` schedule modes on the flagship.
+3. Check both `ampm` and `eve` schedule modes on the flagship, and all three emphases.
 4. Verify a fresh load works with empty localStorage (incognito window), which exercises
    the `load()` defaults path.
+
+### If there's no `node` on the machine
+
+Headless Chrome is a better check anyway — it proves the script parses *and* boots *and* renders.
+Copy `index.html`, strip the trailing `</body></html>` (keep the app's own `</script>`), append a
+`<script>` that drives the app and dumps assertions into a `<pre>`, then:
+
+```
+chrome.exe --headless --disable-gpu --no-sandbox --virtual-time-budget=20000 \
+  --user-data-dir=<tmp> --dump-dom "file:///<path>" > dom.html
+```
+
+Assemble that copy with `cat`, **not** PowerShell `Get-Content`/`Set-Content` — PS 5.1 misreads
+UTF-8 as ANSI and corrupts every `·`, `✓`, `‹`, `–` in the file.
+
+Gotchas: the harness must be **synchronous** (`--dump-dom` captures before a `setTimeout` fires);
+scope text assertions to `app.textContent`, not `document.body.textContent`, or they'll match the
+harness's own source; and this Chrome clamps the headless viewport to ~500px wide, so
+`--window-size=390,...` screenshots come out cropped rather than reflowed — measure overflow by
+pinning `document.documentElement.style.width` instead.
 
 ## iOS gotchas learned the hard way
 

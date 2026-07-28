@@ -20,7 +20,7 @@
     --ink:#F2EBE3; --muted:#9A8F84; --faint:#6B635B;
     --amber:#E8A13C; --go:#7BC96F; --barbg:rgba(30,26,23,.92);
     --gold:#E9C24A; --red:#E0574E; --blue:#6FA6D8;
-    --arms:#E8A13C; --chest:#E07856; --legs:#9AA65C; --shoulders:#6FA8A0; --back:#8892C4; --ruck:#C9A66B; --rest:#6B635B;
+    --arms:var(--amber); --chest:#E07856; --legs:#9AA65C; --shoulders:#6FA8A0; --back:#8892C4; --ruck:#C9A66B; --rest:var(--faint);
     --skill:#C58BE0;
     --r:14px;
   }
@@ -29,9 +29,85 @@
     --ink:#1F1A16; --muted:#6E6459; --faint:#9B9184;
     --amber:#B9791A; --go:#3E9B4F; --barbg:rgba(255,255,255,.92);
     --gold:#B8901E; --red:#C6392F; --blue:#3E77B0;
-    --arms:#B9791A; --chest:#C1552F; --legs:#6C7A2C; --shoulders:#3B7A72; --back:#515CA6; --ruck:#93743A; --rest:#8A8078;
+    --arms:var(--amber); --chest:#C1552F; --legs:#6C7A2C; --shoulders:#3B7A72; --back:#515CA6; --ruck:#93743A; --rest:var(--faint);
     --skill:#8E4FB0;
   }
+  /* ---- Colour palettes. Each overrides the neutrals + the accent only; the
+     status colours (--go/--gold/--red/--blue) and the per-muscle-group accents
+     stay fixed on purpose, so "done", "rest" and each muscle keep one meaning
+     across every palette. --arms follows --amber and --rest follows --faint. ---- */
+  html[data-palette="zora"][data-theme="dark"]{
+    --bg:#0E1319; --surface:#16202A; --surface2:#1F2C38; --line:#27353F;
+    --ink:#E6EEF5; --muted:#8598A8; --faint:#5C6E7C;
+    --amber:#4FA3E3; --barbg:rgba(22,32,42,.92);}
+  html[data-palette="zora"][data-theme="light"]{
+    --bg:#EFF4F9; --surface:#FFFFFF; --surface2:#E2EBF3; --line:#CFDBE6;
+    --ink:#12202C; --muted:#566876; --faint:#8497A5;
+    --amber:#1D6FB8; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="eldritch"][data-theme="dark"]{
+    --bg:#0D1310; --surface:#161F19; --surface2:#1F2B23; --line:#28352B;
+    --ink:#E6F0E8; --muted:#8AA292; --faint:#5F7367;
+    --amber:#5FBF7A; --barbg:rgba(22,31,25,.92);}
+  html[data-palette="eldritch"][data-theme="light"]{
+    --bg:#EFF5F0; --surface:#FFFFFF; --surface2:#E1EDE4; --line:#CDDDD1;
+    --ink:#102016; --muted:#52685A; --faint:#7F9587;
+    --amber:#21804A; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="retrowave"][data-theme="dark"]{
+    --bg:#120E1A; --surface:#1C1626; --surface2:#271E33; --line:#322640;
+    --ink:#EFE8F7; --muted:#9C8FB0; --faint:#6E6182;
+    --amber:#B76CE8; --barbg:rgba(28,22,38,.92);}
+  html[data-palette="retrowave"][data-theme="light"]{
+    --bg:#F4F0FA; --surface:#FFFFFF; --surface2:#EBE3F5; --line:#D8CCE8;
+    --ink:#1B1226; --muted:#635476; --faint:#8E7FA3;
+    --amber:#7B3BB0; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="cutesy"][data-theme="dark"]{
+    --bg:#171014; --surface:#22181F; --surface2:#2E2129; --line:#3A2B34;
+    --ink:#F7E9F1; --muted:#B0919F; --faint:#82636F;
+    --amber:#F07AA8; --barbg:rgba(34,24,31,.92);}
+  html[data-palette="cutesy"][data-theme="light"]{
+    --bg:#FDF2F6; --surface:#FFFFFF; --surface2:#F9E4EC; --line:#EFCDDA;
+    --ink:#2B1620; --muted:#7A5A67; --faint:#A88494;
+    --amber:#C43A72; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="magma"][data-theme="dark"]{
+    --bg:#150E0C; --surface:#201513; --surface2:#2C1E1A; --line:#382723;
+    --ink:#F5E6E1; --muted:#AC9088; --faint:#7C635C;
+    --amber:#E05436; --barbg:rgba(32,21,19,.92);}
+  html[data-palette="magma"][data-theme="light"]{
+    --bg:#FAF1EE; --surface:#FFFFFF; --surface2:#F5E3DD; --line:#E8CCC3;
+    --ink:#2A1512; --muted:#7A5850; --faint:#A8837A;
+    --amber:#B03418; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="cyber"][data-theme="dark"]{
+    --bg:#081416; --surface:#0F2023; --surface2:#172E32; --line:#1F3A3F;
+    --ink:#E0F4F7; --muted:#7DA3AA; --faint:#52757C;
+    --amber:#2ED3E0; --barbg:rgba(15,32,35,.92);}
+  html[data-palette="cyber"][data-theme="light"]{
+    --bg:#ECF7F9; --surface:#FFFFFF; --surface2:#DCEDF0; --line:#C4DDE2;
+    --ink:#082226; --muted:#4C6D74; --faint:#7A9BA2;
+    --amber:#0E8A99; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="abyss"][data-theme="dark"]{
+    --bg:#0A1416; --surface:#121F22; --surface2:#1A2C30; --line:#22383C;
+    --ink:#E2EFF0; --muted:#85A3A6; --faint:#5A7477;
+    --amber:#3FB5A8; --barbg:rgba(18,31,34,.92);}
+  html[data-palette="abyss"][data-theme="light"]{
+    --bg:#EDF6F6; --surface:#FFFFFF; --surface2:#DEECEC; --line:#C7DEDE;
+    --ink:#0A2124; --muted:#4E6E70; --faint:#7C9A9C;
+    --amber:#12776E; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="solar"][data-theme="dark"]{
+    --bg:#14120A; --surface:#1E1B10; --surface2:#2A2617; --line:#35301E;
+    --ink:#F5F0DC; --muted:#A89C7C; --faint:#776E54;
+    --amber:#F0C43C; --barbg:rgba(30,27,16,.92);}
+  html[data-palette="solar"][data-theme="light"]{
+    --bg:#FAF6E8; --surface:#FFFFFF; --surface2:#F3EDD6; --line:#E4DBBC;
+    --ink:#201C0C; --muted:#6E6544; --faint:#9A9068;
+    --amber:#A88410; --barbg:rgba(255,255,255,.92);}
+  html[data-palette="monolith"][data-theme="dark"]{
+    --bg:#101112; --surface:#1A1B1D; --surface2:#242629; --line:#2F3134;
+    --ink:#ECEDEF; --muted:#93969B; --faint:#666A6F;
+    --amber:#C9CDD4; --barbg:rgba(26,27,29,.92);}
+  html[data-palette="monolith"][data-theme="light"]{
+    --bg:#F2F3F4; --surface:#FFFFFF; --surface2:#E7E9EB; --line:#D4D7DA;
+    --ink:#16181A; --muted:#5C6166; --faint:#8A9096;
+    --amber:#3D4348; --barbg:rgba(255,255,255,.92);}
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0;}
   body{background:var(--bg); color:var(--ink);
@@ -193,6 +269,10 @@
   .gearwrap{display:flex; flex-wrap:wrap; gap:8px;}
   .gearchip{font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.03em; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--muted);}
   .gearchip.on{border-color:var(--go); color:var(--go); background:rgba(123,201,111,.1);}
+  .palgrid{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .palchip{display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); background:var(--surface2); color:var(--muted); font-family:var(--display); font-size:12px; font-weight:600; letter-spacing:.03em;}
+  .palchip .sw{width:14px; height:14px; border-radius:50%; flex:0 0 auto; border:1px solid var(--line);}
+  .palchip.on{border-color:var(--amber); color:var(--amber);}
   .impbox{width:100%; min-height:80px; margin-top:8px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; color:var(--ink); font-family:-apple-system,monospace; font-size:12px; padding:10px; resize:vertical; box-sizing:border-box;}
   .impbox:focus{outline:none; border-color:var(--amber);}
   .btn{flex:1; padding:14px; border-radius:12px; border:1px solid var(--line); background:var(--surface2); color:var(--ink); font-size:14px; font-weight:600; margin-top:8px;}
@@ -225,7 +305,6 @@
   .chart{width:100%; height:96px; margin-top:12px; display:block;}
   .flipx{font-family:var(--display); font-size:10px; letter-spacing:.08em; color:var(--amber); text-transform:uppercase; font-weight:700;}
   .flipface{transform-origin:center;}
-  @media (prefers-reduced-motion:no-preference){ .flipface{animation:flipin .42s cubic-bezier(.2,.7,.2,1);} }
   .flipface{animation:flipin .42s cubic-bezier(.2,.7,.2,1);}
   @keyframes flipin{from{transform:rotateY(-90deg);opacity:.1;}to{transform:rotateY(0);opacity:1;}}
   .calhead{display:flex; align-items:center; justify-content:space-between; margin:10px 0;}
@@ -623,9 +702,15 @@ const PROGRAMS={
       6:REST,0:REST}},
 };
 const PROGRAM_ORDER=["recomp","gymStrength","bulking","glute","toning","endurance","calisthenics"];
-const UPPER_KEYS=["push","pull","chest","back","shoulders","arms","upper"];
-const LOWER_KEYS=["legs","lower","glute","glutes"];
-const BONUS_UPPER=["db_lat",3,15,20,10], BONUS_LOWER=["glutebridge",3,15,20];
+/* "full" counts as both — full-body days are the whole session on those programs,
+   so an emphasis that skipped them (Toning, Endurance) did nothing at all. */
+const UPPER_KEYS=["push","pull","chest","back","shoulders","arms","upper","full"];
+const LOWER_KEYS=["legs","lower","glute","glutes","full"];
+/* Emphasis accessory pools. Two get appended to each matching day, rotated by
+   weekday so Monday and Thursday don't get the same pair. */
+const EMPH_UPPER=[["db_lat",3,15,20,10],["band_pullapart",3,20,20],["db_hammer",3,12,15,15],["cable_lateral",3,12,15,10],["pushup",2,12,20],["facepull",3,15,15,25]];
+const EMPH_LOWER=[["glutebridge",3,15,20],["db_calf",3,15,20,30],["hip_abduction",3,15,20,70],["band_lateral",3,15,15],["walking_lunge",3,12,12,15],["calf_raise",3,15,20]];
+const EMPH_N=2;
 const GEAR_CATS=[
   {cat:"Free weights",items:[["db","Dumbbells"],["bb","Barbell"],["ezbar","EZ curl bar"],["kb","Kettlebell"],["bench","Bench"],["rack","Squat / power rack"],["smith","Smith machine"]]},
   {cat:"Machines",items:[["legpress","Leg press"],["legext","Leg extension"],["legcurl","Leg curl"],["latpull","Lat pulldown"],["cablestation","Cable station"],["chestpress","Chest press"],["pecdeck","Pec deck"],["glutemachine","Hip thrust / glute machine"],["abduction","Hip abduction"],["shoulderpress_m","Shoulder press machine"]]},
@@ -636,21 +721,39 @@ const GEAR_HOME={db:true,band:true,pullup:true,handles:true,romanchair:true};
 const GEAR_GYM={db:true,bb:true,ezbar:true,kb:true,bench:true,rack:true,smith:true,legpress:true,legext:true,legcurl:true,latpull:true,cablestation:true,chestpress:true,pecdeck:true,glutemachine:true,abduction:true,shoulderpress_m:true,treadmill:true,stairmaster:true,rower:true,bike:true,jumprope:true,band:true,pullup:true,dipstation:true,abwheel:true};
 let PROG=null, DAYS=RECOMP_DAYS;
 function buildEx(a){const[id,sets,lo,hi,w]=a;const b=LIB[id]||{name:id,gear:["bw"],fig:"curl",kind:"reps"};return Object.assign({id},b,{sets,lo,hi,defW:w||0});}
+/* Accessories the current emphasis adds to a day. Purely additive — nothing is
+   removed, so switching emphasis can never truncate a set you already logged.
+   Skips gear you don't own and anything already on the day (duplicate ids would
+   share one log entry and fight over the set count). */
+function bonusFor(key,dow,existing){
+  const e=(store&&store.emphasis)||"balanced";
+  const pool = e==="upper" ? (UPPER_KEYS.includes(key)?EMPH_UPPER:null)
+             : e==="lower" ? (LOWER_KEYS.includes(key)?EMPH_LOWER:null) : null;
+  if(!pool)return [];
+  const seen=new Set(existing),out=[];
+  const av=pool.map(buildEx).filter(x=>exAvailable(x)&&!seen.has(x.id));
+  for(let i=0;i<av.length&&out.length<EMPH_N;i++){
+    const x=av[(dow+i)%av.length]; if(seen.has(x.id))continue; seen.add(x.id);
+    out.push(Object.assign({},x,{bonus:e}));}   // tagged so the UI can say where it came from
+  return out;
+}
 function applyProgram(){
   const pid=(store&&store.program)||"recomp"; PROG=PROGRAMS[pid]||PROGRAMS.recomp;
+  const days={};
   if(PROG.flagship){
-    const sched=store.schedule||"ampm";
-    if(sched==="eve"){const days={};for(const k in RECOMP_DAYS){const d=RECOMP_DAYS[k];days[k]=Object.assign({},d,{morning:[],evening:[...(d.evening||[]),...(d.morning||[])]});}DAYS=days;}
-    else DAYS=RECOMP_DAYS;
-    return;
+    const eve=(store.schedule||"ampm")==="eve";
+    for(const k in RECOMP_DAYS){const d=RECOMP_DAYS[k],dow=Number(k);
+      const morning=eve?[]:[...(d.morning||[])];
+      const evening=eve?[...(d.evening||[]),...(d.morning||[])]:[...(d.evening||[])];
+      const bonus=bonusFor(d.key,dow,[...morning,...evening].map(x=>x.id));
+      days[k]=Object.assign({},d,{morning,evening:evening.concat(bonus)});
+    }
+    DAYS=days; return;
   }
-  const emph=store.emphasis||"balanced",days={};
   for(let dow=0;dow<7;dow++){const t=PROG.days[dow];
     if(!t||t.rest){days[dow]={grp:"Rest",key:"rest",rest:true,morning:[],evening:[]};continue;}
-    let ev=t.ex.map(buildEx);
-    if(emph==="upper"&&UPPER_KEYS.includes(t.key))ev.push(buildEx(BONUS_UPPER));
-    if(emph==="lower"&&LOWER_KEYS.includes(t.key))ev.push(buildEx(BONUS_LOWER));
-    days[dow]={grp:t.grp,key:t.key,morning:[],evening:ev};
+    const ev=t.ex.map(buildEx);
+    days[dow]={grp:t.grp,key:t.key,morning:[],evening:ev.concat(bonusFor(t.key,dow,ev.map(x=>x.id)))};
   }
   DAYS=days;
 }
@@ -660,10 +763,11 @@ function progGearMissing(){const p=PROG;if(!p||!p.gear)return [];return p.gear.f
 /* ============ Storage ============ */
 const KEY="loadout.v1";
 let store=load();
-let state={tab:"home",dateISO:todayISO(),openSkill:null,editDay:null,railBase:null,homeFlip:false,calAnchor:null,railAnim:null,unflipDay:null,armLevel:null,showRestore:false,gearOpen:{},lvlPick:null};
+let state={tab:"home",dateISO:todayISO(),openSkill:null,editDay:null,railBase:null,homeFlip:false,calAnchor:null,railAnim:null,unflipDay:null,armLevel:null,showRestore:false,gearOpen:{},lvlPick:null,armErase:false,expMsg:null};
 let _homeTap=0;
 let _swipeTap=0;
 let _armTimer=null;
+let _eraseTimer=null;
 let _lastTab=null,_lastDate=null;
 function load(){
   try{const r=JSON.parse(localStorage.getItem(KEY)); if(r&&r.logs){
@@ -678,10 +782,12 @@ function load(){
     if(!r.gear)r.gear=Object.assign({},GEAR_HOME);
     if(!r.emphasis)r.emphasis="balanced";
     if(!r.schedule)r.schedule="ampm";
+    if(!r.palette)r.palette="default";
+    if(!r.logProgram)r.logProgram={};
     if(r.handstandStep&&!r.skillSteps.handstand){r.skillSteps.handstand=r.handstandStep;}
     return r;
   }}catch(e){}
-  return {bodyweight:175,theme:"dark",level:"beginner",skillDays:2,skillSteps:{},exLevels:{},overrides:{},anim:true,program:"recomp",location:"home",gear:Object.assign({},GEAR_HOME),emphasis:"balanced",schedule:"ampm",logs:{}};
+  return {bodyweight:175,theme:"dark",palette:"default",level:"beginner",skillDays:2,skillSteps:{},exLevels:{},overrides:{},anim:true,program:"recomp",location:"home",gear:Object.assign({},GEAR_HOME),emphasis:"balanced",schedule:"ampm",logProgram:{},logs:{}};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
 function hydrate(r){
@@ -689,9 +795,32 @@ function hydrate(r){
   if(!r.exLevels)r.exLevels={}; if(!r.skillDays)r.skillDays=2; if(!r.overrides)r.overrides={};
   if(r.anim===undefined)r.anim=true; if(!r.program)r.program="recomp"; if(!r.location)r.location="home";
   if(!r.gear)r.gear=Object.assign({},GEAR_HOME); if(!r.emphasis)r.emphasis="balanced"; if(!r.schedule)r.schedule="ampm";
+  if(!r.palette)r.palette="default"; if(!r.logProgram)r.logProgram={};
   if(!r.logs)r.logs={}; if(!r.bodyweight)r.bodyweight=175; return r;
 }
-function applyTheme(){const t=store.theme==="light"?"light":"dark"; document.documentElement.setAttribute("data-theme",t); document.documentElement.setAttribute("data-anim",store.anim===false?"off":"on"); const m=document.querySelector('meta[name="theme-color"]'); if(m)m.setAttribute("content",t==="light"?"#F4F0E8":"#14110F");}
+/* Colour themes. The CSS holds the actual palettes (html[data-palette][data-theme]);
+   these are just the picker labels + the accent swatch for each mode. */
+const PALETTES=[
+  {id:"default",name:"Default",dark:"#E8A13C",light:"#B9791A"},
+  {id:"zora",name:"Zora",dark:"#4FA3E3",light:"#1D6FB8"},
+  {id:"eldritch",name:"Eldritch",dark:"#5FBF7A",light:"#21804A"},
+  {id:"retrowave",name:"Retrowave",dark:"#B76CE8",light:"#7B3BB0"},
+  {id:"cutesy",name:"Cutesy",dark:"#F07AA8",light:"#C43A72"},
+  {id:"magma",name:"Magma",dark:"#E05436",light:"#B03418"},
+  {id:"cyber",name:"Cyber",dark:"#2ED3E0",light:"#0E8A99"},
+  {id:"abyss",name:"Abyss",dark:"#3FB5A8",light:"#12776E"},
+  {id:"solar",name:"Solar",dark:"#F0C43C",light:"#A88410"},
+  {id:"monolith",name:"Monolith",dark:"#C9CDD4",light:"#3D4348"},
+];
+function applyTheme(){
+  const t=store.theme==="light"?"light":"dark",root=document.documentElement;
+  root.setAttribute("data-theme",t);
+  root.setAttribute("data-palette",store.palette||"default");
+  root.setAttribute("data-anim",store.anim===false?"off":"on");
+  const m=document.querySelector('meta[name="theme-color"]');
+  if(m){const bg=getComputedStyle(root).getPropertyValue("--bg").trim();
+    m.setAttribute("content",bg||(t==="light"?"#F4F0E8":"#14110F"));}
+}
 function todayISO(){return iso(new Date());}
 function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function parseISO(s){const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);}
@@ -702,6 +831,35 @@ function dayLog(d){if(!store.logs[d])store.logs[d]={};return store.logs[d];}
 function skStep(id){return clamp(store.skillSteps[id]||1,1,SKILLS[id].steps.length);}
 function exLevel(ex){if(!ex.lv)return 0;return clamp(store.exLevels[ex.id]||0,0,ex.lv.length-1);}
 function findEx(id){for(const k in DAYS){const d=DAYS[k];for(const p of [d.morning,d.evening]){if(p)for(const ex of p)if(ex.id===id)return ex;}}return null;}
+/* Like findEx but falls back past the active program, so old logs from a program
+   you've since switched away from still resolve to a name and kind. */
+let _EXALL=null;
+function exMeta(id){
+  const cur=findEx(id); if(cur)return cur;
+  if(!_EXALL){_EXALL={};
+    for(const k in RECOMP_DAYS){const d=RECOMP_DAYS[k];
+      [...(d.morning||[]),...(d.evening||[])].forEach(ex=>{if(!_EXALL[ex.id])_EXALL[ex.id]=ex;});}
+  }
+  return _EXALL[id]||LIB[id]||null;
+}
+/* Which program was active the first time this date got logged. Recorded so the
+   Log tab can label an old session with the program you actually trained, not
+   whatever is selected now. First write wins. */
+function stampProgram(d){
+  if(!store.logProgram)store.logProgram={};
+  if(!store.logProgram[d])store.logProgram[d]=store.program||"recomp";
+}
+/* The {grp,key} to label a logged date with. Falls back to the current program
+   for logs recorded before logProgram existed. */
+function logDayInfo(dISO){
+  const dow=parseISO(dISO).getDay();
+  const p=PROGRAMS[store.logProgram&&store.logProgram[dISO]];
+  if(!p)return DAYS[dow];
+  if(p.flagship)return RECOMP_DAYS[dow];
+  const t=p.days&&p.days[dow];
+  if(!t||t.rest)return {grp:"Rest",key:"rest",rest:true};
+  return {grp:t.grp,key:t.key};
+}
 function skInfo(id){return SKILLS[id].steps[skStep(id)-1];}
 function skLog(id,d){const dl=dayLog(d),k="sk_"+id,step=skStep(id),st=SKILLS[id].steps[step-1]; if(!dl[k])dl[k]={rounds:0,result:st.def,done:false,step}; if(dl[k].rounds===0)dl[k].step=step; return dl[k];}
 
@@ -902,6 +1060,7 @@ function exerciseCard(ex,dateISO){
       ${hasLv?`<button class="badge lvb lvb-btn${state.lvlPick===ex.id?" open":""}" data-a="lvlpick" data-id="${ex.id}">LV ${lvl+1} ▾</button>`:""}</div>
     ${hasLv&&state.lvlPick===ex.id?`<div class="lvlmenu"><div class="lvlmenu-h">Jump to a level</div>${ex.lv.map((s,i)=>`<button class="lvlopt${i===lvl?" cur":""}" data-a="lvlset" data-id="${ex.id}" data-n="${i}"><span class="ln">${i+1}</span><span class="lt">${s}</span>${i===lvl?'<span class="lnow">current</span>':""}</button>`).join("")}</div>`:""}
     ${ex.note?`<div class="ex-note">${ex.note}</div>`:""}
+    ${ex.bonus?`<div class="ex-note" style="color:var(--amber);font-style:normal">+ Added by your ${ex.bonus} emphasis · switch to Balanced in Setup to drop it</div>`:""}
     ${needG?`<div class="ex-note" style="color:var(--red);font-style:normal">Needs gear you haven't enabled: ${needG}. Swap it or enable in Setup.</div>`:""}
     <div class="formpanel">
       ${ex.equip?`<div class="fp-blk"><span class="k">Gear</span>${ex.equip}</div>`:""}
@@ -933,12 +1092,23 @@ function noteCard(title,body){const el=document.createElement("div");el.classNam
 
 function skillDayCard(id,dateISO){
   const sk=SKILLS[id],step=skStep(id),st=sk.steps[step-1],log=skLog(id,dateISO);
+  const next=sk.steps[step];
   const el=document.createElement("div"); el.className="card"+(log.rounds>0?" ready":"");
   el.style.borderColor=log.rounds>0?"var(--go)":sk.accent;
-  el.innerHTML=`<div class="ex-top"><div><div class="ex-name" style="color:${sk.accent}">${sk.name}</div>
-      <div class="ex-target">Step ${step}: ${st.name} · aim 5–8 rounds, rest 2–3 min</div></div>
+  el.innerHTML=`<div class="ex-top"><div class="ex-head" data-a="form" style="flex:1">
+      <div><div class="ex-name" style="color:${sk.accent}">${sk.name}</div>
+        <div class="ex-target">Step ${step}: ${st.name} · aim 5–8 rounds, rest 2–3 min</div></div>
+      <span class="chev">ⓘ</span></div>
       <span class="badge" style="color:${sk.accent}">${step}/${sk.steps.length}</span></div>
     <div class="ex-note">${st.desc}</div>
+    <div class="formpanel">
+      <div class="fp-blk"><span class="k">Form</span>${sk.form}</div>
+      <div class="fp-blk"><span class="k">Step ${step} of ${sk.steps.length} · ${st.name}</span>${st.desc}
+        <div class="fp-lvl">▸ Target this session: ${st.def}${st.unit==="sec"?"s":" "+st.unit} per round, 5–8 rounds.</div></div>
+      ${next?`<div class="fp-blk"><span class="k">Next · Step ${step+1}</span>${next.name} — ${next.desc}</div>`
+            :`<div class="fp-blk"><span class="k">Next</span>Final step — keep extending the hold and cleaning up the shape.</div>`}
+      <a class="vid" href="${sk.vid}" target="_blank" rel="noopener">Watch tutorial ↗ (opens browser)</a>
+    </div>
     <div class="sets">
       <div class="setrow"><span class="setlbl">Rounds</span><div class="stepper"><button data-a="dec" data-id="sk_${id}" data-f="rounds">−</button>
       <input inputmode="numeric" value="${log.rounds}" data-id="sk_${id}" data-f="rounds"><span class="unit">done</span>
@@ -950,7 +1120,7 @@ function skillDayCard(id,dateISO){
     <div class="cue"><span class="k">Progress</span><span>Advance only when this feels easy and controlled across all rounds. Try the next step ~once a week before committing.</span></div>
     <div class="btnrow" style="margin-top:12px">
       <button class="btn" style="margin-top:0" data-a="skback" data-id="${id}">‹ Step ${Math.max(1,step-1)}</button>
-      <button class="btn" style="margin-top:0" data-a="skinfo" data-id="${id}">See form</button>
+      <button class="btn" style="margin-top:0" data-a="form">See form</button>
       <button class="btn" style="margin-top:0" data-a="skadv" data-id="${id}">Step ${Math.min(sk.steps.length,step+1)} ›</button>
     </div>`;
   return el;
@@ -1153,20 +1323,22 @@ function renderHistory(){
   const list=document.getElementById("hlist");
   if(!dates.length){list.innerHTML=`<div class="empty">Nothing logged yet.<br>Tap ✓ on your sets and they'll show up here.</div>`;return;}
   dates.forEach(dISO=>{
-    const dd=parseISO(dISO).getDay(),day=DAYS[dd],dl=store.logs[dISO];
+    const dd=parseISO(dISO).getDay(),day=logDayInfo(dISO),dl=store.logs[dISO];
+    const lpid=store.logProgram&&store.logProgram[dISO];
+    const lpname=(lpid&&lpid!==store.program&&PROGRAMS[lpid])?PROGRAMS[lpid].name:"";
     let exCount=0,setCount=0;
     Object.entries(dl).forEach(([id,e])=>{if(e.sets){const d=e.sets.filter(s=>s.done);if(d.length){exCount++;setCount+=d.length;}}else if(e.done||e.rounds>0){exCount++;}});
-    const allEx=[...day.morning,...day.evening];let detail="";
+    let detail="";
     Object.entries(dl).forEach(([id,e])=>{
       if(id.startsWith("sk_")){if(e.rounds>0){const sid=id.slice(3),sk=SKILLS[sid];if(sk){const st=sk.steps[(e.step||1)-1];detail+=`<div class="hex"><span style="color:${sk.accent}">${sk.name} · Step ${e.step}</span><span class="v">${e.rounds} rounds · best ${e.result}${st?(st.unit==="sec"?"s":" "+st.unit):""}</span></div>`;}}return;}
       if(id.startsWith("man_")){const d=e.sets?e.sets.filter(s=>s.done):[];if(!d.length)return;const ov=store.overrides[dISO];const it=ov&&ov.items&&ov.items.find(x=>x.key===id);const nm=(it&&it.name)||"Manual exercise";const top=d.reduce((a,s)=>Number(s.v)>Number(a.v)?s:a,d[0]);const uw=(it&&it.kind==="weight")?`${top.v}×${top.w}lb`:`${top.v} reps`;detail+=`<div class="hex"><span>${nm}</span><span class="v">${d.length} set${d.length>1?"s":""} · top ${uw}</span></div>`;return;}
-      const ex=allEx.find(x=>x.id===id);if(!ex)return;
+      const ex=exMeta(id);if(!ex)return;
       if(e.sets){const d=e.sets.filter(s=>s.done);if(!d.length)return;const top=d.reduce((a,s)=>Number(s.v)>Number(a.v)?s:a,d[0]);const uw=ex.kind==="time"?`${top.v}s`:ex.kind==="weight"?`${top.v}×${top.w}lb`:`${top.v} reps`;detail+=`<div class="hex"><span>${ex.name}</span><span class="v">${d.length} set${d.length>1?"s":""} · top ${uw}</span></div>`;}
       else if(e.done){detail+=`<div class="hex"><span>${ex.name}</span><span class="v">${e.min}min · ${e.load}lb</span></div>`;}
     });
     const row=document.createElement("div");row.className="hrow";
     row.innerHTML=`<div class="hh"><span class="hd" style="color:${(store.overrides[dISO]&&store.overrides[dISO].type==="manual")?"var(--amber)":accentFor(day.key)}">${(store.overrides[dISO]&&store.overrides[dISO].type==="manual")?"Manual":day.grp}</span><span class="hm">${DOWFULL[dd]} ${prettyDate(dISO)}</span></div>
-      <div class="hstat">${exCount} item${exCount!==1?"s":""} · ${setCount} set${setCount!==1?"s":""}</div><div class="hdetail">${detail}</div>`;
+      <div class="hstat">${exCount} item${exCount!==1?"s":""} · ${setCount} set${setCount!==1?"s":""}${lpname?` · <span style="color:var(--faint)">${lpname}</span>`:""}</div><div class="hdetail">${detail}</div>`;
     row.querySelector(".hh").addEventListener("click",()=>row.querySelector(".hdetail").classList.toggle("open"));
     list.appendChild(row);
   });
@@ -1180,6 +1352,18 @@ function renderSettings(){
   const progBtns=PROGRAM_ORDER.map(pid=>{const p=PROGRAMS[pid],sel=store.program===pid;
     return `<button class="btn progbtn" style="margin-top:0; ${on(sel)}" data-a="program" data-p="${pid}"><b>${p.name}</b> · ${p.daysPerWeek}×/wk<span class="pg">${p.goal}</span></button>`;}).join("");
   const ebtn=(e,txt)=>`<button class="btn" style="margin-top:0; ${on((store.emphasis||"balanced")===e)}" data-a="emphasis" data-e="${e}">${txt}</button>`;
+  const curPal=store.palette||"default";
+  const palChips=PALETTES.map(p=>`<button class="palchip ${curPal===p.id?"on":""}" data-a="palette" data-p="${p.id}"><span class="sw" style="background:${store.theme==="light"?p.light:p.dark}"></span>${p.name}</button>`).join("");
+  /* what the current emphasis is actually adding, per day — so the setting is visible */
+  const emphAdds=(()=>{
+    if((store.emphasis||"balanced")==="balanced")return "";
+    const seen=[];
+    [1,2,3,4,5,6,0].forEach(dow=>{const d=DAYS[dow]; if(!d||d.rest)return;
+      const b=(d.evening||[]).filter(x=>x.bonus);
+      if(b.length)seen.push(`<b style="color:var(--ink)">${DOWFULL[dow]}</b> ${b.map(x=>x.name).join(", ")}`);});
+    return seen.length?`<br><br>Right now it's adding — ${seen.join(" · ")}.`
+                      :`<br><br><span style="color:var(--red)">Nothing added yet — this program has no matching days, or the accessories need gear you haven't enabled.</span>`;
+  })();
   const gearAcc=GEAR_CATS.map(c=>{
     const opn=!!(state.gearOpen&&state.gearOpen[c.cat]);
     const n=c.items.filter(it=>store.gear&&store.gear[it[0]]).length;
@@ -1197,7 +1381,7 @@ function renderSettings(){
       <div class="capnote">${PROG?PROG.blurb:""}${miss.length?` <span style="color:var(--red)">Needs gear you haven't enabled: ${miss.map(gearName).join(", ")} — turn it on below or expect some moves flagged.</span>`:""}</div></div>
     <div class="set-item"><label>Emphasis</label>
       <div class="btnrow">${ebtn("balanced","Balanced")}${ebtn("upper","Upper")}${ebtn("lower","Lower & glutes")}</div>
-      <div class="capnote">Adds one bonus accessory to matching days. Note: there's no real men's vs women's training split — muscle responds the same regardless of sex. Choose your <b>goal</b> with the program and lean it here.</div></div>
+      <div class="capnote">Appends up to two accessories to every matching day, rotated so each day gets a different pair. Works on all seven programs — full-body days count as both upper and lower. It only ever <b>adds</b>, so switching back and forth can't wipe sets you've already logged. Note: there's no real men's vs women's training split — muscle responds the same regardless of sex. Choose your <b>goal</b> with the program and lean it here.${emphAdds}</div></div>
     <div class="set-item"><label>Location</label>
       <div class="btnrow">
         <button class="btn" style="margin-top:0; ${on(store.location!=="gym")}" data-a="location" data-loc="home">Home</button>
@@ -1222,20 +1406,25 @@ function renderSettings(){
     <div class="set-item"><label>Bodyweight (sets your ruck load cap)</label>
       <div class="stepper"><button id="bwdec">−</button><input id="bw" inputmode="numeric" value="${store.bodyweight||175}"><span class="unit">lb</span><button id="bwinc">+</button></div>
       <div class="capnote">Ruck cap ~<b>${cap}lb</b> (⅓ bodyweight). Start at 20lb regardless and build slowly.</div></div>`:""}
-    <div class="set-item"><label>Theme</label><div class="btnrow">
+    <div class="set-item"><label>Mode</label><div class="btnrow">
       <button class="btn" style="margin-top:0; ${on(store.theme!=="light")}" data-a="theme" data-t="dark">Dark</button>
       <button class="btn" style="margin-top:0; ${on(store.theme==="light")}" data-a="theme" data-t="light">Light</button></div>
-      <div class="capnote">The app runs dark by default. Light mode is here if you ever want it.</div></div>
+      <div class="capnote">The app runs dark by default. Every colour theme below has both a dark and a light version, so this switch and the theme are independent.</div></div>
+    <div class="set-item"><label>Colour theme</label>
+      <div class="palgrid">${palChips}</div>
+      <div class="capnote">Each theme restyles the background, chrome, and accent. The status colours stay put on purpose — <span style="color:var(--go)">done</span>, <span style="color:var(--blue)">rest</span>, <span style="color:var(--red)">skip</span> and the per-muscle day colours mean the same thing in every theme.</div></div>
     <div class="set-item"><label>Animations</label><div class="btnrow">
       <button class="btn" style="margin-top:0; ${on(store.anim!==false)}" data-a="anim" data-v="on">On</button>
       <button class="btn" style="margin-top:0; ${on(store.anim===false)}" data-a="anim" data-v="off">Off</button></div>
       <div class="capnote">Overrides your phone's Reduce Motion setting — animations play unless you switch them off here.</div></div>
     <div class="set-item"><label>Reminders</label>
       <div class="capnote">A home-screen web app can't send scheduled iOS notifications (that needs a live server this offline app deliberately isn't). Ask me for a calendar (.ics) file to get real alerts.</div></div>
-    <div class="set-item"><label>Data</label><button class="btn" id="exp">Copy my data (backup)</button>
+    <div class="set-item"><label>Data</label><button class="btn" data-a="export">Copy my data (backup)</button>
+      ${state.expMsg?`<div class="capnote" style="margin-top:6px; color:${state.expMsg==="ok"?"var(--go)":"var(--red)"}">${state.expMsg==="ok"?"Backup copied to clipboard — paste it somewhere safe.":"Copy failed — the clipboard is blocked here. Try again, or screenshot your data as a last resort."}</div>`:""}
       <button class="btn" data-a="restoretoggle">Restore from a backup</button>
       ${state.showRestore?`<textarea id="impdata" class="impbox" placeholder="Paste your copied backup here…"></textarea><button class="btn" id="imp">Load this backup</button><div class="capnote" id="impmsg" style="margin-top:6px"></div>`:""}
-      <button class="btn warn" id="rst">Erase all logs</button>
+      <button class="btn ${state.armErase?"arm":"warn"}" data-a="erase">${state.armErase?"Tap again to erase everything":"Erase all logs"}</button>
+      ${state.armErase?`<div class="capnote" style="margin-top:6px; color:var(--gold)">This clears every logged session and every skip/manual day. Your program, gear, skill steps and exercise levels stay. Tap again to confirm, or wait 4s to cancel.</div>`:""}
       <div class="capnote">Stored only on this phone — nothing leaves the device, and it isn't synced between devices or people. Copy a backup now and then; paste it into Restore to move to a new phone or recover after clearing Safari data. Restoring <b>replaces</b> everything currently in the app.</div></div>
     <div class="set-item"><label>About</label><div class="capnote">Seven selectable programs, gear/location filtering, and an emphasis lean. Home Recomp is the flagship (skills, ruck, level ladders). Tap ⓘ on any exercise for gear + form. Display font: Rajdhani (OFL).</div></div>
   </div>`;
@@ -1243,19 +1432,21 @@ function renderSettings(){
   if(bw){bw.addEventListener("change",e=>{store.bodyweight=clamp(parseInt(e.target.value)||175,80,500);save();render();});
     document.getElementById("bwdec").onclick=()=>{store.bodyweight=clamp((store.bodyweight||175)-5,80,500);save();render();};
     document.getElementById("bwinc").onclick=()=>{store.bodyweight=clamp((store.bodyweight||175)+5,80,500);save();render();};}
-  document.getElementById("exp").onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(store));alert("Backup copied to clipboard.");}catch(e){alert("Copy failed — take a screenshot instead.");}};
   const impBtn=document.getElementById("imp");
   if(impBtn)impBtn.onclick=()=>{const el=document.getElementById("impdata"),msg=document.getElementById("impmsg");const raw=((el&&el.value)||"").trim();
     if(!raw){if(msg){msg.textContent="Paste a backup first.";msg.style.color="var(--red)";}return;}
     let r;try{r=JSON.parse(raw);}catch(e){if(msg){msg.textContent="That isn't valid backup text — copy the whole thing and try again.";msg.style.color="var(--red)";}return;}
     if(!r||typeof r!=="object"||!r.logs){if(msg){msg.textContent="That doesn't look like a RAID backup.";msg.style.color="var(--red)";}return;}
-    store=hydrate(r);applyProgram();applyTheme();save();state.showRestore=false;render();};
-  document.getElementById("rst").onclick=()=>{if(confirm("Erase all logged sessions? This can't be undone.")){store={bodyweight:store.bodyweight,theme:store.theme,level:store.level,skillDays:store.skillDays,skillSteps:store.skillSteps,exLevels:store.exLevels,overrides:{},anim:store.anim,program:store.program,location:store.location,gear:store.gear,emphasis:store.emphasis,schedule:store.schedule,logs:{}};save();render();}};
+    store=hydrate(r);applyProgram();applyTheme();save();state.showRestore=false;state.expMsg=null;render();};
 }
 
 /* ============ Events ============ */
+/* Actions that write to store.logs[state.dateISO] — these stamp which program
+   the session was trained under. Keep in sync when adding log-mutating actions. */
+const LOG_ACTS={inc:1,dec:1,done:1,ruckdone:1,madd:1,mdel:1,mkind:1,msetadd:1,msetdel:1,skadv:1,skback:1};
 app.addEventListener("click",e=>{
   const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;
+  if(LOG_ACTS[a])stampProgram(state.dateISO);
   if(a==="homeflip"){const now=Date.now(); if(now-_homeTap<330){state.homeFlip=!state.homeFlip;_homeTap=0;return render();} _homeTap=now; return;}
   if(a==="homeflipbtn"){state.homeFlip=!state.homeFlip;return render();}
   if(a==="calprev"||a==="calnext"){const an=state.calAnchor?parseISO(state.calAnchor):new Date();state.calAnchor=iso(new Date(an.getFullYear(),an.getMonth()+(a==="calnext"?1:-1),1));return render();}
@@ -1294,24 +1485,33 @@ app.addEventListener("click",e=>{
   if(a==="skilldays"){store.skillDays=parseInt(b.dataset.n); save(); return render();}
   if(a==="program"){store.program=b.dataset.p; applyProgram(); state.dateISO=todayISO(); state.railBase=null; state.editDay=null; save(); return render();}
   if(a==="emphasis"){store.emphasis=b.dataset.e; applyProgram(); save(); return render();}
-  if(a==="location"){store.location=b.dataset.loc; store.gear=Object.assign({},b.dataset.loc==="gym"?GEAR_GYM:GEAR_HOME); save(); return render();}
-  if(a==="restoretoggle"){state.showRestore=!state.showRestore;return render();}
+  if(a==="location"){store.location=b.dataset.loc; store.gear=Object.assign({},b.dataset.loc==="gym"?GEAR_GYM:GEAR_HOME); applyProgram(); save(); return render();}
+  if(a==="restoretoggle"){state.showRestore=!state.showRestore;state.expMsg=null;return render();}
+  if(a==="export"){Promise.resolve().then(()=>navigator.clipboard.writeText(JSON.stringify(store)))
+    .then(()=>{state.expMsg="ok";render();}).catch(()=>{state.expMsg="fail";render();});return;}
+  if(a==="erase"){
+    if(!state.armErase){state.armErase=true; if(_eraseTimer)clearTimeout(_eraseTimer); _eraseTimer=setTimeout(()=>{state.armErase=false;render();},4000); return render();}
+    state.armErase=false; if(_eraseTimer)clearTimeout(_eraseTimer);
+    store={bodyweight:store.bodyweight,theme:store.theme,palette:store.palette,level:store.level,skillDays:store.skillDays,skillSteps:store.skillSteps,exLevels:store.exLevels,overrides:{},anim:store.anim,program:store.program,location:store.location,gear:store.gear,emphasis:store.emphasis,schedule:store.schedule,logProgram:{},logs:{}};
+    save(); return render();}
   if(a==="schedule"){store.schedule=b.dataset.s; applyProgram(); save(); return render();}
   if(a==="gearcat"){const c=b.dataset.c; if(!state.gearOpen)state.gearOpen={}; state.gearOpen[c]=!state.gearOpen[c]; return render();}
-  if(a==="gear"){const g=b.dataset.g; if(!store.gear)store.gear={}; store.gear[g]=!store.gear[g]; save(); return render();}
+  if(a==="gear"){const g=b.dataset.g; if(!store.gear)store.gear={}; store.gear[g]=!store.gear[g]; applyProgram(); save(); return render();}
   if(a==="toggleskill"){state.openSkill=state.openSkill===b.dataset.id?null:b.dataset.id;return render();}
   if(a==="level"){store.level=b.dataset.l;save();return render();}
   if(a==="theme"){store.theme=b.dataset.t;save();applyTheme();return render();}
+  if(a==="palette"){store.palette=b.dataset.p;save();applyTheme();return render();}
   if(a==="anim"){store.anim=b.dataset.v!=="off";save();applyTheme();return render();}
 });
 app.addEventListener("change",e=>{
   const nm=e.target.closest('input[data-a="mname"]');
   if(nm){const ov=store.overrides[state.dateISO];const it=ov&&ov.items&&ov.items.find(x=>x.key===nm.dataset.key);if(it){it.name=nm.value;save();}return;}
-  const inp=e.target.closest("input[data-id]");if(!inp)return;const id=inp.dataset.id,f=inp.dataset.f,i=inp.dataset.i,dl=dayLog(state.dateISO),val=Math.max(0,parseInt(inp.value)||0);
+  const inp=e.target.closest("input[data-id]");if(!inp)return;stampProgram(state.dateISO);
+  const id=inp.dataset.id,f=inp.dataset.f,i=inp.dataset.i,dl=dayLog(state.dateISO),val=Math.max(0,parseInt(inp.value)||0);
   if(!dl[id]&&id.startsWith("sk_"))skLog(id.slice(3),state.dateISO);
   if(i!==undefined)dl[id].sets[+i][f]=val;else dl[id][f]=val;save();render();
 });
-document.querySelectorAll("nav.tabs button").forEach(btn=>btn.addEventListener("click",()=>{state.tab=btn.dataset.tab;state.openSkill=null;state.editDay=null;state.armLevel=null;state.lvlPick=null;render();}));
+document.querySelectorAll("nav.tabs button").forEach(btn=>btn.addEventListener("click",()=>{state.tab=btn.dataset.tab;state.openSkill=null;state.editDay=null;state.armLevel=null;state.lvlPick=null;state.armErase=false;state.expMsg=null;render();}));
 
 /* PWA manifest via blob */
 (function(){const icon="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAA7hUlEQVR4nO3de5Bk6Vnf+d/znpNZ98q6dHV19/RMz0zPRSMNYElIsJIwCoux8AYrGQg7Yo0VSNhChDfWIeQgHGtDIC4mfFmzLOwSBtlILOCNxbBYmF1LHskrVhIrJMTNEkJCM6OZ6Z6evlRVV1VXdXflOe+zf5xzqrPv1VWZlVl5vp+IlqaysjJPZlWe53ee9z3vMaFXTFIo/1+Sckl+qzsen56e20iSY6nlx9w1I9drJXOXHjbTQ+XPmdwfl9nU9tcAMBiqfdS6zL5cfe2u50x6VnKT6fNmuph58tJEnr90am1t+TaPZZKSjseNus2+E3tDEeke07Wi7yoK/nVardZsmvrJ4OFVcn84ur7RpDmZTro0HcxG7vQE7nwGAAw2szuXleh+1aQ1uZ5xaTmY/kBmz0aLX8wye2Z1dXXlFj+WqNi/VmGAnWEXEAD25sYj/G1Hjx4dv3p148lE9iq5fb3L3yj5o5LNmJlM1/6COwq76+Y/7s7fUej+SwCArood/33jvqz6tx0Uqn1hsR/0i5L9hck+LfM/zeVfHBmZ+MKZM2c2b3iOGzsE2AUCwL0L5b+o6//wkvn56deY2xvl/i2SfaOZHuh8i8tC39nSso7HlPh9ABh+VSiIHV9vD5le30FwuesFyf9AZp90808vLa39oa4/4LrdPhl3QcHZmc7W/vYf2Nzc3PFE+evd7Tsk/2YzPbH9lrrLby72nR0DAMD1btpnmmTaDgUud31Jss+Y+e/kSj67vLx8quPnq30s8wZ2gGJ0Z1WbaTttlkX/KXf9dbnebMGmi+94WfOV6/r5AACA3esc90+KEdSidHn0NZk+YaZ/nyt5+oYwcNP+G9cjANysKtzbCXJ+fn7K8/w7g/l3dxb9sqVfze6v2lAAgN6pWv0mKamGDKowEN1+05Lkt5aWltbL+9+0T0eBAHBNVcCz6oaF2ak3RLN3WrS/ZsGOS9cV/epneA8BoD86h2U7w8ApD/4fg/uHzq+s/17H/VMxV2AbxetaEc8l6fDExGJspm+T650W9Ibi1FaKPgAMuFuEAZdH/Z5MHwpb2W+f29g4W31fnEFQ60KWqKMlNDs7+2Ti+ffK7B1mtihJXlT+KIo+ABwk2/vu6rQCdz8r91/JLfnllZWVL5T3q4YHajlPoI5F7brktzA79QYp+Tsu/9vBrBmvHe0ziQ8ADr7qQC8JZoruWyb7VSn/Nx3DA9d1guuiTgHg+lb/3PRT0e2HzOwpaXtsP9O1FacAAMOjOksr3Z4r4P50MP8X55bXni7vU6uhgToUuutaPPOt1lss6B92FH7a/ABQH7caHnjao/7Z0urqx8v7XDdEPKyGueBdV/hnZ2efTOTvM/m7ZCZ3324L9XMjAQB9k6tYfTAUC7nYB3PZT3fMERjqIDCsASBRWfgXJyYO5830hyW9x8yaHUf8FH4AgFTUi2Bm5u5bkn4h2cp+8uzGxrny+9s1ZZgMWwDoPOpvLMzM/ICb/7CZHe44lY/CDwC4lVzlKYTufs7cfvL8xYv/SlJbQ9gNGKYAsJ3QynH+fxLMvqljVj9j/ACAu9nuEpdnDfy+R/3jG+YHDEU3YBgKoqn4hWSzs7OtRPEnzOy/lyR3p/ADAHbDJUUzSyTJ3X8uV/iRlZWVVRUrClbLwB9YB70wbiexhdnpt0r2s2b2WCwm+Emcxw8A2JsoScEsuPtXJP/751fWPlp+70B3Aw5yAEh166P+rPweAADdkplZKt2yG5Dd+UcH00EMANVRfeSoHwCwj27XDQid3z8oDlqxrGZhxkNzMz8qCx9RUfwzcTleAEBvBUkhumcye0wWPnJobuZHde0KgwfqLLOD1AFIJWWHDo0fVWx8MMjeylE/AKBPtrsBUf5Rhfa7LlzYPKMDNCRwEAKAlf+qlv8HZXaUsX4AwAAo5ga4n5H8XR1DAq4BP0tg0I+cqzcxHpprvVcWPiLpaHl6H8UfANBvaVmTjhZDAq336tqCQQNdYwe5A5BIyufn56dCzH/GTN8XizeZy/QCAAZNlOTBLHHXL8WQvHdpaWldA3yq4KAGgGvj/Xnjw8HsdZGWPwBg8GXBLI3un1PSfvsgzwsYxACQSsrm56dfF6J9mPF+AMABsz0vIAZ/+9LS2uc0gCFg0Frp5eI+02+1aB8tiz/j/QCAg6SYF2B21KJ9dHZ2+q0qiv9A1bJBCgBF23+29e60mOw368VpfgfqvEoAACQlZQ2bTS185NBs690asBAwKEMA28XfzH7RmewHABgOUZKbWeLu339hZfUDGpDhgEEIALcq/lzBDwAwLLavLDhIIaDfR9gUfwDAsDNJwd1zM/vFQRkO6GcAoPgDAOpi4EJAvwIAxR8AUDcDFQL6UXATSTnFHwBQU7eaE7DvKwbudwcgFcUfAFBvt+oE7PuaN/tZeFNJ2Vyr9W1JYk9T/AEANbfdCchzf2p5dfVj2sezA/ar+CaS8rm56dcHt/9b0mx5e7/PQgAAoJ9i+f8r0fy/Xl5e+6z2aThgPwJAkBQnJiYOjzXTL5jZQrk6EsUfAICiCxDc/fzlrezJjY2NcyprZy+ftNdF2CTp6NGj42PN9HfK4l+1/gEAwLX5AAtjzfR3jh49Ol7e3tOD9F4X4kRSbF/Z/Plg9rryqn6s7Q8AwPUSd8+C2evaVzZ/XsXRf0/rZS8DQHGuf6v13mD2vdG9rQG6CAIAAAMmje7tYPa9h1qt96rHawT0qr1QTPqbnn4qScN/6jjyZ8Y/AAC355JyM0vzLP7V5bW1p9WjSYG9KMhBkh+emDgcm+mfSDqs4gUx7g8AwN1FFfX5XNjKvuFcMSnQ1OVJgb0oyibJYzP9FTNbVLHBFH8AAHYmqDgzYDE2019RcRDd9QP2bhfmVFI+P9t6fzB7ikl/AADsSjUp8Kn52db71YOVAruZKBJJ+Xyr9ZZQrPTX8xmMAAAMudzMQsz9qaXV1Y+ri/MBuhUATJLNz89PWMz+yMxOstgPAAB7Vi0S9IyH9NVLS0sbKoYEfK8P3K0CnUiKFrN/Goriz2I/AADsXXD3PJidtJj9U3VxfYBudAA6W/8fK4s/rX8AALonN7Mk5v5t3RoK2GsAuLH1/7C7c8ofAADdFc3M3P3Zbg0F7LVQF6cqXGv9M+4PAED3BXePNwwF7Kne7qUDkEjKD83MfIsF/b+0/gEA6LnczBKP+ssXLl78pPYwFLDb9GAq2g6pW/yZjtsAAEDvmCSVtTfVHhYJ2m0ACJLi/Mz0exILr2HWPwAA+yK4e55YeM38zPR7tIehgN2kBpOkVqs10wh6RlKrvI0OAAAAvVdN/lttR51cXV292HH7ju0mNQRJ3gj6CTObVY/WKAYAALdkktzMZhtBP6FdXnDvXgt3kOTzU1OPWRq+UH7N0T8AAPur6gJEz+KTS+vrX9E9XjHwXhNDkTrS8I/MbE+TDwAAwK5VXYDU0vCPtIt6fC93rk77+1YL+nix3g+n/QEA0Ee5mcmj3nLh4sXf1T2cFngvHYBicoHF94vCDwDAoEjK2izdw0TAnQaARFKcb7XebBbezKI/AAAMhMTdc7Pw5vlW6826h4sF7TQAuKRgwX90lxsIAAB6qKzRQTvsAuxkDkBx9D89/dqQhs+x3j8AAAMnmlmIWXzd0tra51XU6TvOBdh5ByDRf7f93wAAYJAUtbmo1V3pAARJPjc394rg+R9Lauzw5wAAwP6pin47WvKXlpeX/1x3WRfgbh2AIMlN8e8Gs6aKdgLFHwCAwWKS8mDWNMW/qx2sDninYm6SNDk5OT/aSL4oaWEHPwMAAPqj6gKcv9LOX3Xp0qWlG26/zp3SQSLJRxvJdwazwyraCBR/AAAGk0mKwezwaCP5ThWF/7anBN4pAFSz/d/tTPwDAOBAKGv2u1XU8HueA7B96p+ZvdaLdX9Z+AcAgMGWuLub2Wvnp6dfqzssDHTnSYCpvt/ukiAAAMBAiSYFpfr+O93pVmP6JskXFhYmY7b1VZMWxVX/AAA4KFySuXQ2pM1Hzp8/f0llbe+80606AIkkxXb77YnZojj1DwCAg8Qk5YnZYmy3317edtMwwK0CQNnu9+9h5h8AAAdTUcP9e8ovbxrKvzEAmKS4MD5+xORvLOb+se4/AAAHTHB3mfyNC+PjR3SLU/lvLO6JJOWNxreHEKZF+x8AgIOoWBkwhOm80fj28rbrhgFuDABRksz0N2j/AwBwsLmKml5+ed0wQGcAMElxfn7+mMnfRPsfAIADrRoGeNP8/Pwx3TAM0Fngi//Ostcb7X8AAA46k5RbCNPKsteXt23X/ZuP8IO/raz6jAIAAHCwuUlS8Lfd+I3OABAljUj2xkj7HwCAYRCKmm5vlDSijnkAoeP/fX56+uuC2SPawXWEAQDAwAuSPJg9Mj89/XXqqO+dAUCW2pvKtf/zvmwmAADottykYKm9qfz6ugBQLhjk31oO/DP5DwCA4WAuSe7fWn69Pc5vkvLFxcUJuV7H6X8AAAyV4O6S63WLi4sTKs/yqwKA8itXHrcQjogr/wEAMExMklsIR/IrVx6vbgsqj/aj9A1WLBN40wUDAADAgRZNSqL0DeXXYbsDYEF/qbyR8/8BABguLl1X662a8d+Q/E1l5Wf8HwCA4RLK2f5vktSQlAdJsdVqTZjrkXICIOP/AAAMF3N3meuRVqs1ISkGSWqanZDZuJgACADAMDJJLrPxptkJqWr3u786mKViAiAAAMMqBrNU7q+WygDgIT5WfpMJgAAADKdiPaCy5hcdgBieZAVAAACGWrEiYAxPSkUAaMp0uPpmv7YKAAD0lJX/e1hS02ZnZ1tB8asmHRKTAAEAGFauogtwISo8EiQ9IPfqDAAAADC8vKz5DwSz/GgoTgGUOPoHAGBYmSQFs3Gz/Ghw10yfNwgAAOwjd82ExPV6mUmsAQAAwLCLMlPien0ws81+bw0AANg/ZrYZomv72sB93RoAANBrRcvf9XiQ+eN3uzcAABgi5o8Hk231ezsAAMD+MdlWEOf/AwBQN57K/QmuAwAAQC2Yu0vuTwSZTVU39nWTAABAr5XXA7AphgAAAKgfD+LIHwCAurHQ7y0AAAD7jwAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIbSfm8AgP1h2/9zZ+693hIAg4AAAAyxECSTyd2VRSnmfvsQ4JKZ1EhMZsWdYnSRB4DhRAAAhlASTHl0rV+OynNXmpjmJlONNEzxdhnApBilC+ttXW27gkkTI4kaqSm60xkAhgwBABgiIRRFfOVSpqnxRG94bFJvfXVLTxwf0/H5pqbGgmLUzQmgPPrPovTc2av60qnL+v++fEm//xeX9PLFtqZGgxppUB5JAcCwsEOzLT7RwBBIE9P65VwjadB3/VezetdfWdArj49qpFEU7nbmymNR6G/V13cV3xtJTWliyqLrhfNb+ne/t6wPfOy8zq+1NTeRKiMEAEOBAAAMgTSYli5les3DE/rn77hf3/TYhK5sRW1uubzs3QfbwQxASe7Xxv1HGkFTo0F/duqK/tlvvaTf+MyKZieS8n69eCUA9gsBADjgkmBaWs/0jm89pJ/6nuOaGA1a28wVginsrObflruURdfkaFAjMf38R87px379tEYbQSEQAoCDjHUAgAMsCaaLG5m+7y0L+l/efUJJIq1fzpUmey/+0rWzAi5fda1u5nrff3NE//wd9+tqO+79wQH0FQEAOKCq4v9tX9/ST7/zfq1dzpXlxe3dFoIUgunMxbZ+4K2H9b63HdXKpVxpD54LwP4gAAAHkJl0tR11/6ER/ct3PqCrbZdHdeWo/7bPqWKi4dnVTP/gbUf07a9uaXUz70ngANB7BADgAApm2rga9UNvP6IHDze1uRUV9uHTbNL2pMIf+RvHND4alEXXDucXAhggBADggAlm2rya69UPTejtr5/VxY1cjWT/KnASTOtXcn3diXF91zfNaf1yroQEABw4BADggAkmXd5yffc3z2pmIunLefkmKctdf/ONsxpJg3JOBwAOHAIAcMC0Y9TsZKK//KopXd6KOz6/v5uSYNq8GvXk/eN64vhosR3sTYADhY8scIAkwXTlquuVx8f0+LFRXdnynk78u5MsumYnE73xFVPFduzkUoMABgYBADhgsigdm2uqmZr6fTa+u3R8vskkQOAAIgAAB4hJyqPr8WOjShPbnpHfr23JouvxYyPbVwwEcHAQAIADaJCuxzNI2wJg5wgAAADUEAEAAIAaIgAAAFBDBAAAAGqIAAAAQA0RAAAAqCECAAAANUQAAACghggAAADUEAEAAIAaIgAAAFBDBAAAAGqIAAAAQA0RAAAAqCECAAAANUQAAACghggAAADUEAEAAIAaIgAAAFBDBAAAAGqIAAAAQA0RAAAAqCECAAAANUQAAACghtJ+bwAAoGBmd72Pu+/DlqAOCAAA0CdVwXd3RXd5nt/9Z0JQMLvuZ4HdIAAAwD4zM7m7siyTJDXSVM1mU6Mjzbv+7NWrW7q6taV2lskkJUmy/XjAvSAAAMA+a7czpWmi+blZzc3OaHp6UmmSKk2Tu/5snue6urWl9UsbWllZ1cXVNWVZpiS5+88CnQgAALAPzEwxRrm7jiwu6NjRw5oYH5dJysvb8xhlkm51LF/dbmYaHxvT5Pi4jhxe0MbmZZ06fUbnLywphKAQAt0A7AgBAAB6zMyU57mazYYeefhBzc3OKMa4PQRQjedXUwBvNxWwuj3GqLws8uNjo3r80Ye1cGhOzzz3vLa22kqShBCAuyIAAEAPmZmyLNPU1KSeeOykms2m2u22rGMi324fV5JiHuVyzc3OaHJiXF/6yjNaX7+kNE0JAbgj1gEAgB4xM+VZrqnJSb3yFY+q0Wgoy7I9Ff6bn+RayGg0GnrlKx7V1OSk8izv7vNg6BAAAKBHYoxKG6kee+QhpWmiPO9dUa6GGdI0KZ6vkSrG2JPnwnAgAABAD1ST/h5+8AGNj4/tyxF51XEYHx/Tww8+oBgjXQDcFgEAALqsasnPzrS0cGiuOGd/nwqxmamdZVo4NKfZmVb3hxwwNAgAANBt7jIzHTu6uP31fj+/JB07ulgUfyYD4hYIAADQRWamPEaNj49pemqyp+P+d9yGPNf01GQx/MBQAG6BAAAAXRZj1OxMS0kfT8VzdyVpqtmZFpMBcUsEAADoprL9Pz012f/Wu7umpyYZBsAtEQAAoIvcXWmaaqTZlJdhoB+qCwSNNJssCoRbIgAAQBe5pBCCms1G34uuu6vZbBTXB+jrlmAQEQAAoAf6Xfwrg7IdGDwEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADaX93gAMh3u74IlzYTIA6DMCAHatutpYjFHuVVG/S2U3UzCTWVAIRWhgrXIA2H8EANwzM1OMUVmWKwTTxPi4miNNTYyP3b4TUF4W9erWljY2L+vKlatqt9uSpCRJ9nHrAQASAQD3oDrib7fbGh0d0bEj85qdbWlyYlxJkqio/XceCqg6Ble3trS2dkkXlpZ1cXVNUhEE6AYAwP4gAGBHzEx5niuY6YH779PRxQWNjIwoxlh2A7J7eqyRZlOLi4e0eHheyyurev7F09rY2KQbAAD7hACAuzIz5Vmu0bERPXryQc1MTyvL87KFbzK710mARScga2cyM83NzmimNa3nXzit02fOKkk4OQUAeo0AgDsyM2VZpqnJSb3yFY+q0Ui11W7LzO656N/qsSUpy4ogcPLhExobG9VXn/0anQAA6DEOtXBbVdt/YmJcr3ziUSVpsl2su/08krS1taVjRw7r5MMnlOe5uvw0AIAOBADclseoJEn06MmH1EhTxTzvevHvZGbaard17MiiFg8vqN3u7fMBQJ0RAHBLZqY8Rj1w/32ampxQuwdH/rd73izP9dCJ45qYGFOe56IVAADdRwDAzTpa/4sL88qyTGEfi7DHqEajofuOHlF0v8uJhQCA3SAA4CamYpb+0cXDStN038/NryYeHpqf1eT4OF0AAOgBAgBuEssj8JmZ6XIy3v4XX3dXmqaanW0pxkgXAAC6jACA61TL/LampzTSbCr2cWU+d9fcTIsVAgGgBwgAuIm7a3x8TCEE9euyfVUQGR0d6cswBAAMOwIArueuEILGxkb7XnSrYYDRkRF5eTEhAEB3EABwS420/4tEuopOQJqGvocRABg2BADc0iAV3AHaFAAYGgQAAABqiAAAAEANEQAAAKghAgAAADVEAAAAoIYIAAAA1BABAACAGiIAAABQQwQAAABqiAAAAEAN9X/Bd2AA3euFhwZp6WQA2AkCAFAyM7m7Yoxy9/IaBHcr7CYzUwhWXD5ZhAEABwMBALVnZooxKstyhWCaGB9Xc6SpifGx23cCyssTZ3mujY1NXb5yRVevtuVypUmyHSYAYFARAFBbVZFut9saHR3RsSPzmp1taXJiXEmSqKj9dxsKcMVYPMb6pU0tr6zowtKKsixTmiZcyRDAwCIAoJbMTHmeK5jpgfvv09HFBY2MjCjGWHYDsnt6rDRNNT83o0PzMzp2ZFHPv3hayysXFUJQCIFuAICBQwBA7ZiZ8izX6NiIHj35oGamp5Xludrttoox/d1NAqxCw/j4mF75ikf18rnz+trzLyrGSAgAMHAIAKgVM1OWZZqanNQrX/GoGo1UW+22zOyei/6tHluS8jxKch1dPKyJsTH92Zf/QnlOCAAwWFgHALVRtf0nJsb1yiceVZImyrJsz4X/5ucpnqvdbmtqelKvfPxRBTN5jF19HgDYCwIAasNjVJIkevTkQ2qkqWKed734dzIzZe1M09NTeujB+5XH2NPnA4B7QQBALZiZ8hj1wP33aWpyQu0eHPnf7nnb7baOLC5o4dB8TzoOALAbBAAMv47W/+JCUYTDPhfhGF3H7zuiJEmYBwBgIBAAMPRMxSz9o4uHlabpvhfg7bkH4+M6ND9LFwDAQCAAYOjFGNVoNDQzM628x+P+dzM3O1M8P10AAH1GAMBQq5b5bU1PaaTZVOxT4a22Y3pqUmOjo4qcEQCgzwgAGHrurvHxseJiPX088o7uStNUo6MjiuW1BHDvqtMsq/fP7vCvuP/e13gAhhELAWG4uSuEoLGx0f5PviuL/vj4mJZXLvZ3Ww6g6toNWR7l5SmVOyns0V1ybV+xkQs1AQUCAGqhkQ7Gn3p13QDs3LWrNWZK01Qz01OampzQ6OiIRkZG7lrML1++oo3Ny7q0saHNzSuKnnPFRkAEANTEIO3oB2lbBp1JyrJMI82mjh87ovn5WY2NjnacTum68xUbXXOzLUlSlhWXbj53YUnnLiwrLwMFvw/UFQEAwMCpjvrzGHXs6KKOHzuqkZHm9tUaiws33ftjTk1NqtWa1uGFQ3rhxdNaubimNE168AqAwUcAADBQqnUT0jTRY488pIVD88rLqzVuT/zb5aS+PM+V57mmJif0qice04unXtKLp88UE0SBmiEAABgoMUalaapXvuIRTU9NbRf+bszkv3bFxlwy04Mn7lez2dQzzz1PCEDt8BcPYOA88djJ64p/t5mZTNLW1paOHV3UgyeOs0IjaocAAGAgVK3/Ew8cV6s13bPif+Nzbm21dd/RIzq8wMWaUC8EAAB9Z2bKskwzMy0dO3J4367WWDx3sVbAgw8UwwGs0oi6IAAA6L9ykaT7ji725VoJMc81OjqiI4sLfb9eBLBfCAAA+srMlOW5pqcmNdOaVtaHAlwNPxxemKcLgNogAADoO3fX7OxMX6/XEN01OtLU9NSkYrnUMDDMCAAA+srL0/5mZ6aLwtu3DXGZBc3NzfRrC4B9RQAA0FcuKU1TNRuNYlnePh55u7tGm82+zEMA9hsBAEDfVEv+jo2OKEnS4sp9fd6W0dERNRqNvm4LsB8IAAD6rljpr99bUWDsH3VBAAAAoIYIAAAA1BABAACAGiIAAABQQ1wOuA+qSUbufsdznv2G+wIA0C0EgH1iZnJ3xRiLZUbNFHYw2zi6Sy6FYAohbD8OAAB7QQDosapgt7NMwUwT4+NqTU9pZKSpsbHRu/785ctXtLF5WZc2NrS5eUXRc6VJQhAAAOwJAaCHqkucJkmio4sLOnxoXhMT40rTVJKXBfzOgwBzsy1JUpbl2tjY1LkLSzp3YVl5lilNU0IAAGBXCAA91G63NTc7owdPHNfkxLg8uvIY1W637/mxzExTU5NqtaZ1eOGQXnjxtFYurilNkx5sOQBg2BEAeiTGqBP336f7jx+TJLXbmaRqxbPdrTSW57nyPNfU5IRe9cRjevHUS3rx9JniCmoAANwDAkAPxBh18qETOnZ0UVvtdnmVsb0vL1o9Rp7nkpkePHG/ms2mnnnueUIAAOCeUDW6qBrzf/DE8aL4b23J1P21xc1MJmlra0vHji7qwRPHlWUZa5gDAHaMANAlVfE/vDCv+44e0dZWu+cF2cy0tdXWfUeP6PDCPCEAALBjBIAuiTGq2WzqwQfuV3TftyubmRVrBTz4QDEcEGPcnycGABxoBIAuMDPlea4jiwsaHR1RzPN9ff6Y5xodHdGRxQXleU4XAABwVwSALqiO/g8vzPelAFcB5PDCPF0AAMCOEAD2yMwUY9T01KRGR5rF0r19EN01OtLU9NSkYox0AQAAd0QA6JK5uRmZBalfK/O5yyxobm6mP88PADhQWAdgr8pz/Eebzb4vy+vuGm02i6N/lggG0CfbHci77Ic6r3haLI/e083CDQgAexTd1Wg0isl/fWy9V0MRo6MjajQanBIIYF9V+5sYo7I8l9x3tECZe1H4ueLp/iMAdMmgFNtB2Q4A9ZJluSTX6OiIZlrTGh0Z0fj42B33SWamq1e3tLG5qUsbm9rY2FS73VaSJAohEAR6jAAAANgVM1PMc7lLs7PTOnJ4QdNTk2o0Gjs8ki+uiGom5XnU5StXtLS0opfPXdDVq1tqpImIAL1DAAAA3DMzU7udaWJ8TA+dOK6Zmdb2KclZlu3q8cbHxjT5wIQWDx/SC6fO6Nz5CzIzugE9QgAAANwTMynLMi0cmtPJh06o2UjVzvZ+xdMYo/I8V6PR0GOPPKTZmWk989zzyrJcSZIQArqMAAAA2LHquidHFhf0yMMPKsaodhcnHVdDB+12WwuH5jUy0tSf/flXWeW0B1gHAACwI0Xbv61D83N65OEHled5z85+qp5rempKTzx2suuPDwIAAGAHqvH9ifFxnXzoAcUY5eU6KL18zna7rVZrWiceOE4XoMsIAACAuyvH3x88cVzNRmPf1j0xM7WzTMeOHNbMTIs1TrqIAAAAuCMzU5bnmmm1NDvTUnu/j8TLTsN9RxdZ6bSLCAAAgDsrC+6RxUN9KcDXAsi0pqcmlTEU0BUEAADAHRVXGx3R9NSk8n4teV4uLTw7O8PpgF1CAAAA3FY1+W9mZlqNRkMeY3+2Q8U6AbMz00rTtG/bMUwIAACAuxodHe1v271cH6DZaBQBoH9bMjQIAACA2ytb7+Njo31vvUd3JUmqsT5ffXVYEAAAAHc1KMXWbHC25aAjAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAAACoIQIAAAA1RAAAAKCGCAAAANQQAQAAgBoiAAAAUEMEAAAAaogAAABADREAgAPIrN9bcM0gbQuAnSMAdIm793sTJHVvOwbl9Ujd2ZZhez3tzDUor6id8fvp5ePs1bC9HmmwtuUgIwDsUTBTu93W5StXFULo2x+muyuEoMtXrqrdbivs9rDMTDFGbWxelvX50C6YKcuyvb23A/R6trdlY3PX2+KS0sT0xRcvK8t897/nLnBJjcT0xVNXtNXe3bZ0/t1mWdbf19OlzxD7hN7pyj4B2wgAe1V+ODYv9//DYWbavHxZMcY99WXNTJubm8WHq0+vyd1lZnvfeWkwXk+1HXme6/KVKzKzXe283F3N1PTsy1e0spErDaZ+7QPNTFnu+rMXLysJtuuORGfB3O370i1d+QyxT+iJbu4TUCAAdIGZaXV1Xe57+5DtcSPk7lpdXd/TTqc6ali/tKl2u93XHVgIQevrl5Tn+a7f10F5Pe6uJARtbl7W1atbSsLuPnrRpZGG6fkLW/rz05c10jTFPhRMd6kRTBfWM/3xc5sa3ct2lMFobf2Swi7fl67o0meoeCj2Cb3QjX0CriEA7FH14Vhbv6QrV7f6k0o7isvq2rqSPbbGgpmuXLmitfVLe36s3TIz5Vmm80vLRatvD481CK+ncn5pec87r8RMm1ejnv6TNY2kuz/y3ovcXROjpv/8p2t69uwVjTbCnjoRZqaVlYt7PlLdtS5+htgn9EY39wkoEAC6IISgra0tnTu/pCRJ9v3D4eU2XFheKRL6Xo+iyh3Wy+cuXPf1fnF3JUmitfVL2tjYLI6W91ZdJPXv9UjX/kaWli/u+W8kd9fkaND/+ZllnVra0ki6t+K7G6Zi6OE3PrOy5wLn7krL3/fq2rrSIfgMsU/orq7vEyCpCAC8i3tU7cDOvHxWm5ub+/qBrz4YG5ubOvPyua7sPN1daZpqZeWizl9YViNN93UHZuUY6vOnXqpu2NPj9fv1VL+jUy+9rK2trT23ud2l0UbQCxe29LP/11lNjQXlcf9eT5a75iYT/eZnVvT/fGGtO89f/o6ff/G0Yoz72mbu2WeIfULXdHufAEmSB0m8k11gIajdzvT8iy/t7xhZ+VzPfe3F7iT96x7a9MKp09tFaz8+8NWO5tRLL2ttbb2rO85+vp7llYtd2xlLRRegNZ7of/vEkj75pUtqTSTK8t6/nhilsWYRPn7810+rmXbnb337CG9tXWfOnlO6nwWmR58h9gnd0ct9Qs1ZkPt6+QXv6B5Uf6TnLyzp9JmX1Ww2e/5H6u5qNhp68fQZLa9c7OpOs9ohb25e1jPPvaAQQs9naEd3NRoNLa9c1IunXurqUUY/Xk/1nFtbW/rqs18rnq9rjy2FYMqj6wd/6Xktr2caHwk9DQExukIoJiG+74Mv6PRSW2ONoG41H6rP0PMvnNbq6poajcaB/wyxT9ibXu4Taqx4A93Xg8y+VKZT3tU9qj7wX3v+lF46c7b4wKv7i1ZUj9dsNvXSmbN68dRLPTli8vLDd2FpWV999mtKkqRnqb/aca2tresrX32uq8Wy8zn28/Wkaaosy/Slrzyjra1212e4x+gaHwl69uxV/a2feVaXrkS1xhO1exACstzVbARNjga970Mv6mN/ulp0HXo09PClrzyjtfX1noWA/fwMsU/Y/XP1ep9QU25mktmX7NBs67Nm9jp3j2JSYNfEGHX/fUd1//FjklTM/Jb2fDqOpO0W2PMvnNLpl8/t+pSynTKTsizXofk5nXzohJqNVO0sK7+39/H5EIKSJNGZs+f0tedfLI80e9de7PXrMTOlaarVtTX9xTNf0+XLV3ra0k6D6eJmrq87Mab/+ftO6LUnx7V8KVceXYnZrodLXUXIkKS5yVQvXNjS+z74wnbxj7F7r6FTtV5CmiY6+dAJLRyaV57nXZkb0K/PkMQ+Yaf6sU+omWhmwd0/Z/Oz038cLHwDAaD7sizT3OyMHjxxXJMT4/LoymPc1R+xmSkJQRaCVtfW9dzzL2ptbV1pmvZgy2/9/O12ponxMT104rhmZlrbO+rdvp4QgkIIunLlqr72wimdv7C0fVuvP+jdfj2SKQRTkiTKskynz5zVqdNnttumvX49aWJa38w1OZbof/iuo/pb3zKvqbFEG1ejttqu6C6zYsLP3bbEVdyvkZgmRott/83PrOjHf/20Ti+31RpPej7psJr0FWPUsaOLOn7sqEZGmtu3HcTPkMQ+4W6P1899Qo1EMwvR45/Y/Ezr/wjB/iYBoPusXLYySRItHJrT4UPzmpgYLz+gXv5B3ykteznGpu2FUs5fWNbS8oryGPf9dCkzU8xzuUszs9M6cnhB01OTajQaOxwLLF6vmbaXFj1/YVkXlpZ15cqWGo0+zCzu0utxd125clVLyxd1/sKS1i9tKk2TfV3ZLgmmdu66dDnXNzw4rnf9lQV966umdP+hppqpKculu11BwFSEiSyXLqy39Z//dE2/Uc72b6am0cb+nnFgkrI810izqcXDhzQ/P6ux0dGOUHXwPkPsEzoN1j6hJooAEP3XbWG29eMy+xF3zyUl/d6yYVN9CLI8VzDTxPi4WtNTGhlpamxs9K4/f/nyFW1sXtaljQ1tbl5WjL7vheVW8jxKco2OjmimNa3RkRGNj4/dsf1nZrp6dUsbm5u6tLGpjY3N7Z1hvxP+bl9PlmXa2NjUxuZlrV/a2J4d3a+ZymbFoi0bV3NtZa7D0w294RWTesV9Y3rs2KhmJoqj9xtflatckjd3ffGFy/qzU5f1x89t6tmzVxTMNDVerDXQj19R1Q0ohgVSTU1OaGpyQqOjIxoZGbnr+zxonyH2CdcM8j5hiOVmlsj9J+zQzPT/aCH8AwJAb1UfzqqFKbMdLaAS3aVyxvd+zLrdqepDHWNUHqNUjtvdjbtvz2Afjtcjucfr2peD8HqCFa9pK4u6vBXVzqVmYtpeP+UWCaDoZEhbmSsJ0mgzaLRRvAf7edR/O9XfSh6jvJwPsJPx5kH+DLFPGNx9whDLzSzxGP9lmps+mxZvNu3/Hqr+oKujw+q2Ozf7imVfO39+UD4Y1XaYmRrVmONdts3VOUHIy+I5DK/n2u9zUF5PLKaaK01MrfG0aLGWt91NKGdbR/eBKPyV6r1NkyAN0WeIfcJg7hOGWJC7ctNnUzNd5NyK/dX5B37XEbID8GG4l23k9ewv92LRoHvRj4sL3Yti84b3MzRsr6eb90X3mOlicE/ORPfN8jZ+EwAADCeXpOi+6Z6cCZJekNmmWBIYAIBhZ2XNfyGsrKxcNtczrAYIAMBQczOTuZ5ZWVm5HCRtyXWu+mY/twwAAPRMOXNU5yRtFTP/Q/yCdX4TAAAMGzdJCvELUnnqn8XwlfKbzAMAAGA4mXSt5hcdALM/iu6ZWAsAAIBhFaJ7JrM/ksqCv+X+vIpTAXdyrRAAAHCwFGuAum9uuT8vFQEgrK6ubrjpq5wJAADAUHIzk5u+urq6uiEpBBXrmLYl+1Q5AaBHV/kGAAB9Eosab5+S1JaUBJVH/B71x+WdmAgIAMBwKVr812q9B5VH/EH6E5dyMREQAIBhE1zKg/Qn5ddxuwOQjI5+2WN8WUwEBABgmLgk8xhfTkZHv1zdVgWA5OzZsxsyfa6cCMg8AAAAhkM0M8n0ubNnz26omPvnVbu/nBtgv8uKgAAADJViBUCz3y2/LhYELL+IkuSZf8qL/072ffMAAEAvJC5Fz/xT5dfV3L/tL2xpbe2/RPevqkgHDAMAAHCwRUkW3b+6tLb2X9RR3ztn/AdJVyX/dGAeAAAAwyAWNd0/LemqOur+zaf8RfvtcgIA6wEAAHCwmUtStN++8RudAaA44k/Tz3qMaypnCe7H1gEAgK5zSYnHuKY0/Wx523Z3P9xwx7C0tPSSyz7F6YAAABxo0czksk8tLS29pKLmbx/Y3zgEECTJXf+O/j8AAAebqajp5ZfX1fwbA0AuSUm7/ZHIMAAAAAeVS0pijGtJu/2R8ra88w43BgCXFM5vbr7ssk8zDAAAwIFUtf8/fX5z82Xd0P6Xbn3hn/I2+zWGAQAAOJjKJX5/rfzypnp/qwCQS1JoND6cu58VwwAAABwkLinJ3c+GRuPD5W35jXe6VQBwScn58+cvyfw/lIsC3fSDAABgIOXBTDL/D+fPn7+k2xzI3yoAXJPpF8trA9z5fgAAYFAEl6Iy/eId73Sb23NJYWlt7fPu/nkrZgPSBQAAYLDlZmbu/vmltbXPq6jzt6zfdzqyDyqO/j9gLAsMAMCBUNbsD+guHfw7BYBckl1p578V3c/pFqcQAACAgeGSQnQ/d6Wd/5aKIHDb7v2dAoBLSi5dunTBzX41MAwAAMAgy4OZudmvXrp06YLuchbf3Sb3RUnmCv86um/d7cEAAEBfFCv/uW+5wr9WcfR/x4X8dhIAwvLy8pdc/m/LyYCsDAgAwGCJZmYu/7fLy8tf0rV5fLe109P7TLn+1+3/BgAAg6SozUWt3lGd3kkAyCXZ0traH7rHT5jZbU8pAAAA+y43s+AeP7G0tvaHusvkv8rOOwBS9Gg/tpctBAAAvVHW6KgudgCkamGg1dVPlF2ARHQBAADot9zMEvf4iaXV1U/oDgv/3OhelvgtEoWH9+/0wQEAQM/lZW2W7mGe3r0EgFxScuHixd9191+jCwAAQF+VR//+axcuXvxdFafq77gu3+tFflySeRZ/yt0zFUmDdQEAANhfRT12zzyLP6Vd1ON7DQBRUlhaX/+ypF8ozwhgXQAAAPZXLGvwL5Q1+Z7r8W7O6TdJarVaM42gZyS1yttYHwAAgN7z8t9qO+rk6urqxY7bd+xeOwDVE4TV1dUVd/+RQBcAAID9FINZcPcfWV1dXdEuL9a326P26og/zM9O/36w8Bp3v+NlBwEAwJ5FMwvR4x8urax9k4oD8KojcE92W7BdRQDIzMN7O24DAAC945JU1t49TcbfyxF7dVrgJ9395wOnBQIA0Et5KE77+/kLFy9+Uvd42t+N9jpxzyTZ/Pz8hMXsj8zsYXd3MRQAAEA3FVf7c3/WQ/rqpaWlDe2y9V/Za6F2Sba0tLTuUe8R6wIAANALxXn/Ue9ZWlpaVxfqbTeO1HNJ6dLq6scZCgAAoOu2W/9Lq6sfl5SqC3W2W+fu3zgUcJKzAgAA2LNYXOrXn+lW67/SrQJ941BAVzYOAICac0nezdZ/pZtH6NtDAdH9x8uhgKyLjw8AQJ1kwSyJ7j/ezdZ/pRfL9yaS8kOzrf9kZk+5e17eBgAAdqa60t/TF1ZW/6r2eMrfrfRijN4lWdjK3uHuZ7WLCxQAAFBjUVJw97NhK3uHenSGXS8CQJQUzm1snI25v8PMTNeWKgQAALfnKs/5j7m/49zGRs8OpHs1Sz+XlC6vrT3tuf9gMEvFfAAAAO4mC2ap5/6Dy2trT6vL4/6den0J31RSdmi29aFg9r3RPStvAwAA18uCWRrdf/nCyuo7VdbQXj1Zr8/TzyWFxuj434vun7OiE8AiQQAAXC+3ovh/rjE6/vdU1Oee1stedwCkcuxiYmLi8Fgz/YKZLbBIEAAA26rFfs5f3sqe3NjYOKd9mEC/H0U4Sko2NjbORfPvcPeljtsBAKizKEnuvhTNv6Ms/on2oUbuRwegkkrK5lqtb0sSe7pcHyDs8zYAADAoqhn/SZ77U8urqx9Tj8f9O+1nGz6TlC6vrn7M3b/fipUCOT0QAFBH28Xf3b9/v4u/1J+j72qlwHeb2S/SCQAA1Mx1xf/CyuoH1IOV/u6mHxPxcknphZXVD9AJAADUzK2Kf1/OkOvXTPxMhAAAQL3crvj3ZaG8fp6KRwgAANTFQBV/qf/n4hMCAADDbuCKvzQ4E++qJYM7Jwaa+h9QAADYiyjJB634S4MTAKSbQ4BUXlmwv5sFAMCuREnBzDRoxV8arAAglW/M7Oz0WxPZ/25ms2U3IOn3hgEAcA/y8qh/JZf/tysrax/VABV/afACgFS+QfPz068L0T4ss6POVQQBAAdHZmap3M/E4G9fWlr7nAas+EuDGQCkajjg0PhR5Y0PB7PXcSlhAMABUF3S93NK2m+/cGHzjAaw+EuDO76eSUouXNg84yF9i7t+KVy7lDAXEQIADJooKQ9mqbt+yUP6lrL4JxrA4i8Nbgegsn05xENzrfea7H+Su7wIAswLAAAMgtykRGZy+Q9eWF79mfL2nl/Sdy8GPQBIxTaapLgwO/1WyT7IvAAAwIDYHu+X/F3ni8l+QcW5/wO9ps1BCACVa/MCYuODQfbW6F4lq0EdygAADKcoScEsRPlHFdrvGuTx/ls5SAFA6rha0qG5mR816f2SRDcAALCPiqN+SS69/8LyxR8rb9/3K/rtxUELANK1o/1qSOBnzewxugEAgB7bPup3969I/vc7Wv7b3z8oDmKxjOW/9PzK2kczhddH958zs2BmQQek9QIAOFCyqs5E95/LFF5//triPlVdOlAOYgeg03a7hW4AAKAHbnfULx2wlv+NDnqBrC4adLtuQK4Bn4UJABhIrmI539sd9ZsOcPGXDn4HoNN2Eptvtd5iQf8kmH1TLC4qlKsIO8P0egEA3ecqjvqTYKbo/vse9Y+XVlc/Xn7/QB/1dxq2glhdQjiX1FiYmfkBN/9hMzvs14IACwgBAG4ll5SUV+87Z24/ef7ixX8lqa2idkQNUVd52AJAZTuhLU5MHM6b6Q9Leo+ZNb1IAlEEAQBAIVdx2V5z9y1Jv5BsZT95dmPjXPn9oTnq7zSsAUC6vhug2dnZJxP5+0z+LhXprkpyBAEAqKdckplZKJaZtw/msp9eWVn5Qvn9oTvq7zTMAaByXRAo5wf8QzN7SpI6OgLMEQCA4be9zzczkyR3f9qj/tkN4/xDW/grdSp4VYHPJenw3PRT0e2HOoKAVF6FUPV6XwCgDlzF/j8t677c/elg/i/OLa89Xd4n0bWAMPTqWOiu+wUvzE69QUr+jsv/djBrdpw1UHUOAAAH1/Zwbzmrf8tkvyrl/+b8yvrvlfe57gCxLuoYACrXtXhmZ2efTDz/Xpm9w8wWJYYHAOCAulWb/6zcfyW35Jc7xvivGyKuG4rajUMDExOLsZm+Ta53WtAbJFPHKYSd9wcADI7O1n1S1H2XR/2eTB8KW9lvn9vYOFt9XzVq9d8OheyaUP7bvpbAwuzUG6LZOy3aX7NgxyURBgBgcNyi6Ese/ZQH/4/B/UMdbX7pAK/b3wsUr5tVLaHt4YH5+fkpz/PvDObfLdebLdi0dF0YcF0LEACA3qkKuOn6or8m0yei229akvzW0tLSenn/m/bpKBAA7qxaI2B7fGhubu54ovwpd/31zjAgeXEa6bUJhEwiBIC9qwq3S0rMZFXpqoq+mf59ruTp5eXlUx0/d9P+G9cjAOxMVcyvGzMqw8Dr3e07JP9mMz2x/ZYWaaC6v3c8Bu85ANzaTftMk0xm299215ck+4yZ/06u5LM3FP1qH8vR/g5QjO5d1eq/cRwpmZ+ffo25vVHu3yLZN5rpgc63uBwyuPEPvHpMid8HgOFXFebY8fX2AZKZXXdXd70g+R/I7JNu/umlpbU/1PVH9bfbJ+MuKDh703lEf12b6ejRo+NXr248mcheJbevd/kbJX9Ushkreljbn4IyGEjX2lydybXzd8SQAoBB11mEb9yXVf9UFfpqX1jsB/2iZH9hsk/L/E9z+RdHRia+cObMmc0bnqNq79d+Jv9eEAC6p3Pcv5oLcJ1WqzWbpn4yeHiV3B+Orm80aU6mky5NB7OROz1BR1AAgIF0/RH8zaL7VZPW5HrGpeVg+gOZPRstfjHL7JnV1dWVW/xYtUJr53wA7BEBoHduHPOvzha4yfHp6bmNJDmWWn7MXTNyvVYyd+lhMz2kqkXm/rjMpnT98AEA9Fu1j1qX2Zerr931nEnPSm4yfd5MFzNPXprI85dOra0t3+axTDcf4VPwe+D/B2Zvz13Ie2LAAAAAAElFTkSuQmCC";const mani={name:"RAID",short_name:"RAID",start_url:".",display:"standalone",background_color:"#14110F",theme_color:"#14110F",icons:[{src:icon,sizes:"512x512",type:"image/png",purpose:"any"}]};const blob=new Blob([JSON.stringify(mani)],{type:"application/manifest+json"});const l=document.createElement("link");l.rel="manifest";l.href=URL.createObjectURL(blob);document.head.appendChild(l);})();
