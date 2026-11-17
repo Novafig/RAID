@@ -91,6 +91,8 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 .cd.today{border-color:var(--ink)}
 .cd.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .jb{position:absolute;top:2px;left:3px;font-style:normal;font-weight:800;font-size:8px;line-height:1;padding:1px 2px;border:1px solid var(--accent);border-radius:3px;color:var(--accent);background:var(--bg,transparent)}
+.mvrow{display:flex;gap:8px;margin-top:8px}
+.mvrow .sm{padding:5px 10px;font-size:12px}
 .ptabs{display:flex;gap:20px;align-items:baseline}
 .ptabs h2{margin:14px 0 4px;cursor:pointer;color:var(--faint);border-bottom:2px solid transparent;padding-bottom:2px}
 .ptabs h2.on{color:var(--ink);border-bottom-color:var(--accent)}
@@ -463,11 +465,16 @@ function moveBar(d,plan){
  let h='';
  if(plan.movedFrom)h+='<div class="banner">Moved here from '+fmt(plan.movedFrom)+'.'+(hasProgress(d)?'':' <button class="sm" data-a="mvback">Move back</button>')+'</div>';
  else if(plan.t==='rest'&&plan.movedTo)h+='<div class="banner">Your workout was moved to '+fmt(plan.movedTo)+'.'+(hasProgress(plan.movedTo)?'':' <button class="sm" data-a="mvback">Move back</button>')+'</div>';
- if(canMoveFwd(d)){const pp=pushPlan(d),T=pp.t===today()?'today':DOWL[pd(pp.t).getDay()],F=DOWL[pd(pp.f).getDay()];
-  h+='<div style="margin-top:10px"><button class="sm" data-a="mvfwd">Move to '+T+' \u203a</button> <span class="small faint">'+(pp.chain.length?'A workout is already planned for '+T+', so it and every workout after it shifts forward one day, up to '+F+' (a free day). Only these days change, not future weeks.':T+' is a free day. Too wiped out today? Push this workout there.')+'</span></div>';}
- else if(plan.t!=='rest'&&hasProgress(d)&&(pushPlan(d)||pullPlan(d)))h+='<div class="small faint" style="margin-top:10px">To move this workout, untick everything you marked today (and unmark Session complete).</div>';
- if(canPull(d)){const pp=pullPlan(d),T=DOWL[pd(pp.t).getDay()],F=DOWL[pd(pp.f).getDay()];
-  h+='<div style="margin-top:10px"><button class="sm" data-a="mvbk">\u2039 Pull to '+T+'</button> <span class="small faint">'+(pp.chain.length?'A workout is already planned for '+T+', so it and every workout before it shifts back one day, down to '+F+' (a free day). Only these days change, not future weeks.':T+' is a free day. Want this workout sooner? Pull it there.')+'</span></div>';}
+ const cf=canMoveFwd(d),cp=canPull(d);
+ if(cf||cp){
+  const nm=x=>x===today()?'today':DOWL[pd(x).getDay()].slice(0,3);
+  const pf=cf&&pushPlan(d),pb=cp&&pullPlan(d);
+  h+='<div class="mvrow">';
+  if(cp)h+='<button class="sm" data-a="mvbk" title="'+(pb.chain.length?'Shifts the workouts before it back a day too':'Free day')+'">\u2039 Pull to '+nm(pb.t)+'</button>';
+  if(cf)h+='<button class="sm" data-a="mvfwd" title="'+(pf.chain.length?'Shifts the workouts after it forward a day too':'Free day')+'">Move to '+nm(pf.t)+' \u203a</button>';
+  h+='</div>';
+ }
+ else if(plan.t!=='rest'&&hasProgress(d)&&(pushPlan(d)||pullPlan(d)))h+='<div class="small faint" style="margin-top:6px">Untick everything to move this workout.</div>';
  return h;
 }
 function pistolToday(plan){
