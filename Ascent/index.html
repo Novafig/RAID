@@ -93,6 +93,15 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 .jb{position:absolute;top:2px;left:3px;font-style:normal;font-weight:800;font-size:8px;line-height:1;padding:1px 2px;border:1px solid var(--accent);border-radius:3px;color:var(--accent);background:var(--bg,transparent)}
 #hclock{margin-right:10px;font-weight:800;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.04em}
 .hr{display:flex;align-items:center}
+#timerbar{display:none;position:fixed;right:12px;bottom:calc(132px + env(safe-area-inset-bottom));z-index:36;align-items:center;gap:10px;padding:7px 7px 7px 16px;border-radius:999px;background:var(--accent);color:var(--onacc);font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;letter-spacing:.03em;box-shadow:0 6px 22px rgba(var(--accent-rgb),.45),0 2px 8px rgba(0,0,0,.55)}
+#timerbar button{border:0;border-radius:999px;padding:8px 16px;font-weight:800;font-size:13px;letter-spacing:.06em;background:rgba(0,0,0,.22);color:var(--onacc)}
+#timerbar.paused{background:var(--surface2);color:var(--ink);box-shadow:0 0 0 2px var(--accent),0 2px 8px rgba(0,0,0,.55)}
+#timerbar.paused button{background:var(--accent);color:var(--onacc)}
+.frow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:8px 0}
+.frow label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+.frow input[type=time]{font-size:14px;padding:4px 6px;width:auto}
+.frow .fbt{margin-left:auto;display:flex;gap:6px}
+.frow .fbt .sm{padding:4px 12px;font-weight:800;font-size:15px}
 .rowtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .dh{font-size:11px;padding:4px 8px;white-space:nowrap;flex:0 0 auto}
 .mvrow{display:flex;gap:8px;margin-top:8px}
@@ -145,6 +154,7 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 <div id="restbar"></div>
 <button id="beginbtn" data-a="begin">BEGIN</button>
 <div id="donebanner" aria-hidden="true"></div>
+<div id="timerbar"><span id="tbt"></span><button id="tbb" data-a="pause">Pause</button></div>
 <div id="toast"></div>
 <nav class="tabs" id="tabs"></nav>
 <div id="sheet" class="sheet" style="display:none"></div>
@@ -388,7 +398,7 @@ function load(){
  GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});
 }
 function save(){
- try{const t=today(),L=S.logs&&S.logs[t];if(L&&!L.t0&&!L.done&&realProgress(L))L.t0=Date.now();}catch(e){}
+ try{const L=S.logs&&S.logs[today()];if(L&&!lastReal(segs(L))&&!L.done&&realProgress(L)){const sg=ensureSeg(L);sg.push([Date.now(),null]);sync(L);}}catch(e){}
  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
 }
 const peek=d=>S.logs[d];
@@ -884,27 +894,58 @@ function walkCard(d){
 const clk=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
 const hhmm=ms=>{const x=new Date(ms),z=n=>(n<10?'0':'')+n;return z(x.getHours())+':'+z(x.getMinutes());};
 function lenTxt(ms){const m=Math.max(1,Math.round(ms/60000));return m<60?m+' min':Math.floor(m/60)+' h '+(m%60<10?'0':'')+(m%60)+' min';}
+function segs(L){return L.seg?L.seg:(L.t0?[[L.t0,L.t1||null]]:[]);}
+function ensureSeg(L){if(!L.seg)L.seg=L.t0?[[L.t0,L.t1||null]]:[];return L.seg;}
+function lastReal(sg){for(let i=sg.length-1;i>=0;i--)if(sg[i][0]!=null)return sg[i];return null;}
+function isOpen(L){const lr=lastReal(segs(L));return !!lr&&lr[1]==null&&!L.done;}
+function activeMs(L,now){let t=0;segs(L).forEach(x=>{if(x[0]==null)return;if(x[1]!=null)t+=Math.max(0,x[1]-x[0]);else if(now!=null&&!L.done)t+=Math.max(0,now-x[0]);});return t;}
+function sessMs(L){return activeMs(L,null);}
+function breakMs(L){const f=segs(L).filter(x=>x[0]!=null).sort((a,b)=>a[0]-b[0]);let t=0;for(let i=1;i<f.length;i++)if(f[i-1][1]!=null)t+=Math.max(0,f[i][0]-f[i-1][1]);return t;}
+function sync(L){
+ const sg=L.seg||[],st=sg.filter(x=>x[0]!=null).map(x=>x[0]);
+ if(st.length)L.t0=Math.min.apply(null,st);else delete L.t0;
+ if(L.done){const en=sg.filter(x=>x[1]!=null).map(x=>x[1]);if(en.length)L.t1=Math.max.apply(null,en);}
+}
+function tin(a,i,v){return'<input type="time" data-a="'+a+'" data-i="'+i+'" value="'+(v!=null?hhmm(v):'')+'">';}
 function sessLine(L,d){
  L=L||{};
- let h='<div class="sess"><label>Start <input type="time" data-a="t0" value="'+(L.t0?hhmm(L.t0):'')+'"></label><label>Stop <input type="time" data-a="t1" value="'+(L.t1?hhmm(L.t1):'')+'"></label>';
- if(L.t0&&L.t1&&L.t1>=L.t0)h+='<b>'+lenTxt(L.t1-L.t0)+'</b>';
- else if(L.t0&&!L.t1&&d===today())h+='<b data-live="1">'+lenTxt(Date.now()-L.t0)+'</b>';
- else h+='<span class="small faint">Tap BEGIN to start the clock, or enter times by hand.</span>';
+ const sg=segs(L).length?segs(L):[[null,null]],n=sg.length,live=isOpen(L)&&d===today();
+ let h='<div class="sess2">';
+ sg.forEach((x,i)=>{
+  const openFrame=x[0]!=null&&x[1]==null&&!L.done&&d===today();
+  h+='<div class="frow"><label>Start '+tin('fs',i,x[0])+'</label><label>Stop '+tin('fe',i,x[1])+'</label>';
+  if(i===n-1)h+='<span class="fbt">'+(n>1&&!openFrame?'<button class="sm" data-a="fdel" data-i="'+i+'" aria-label="Remove this time frame">×</button>':'')+'<button class="sm" data-a="fadd" aria-label="Add another time frame">+</button></span>';
+  h+='</div>';
+ });
+ const act=live?activeMs(L,Date.now()):sessMs(L),br=breakMs(L);
+ if(act>0||live)h+='<div class="small"><b'+(live?' data-live="1"':'')+'>'+lenTxt(act)+'</b> active'+(br?' · '+lenTxt(br)+' of breaks':'')+'</div>';
+ else h+='<div class="small faint">Tap BEGIN to start the clock, or enter times by hand.</div>';
+ h+='<div class="small faint">Took a break that is not logged? Tap + to add another time frame. Gaps between frames count as breaks.</div>';
  return h+'</div>';
 }
 function clockTxt(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60,z=n=>(n<10?'0':'')+n;return(h?h+':'+z(m):m)+':'+z(x);}
 function paintClock(){
- const el=document.getElementById('hclock');if(!el)return;
  const L=S.logs&&S.logs[today()];
- const run=!!(L&&L.t0&&!L.t1&&!L.done);
- const t=run?'⏱ '+clockTxt(Date.now()-L.t0):'';
- if(el.textContent!==t)el.textContent=t;
- if(run)document.querySelectorAll('[data-live]').forEach(x=>{const v=lenTxt(Date.now()-L.t0);if(x.textContent!==v)x.textContent=v;});
+ const act=!!(L&&!L.done&&lastReal(segs(L))),run=act&&isOpen(L);
+ const txt=act?clockTxt(activeMs(L,Date.now())):'';
+ const hc=document.getElementById('hclock');
+ if(hc){const t=act?(run?'⏱ ':'⏸ ')+txt:'';if(hc.textContent!==t)hc.textContent=t;}
+ const tb=document.getElementById('timerbar');
+ if(tb){
+  const show=act&&ui.tab==='today',disp=show?'flex':'none';
+  if(tb.style.display!==disp)tb.style.display=disp;
+  if(show){
+   const cn=run?'':'paused';if(tb.className!==cn)tb.className=cn;
+   const tt=document.getElementById('tbt'),v=(run?'':'PAUSED · ')+txt;if(tt&&tt.textContent!==v)tt.textContent=v;
+   const bb=document.getElementById('tbb'),a=run?'pause':'resume';if(bb&&bb.dataset.a!==a){bb.dataset.a=a;bb.textContent=run?'Pause':'Resume';}
+  }
+ }
+ if(act)document.querySelectorAll('[data-live]').forEach(x=>{const v=lenTxt(activeMs(L,Date.now()));if(x.textContent!==v)x.textContent=v;});
 }
 setInterval(paintClock,1000);
 function flashDone(label,L){
  const b=$('#donebanner');if(!b)return;
- const len=(L&&L.t0&&L.t1&&L.t1>=L.t0)?' \u00b7 '+lenTxt(L.t1-L.t0):'';
+ const len=(L&&sessMs(L)>0)?' \u00b7 '+lenTxt(sessMs(L)):'';
  b.innerHTML='<div class="dbi"><b>WORKOUT COMPLETE</b><small>'+esc(label)+len+'</small></div>';
  b.className='';void b.offsetWidth;b.className='go';
  clearTimeout(flashDone.h);flashDone.h=setTimeout(()=>{b.className='';},3100);
@@ -976,10 +1017,10 @@ function viewProgress(){
  return h;
 }
 function sessLogHTML(){
- const rows=Object.keys(S.logs).filter(d=>{const L=S.logs[d];return L.done&&L.t0&&L.t1&&L.t1>=L.t0;}).sort().reverse().slice(0,8);
+ const rows=Object.keys(S.logs).filter(d=>{const L=S.logs[d];return L.done&&sessMs(L)>0;}).sort().reverse().slice(0,8);
  if(!rows.length)return'';
  let tot=0,h='<h3>Session log</h3><div class="card"><div class="cb" style="border:0;padding-top:8px">';
- rows.forEach(d=>{const L=S.logs[d];tot+=L.t1-L.t0;h+='<div class="top" style="margin:8px 0" data-a="pick" data-d="'+d+'"><div><b>'+fmt(d)+'</b><div class="small muted">'+clk(L.t0)+' \u2013 '+clk(L.t1)+'</div></div><b>'+lenTxt(L.t1-L.t0)+'</b></div>';});
+ rows.forEach(d=>{const L=S.logs[d],bm=breakMs(L);tot+=sessMs(L);h+='<div class="top" style="margin:8px 0" data-a="pick" data-d="'+d+'"><div><b>'+fmt(d)+'</b><div class="small muted">'+clk(L.t0)+' – '+clk(L.t1||L.t0)+(bm?' · '+lenTxt(bm)+' break':'')+'</div></div><b>'+lenTxt(sessMs(L))+'</b></div>';});
  return h+'<p class="small faint">Average of last '+rows.length+': '+lenTxt(tot/rows.length)+'</p></div></div>';
 }
 function journalHTML(y,m,dim){
@@ -993,7 +1034,7 @@ function journalHTML(y,m,dim){
   return h;
  }
  show.forEach(d=>{
-  const L=peek(d),pl=planFor(d),len=L.t0&&L.t1&&L.t1>=L.t0?' \u00b7 '+lenTxt(L.t1-L.t0):'';
+  const L=peek(d),pl=planFor(d),len=sessMs(L)>0?' \u00b7 '+lenTxt(sessMs(L)):'';
   h+='<div class="card"><div class="cb" style="border:0;padding-top:12px"><div class="top"><div><b>'+esc(fmt(d))+'</b><div class="small muted">'+esc(planLabel(pl))+(L.done?' \u00b7 completed':'')+len+'</div></div><button class="sm" data-a="pick" data-d="'+d+'">Open</button></div><div class="jent">'+esc(L.note)+'</div></div></div>';
  });
  return h;
@@ -1075,7 +1116,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
-const BUILD='2026-11-16 \u00b7 6';
+const BUILD='2026-11-16 \u00b7 7';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1233,9 +1274,15 @@ document.addEventListener('click',e=>{
     toast('Workout moved back',()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});}break;}
   case'pview':ui.pview=t.dataset.v;ui.jday=null;render();break;
   case'jsel':ui.jday=ui.jday===t.dataset.d?null:t.dataset.d;render();break;
-  case'begin':{const L=wlog(ui.date);L.begun=true;if(!L.t0&&ui.date===today())L.t0=Date.now();save();render();scrollToEl(ui.reg&&ui.reg[0]?document.querySelector('[data-card="'+ui.reg[0].k+'"]'):null);break;}
+  case'begin':{const L=wlog(ui.date);L.begun=true;if(ui.date===today()){const sg=ensureSeg(L);if(!lastReal(sg)){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);}}save();render();scrollToEl(ui.reg&&ui.reg[0]?document.querySelector('[data-card="'+ui.reg[0].k+'"]'):null);break;}
   case'alt':{const L=wlog(ui.date);L.alt=t.dataset.v==='arm'?'arm':'';if(L.done){const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;}save();render();break;}
-  case'finish':{const L=wlog(ui.date);L.done=!L.done;const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;if(L.done){if(ui.date===today())L.t1=Date.now();}else delete L.t1;save();render();if(L.done)flashDone(planLabel(pp),L);break;}
+  case'finish':{const L=wlog(ui.date);L.done=!L.done;const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;
+   if(L.done){const sg=ensureSeg(L),lr=lastReal(sg);if(ui.date===today()){if(lr&&lr[1]==null)lr[1]=Date.now();else if(!lr)L.t1=Date.now();}sync(L);}else delete L.t1;
+   save();render();if(L.done)flashDone(planLabel(pp),L);break;}
+  case'pause':{const L=wlog(today()),lr=lastReal(ensureSeg(L));if(lr&&lr[1]==null&&!L.done){lr[1]=Date.now();sync(L);save();render();toast('Paused. Tap Resume when you restart.');}break;}
+  case'resume':{const L=wlog(today());if(L.done)break;const sg=ensureSeg(L),lr=lastReal(sg);if(!lr||lr[1]!=null){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);save();render();}break;}
+  case'fadd':{const L=wlog(ui.date),sg=ensureSeg(L),lt=sg[sg.length-1];if(!lt||lt[0]!=null||lt[1]!=null){sg.push([null,null]);save();render();}break;}
+  case'fdel':{const L=wlog(ui.date),sg=ensureSeg(L),i=+t.dataset.i,x=sg[i];if(x&&!(x[0]!=null&&x[1]==null&&!L.done&&ui.date===today())){sg.splice(i,1);sync(L);save();render();}break;}
   case'walk':{const L=wlog(ui.date);L.walk=Math.max(0,(L.walk||0)+n);save();render();break;}
   case'gtg':{const L=wlog(ui.date);L.gtg.push({k:t.dataset.k,t:Date.now()});save();render();break;}
   case'gundo':{const L=wlog(ui.date);L.gtg.pop();save();render();break;}
@@ -1268,11 +1315,15 @@ document.addEventListener('change',e=>{
   const E=ex(ui.date,t.dataset.g,t.dataset.r,+t.dataset.st),i=+t.dataset.i;
   while(E.s.length<=i)E.s.push({v:null,done:false});
   E.s[i].v=t.value===''?null:parseFloat(t.value);save();
- }else if(a==='t0'||a==='t1'){
-  const L=wlog(ui.date);
-  if(!t.value){if(a==='t1'){delete L.t1;save();render();}else render();}
+ }else if(a==='fs'||a==='fe'){
+  const L=wlog(ui.date),sg=ensureSeg(L),i=+t.dataset.i,k=a==='fs'?0:1;
+  while(sg.length<=i)sg.push([null,null]);
+  if(!t.value)sg[i][k]=null;
   else{const hm=t.value.split(':'),x=pd(ui.date);x.setHours(+hm[0],+hm[1],0,0);let ms=x.getTime();
-   if(a==='t1'&&L.t0&&ms<L.t0)ms+=864e5;L[a]=ms;if(a==='t0'&&L.t1&&L.t1<ms)L.t1+=864e5;save();render();}
+   if(k===1&&sg[i][0]!=null&&ms<sg[i][0])ms+=864e5;
+   if(k===0&&sg[i][1]!=null&&sg[i][1]<ms)sg[i][1]+=864e5;
+   sg[i][k]=ms;}
+  sync(L);save();render();
  }else if(a==='note'){wlog(ui.date).note=t.value;save();}
  else if(a==='setday'){
   const r=t.dataset.r,nv=+t.value,D=S.set.days,old=D[r];
