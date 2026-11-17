@@ -1116,7 +1116,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
-const BUILD='2026-11-16 \u00b7 7';
+const BUILD='2026-11-16 \u00b7 8';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1274,12 +1274,12 @@ document.addEventListener('click',e=>{
     toast('Workout moved back',()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});}break;}
   case'pview':ui.pview=t.dataset.v;ui.jday=null;render();break;
   case'jsel':ui.jday=ui.jday===t.dataset.d?null:t.dataset.d;render();break;
-  case'begin':{const L=wlog(ui.date);L.begun=true;if(ui.date===today()){const sg=ensureSeg(L);if(!lastReal(sg)){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);}}save();render();scrollToEl(ui.reg&&ui.reg[0]?document.querySelector('[data-card="'+ui.reg[0].k+'"]'):null);break;}
+  case'begin':{const L=wlog(ui.date);L.begun=true;if(ui.date!==today())toast('The timer only runs on today\u2019s date. Switch to today to time this workout.');if(ui.date===today()){const sg=ensureSeg(L);if(!lastReal(sg)){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);}}save();render();scrollToEl(ui.reg&&ui.reg[0]?document.querySelector('[data-card="'+ui.reg[0].k+'"]'):null);break;}
   case'alt':{const L=wlog(ui.date);L.alt=t.dataset.v==='arm'?'arm':'';if(L.done){const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;}save();render();break;}
   case'finish':{const L=wlog(ui.date);L.done=!L.done;const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;
    if(L.done){const sg=ensureSeg(L),lr=lastReal(sg);if(ui.date===today()){if(lr&&lr[1]==null)lr[1]=Date.now();else if(!lr)L.t1=Date.now();}sync(L);}else delete L.t1;
    save();render();if(L.done)flashDone(planLabel(pp),L);break;}
-  case'pause':{const L=wlog(today()),lr=lastReal(ensureSeg(L));if(lr&&lr[1]==null&&!L.done){lr[1]=Date.now();sync(L);save();render();toast('Paused. Tap Resume when you restart.');}break;}
+  case'pause':{const L=wlog(today()),lr=lastReal(ensureSeg(L));if(lr&&lr[1]==null&&!L.done){lr[1]=Date.now();sync(L);save();render();}break;}
   case'resume':{const L=wlog(today());if(L.done)break;const sg=ensureSeg(L),lr=lastReal(sg);if(!lr||lr[1]!=null){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);save();render();}break;}
   case'fadd':{const L=wlog(ui.date),sg=ensureSeg(L),lt=sg[sg.length-1];if(!lt||lt[0]!=null||lt[1]!=null){sg.push([null,null]);save();render();}break;}
   case'fdel':{const L=wlog(ui.date),sg=ensureSeg(L),i=+t.dataset.i,x=sg[i];if(x&&!(x[0]!=null&&x[1]==null&&!L.done&&ui.date===today())){sg.splice(i,1);sync(L);save();render();}break;}
@@ -1364,7 +1364,7 @@ load();pruneMoves();
 applyTheme();
 render();
 if(!S.setup)showSetup();
-try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js');}catch(e){}
+try{if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!window.__rl){window.__rl=1;location.reload();}});navigator.serviceWorker.register('sw.js');}}catch(e){}
 </script>
 </body>
 </html>
