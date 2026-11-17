@@ -80,7 +80,9 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;width:100%}
 .cal .h{text-align:center;font-size:11px;color:var(--faint)}
 .cd{position:relative;height:44px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;background:var(--surface2);border:1px solid transparent;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;line-height:1.1}
-.cd small{font-size:9px;font-weight:500;opacity:.75}
+.cd small{font-size:9px;font-weight:500;opacity:.75;letter-spacing:.02em}
+.cd small.t-leg{color:#5FD0B4;opacity:1;font-weight:800}
+.cd small.t-arm{color:#F4A259;opacity:1;font-weight:800}
 .cd.e{background:transparent;cursor:default}
 .cd.done{background:rgba(123,201,111,.22);color:var(--go);border-color:rgba(123,201,111,.5)}
 .cd.skip{background:rgba(224,92,92,.18);color:#EE8E8E;border-color:rgba(224,92,92,.4)}
@@ -446,6 +448,14 @@ function pushPlan(d){
  if(planFor(c).t!=='rest'||chain.some(hasProgress))return null;
  return{t,chain,f:c};
 }
+function pullPlan(d){
+ const t=addD(d,-1),chain=[];let c=t;
+ if(t<today())return null;
+ for(let i=0;i<7&&planFor(c).t!=='rest';i++){chain.push(c);c=addD(c,-1);if(c<today())return null;}
+ if(planFor(c).t!=='rest'||chain.some(hasProgress))return null;
+ return{t,chain,f:c};
+}
+function canPull(d){return planFor(d).t!=='rest'&&!hasProgress(d)&&!!pullPlan(d);}
 function canMoveFwd(d){
  return planFor(d).t!=='rest'&&!hasProgress(d)&&!!pushPlan(d);
 }
@@ -455,7 +465,9 @@ function moveBar(d,plan){
  else if(plan.t==='rest'&&plan.movedTo)h+='<div class="banner">Your workout was moved to '+fmt(plan.movedTo)+'.'+(hasProgress(plan.movedTo)?'':' <button class="sm" data-a="mvback">Move back</button>')+'</div>';
  if(canMoveFwd(d)){const pp=pushPlan(d),T=pp.t===today()?'today':DOWL[pd(pp.t).getDay()],F=DOWL[pd(pp.f).getDay()];
   h+='<div style="margin-top:10px"><button class="sm" data-a="mvfwd">Move to '+T+' \u203a</button> <span class="small faint">'+(pp.chain.length?'A workout is already planned for '+T+', so it and every workout after it shifts forward one day, up to '+F+' (a free day). Only these days change, not future weeks.':T+' is a free day. Too wiped out today? Push this workout there.')+'</span></div>';}
- else if(plan.t!=='rest'&&hasProgress(d)&&pushPlan(d))h+='<div class="small faint" style="margin-top:10px">To move this workout, untick everything you marked today (and unmark Session complete).</div>';
+ else if(plan.t!=='rest'&&hasProgress(d)&&(pushPlan(d)||pullPlan(d)))h+='<div class="small faint" style="margin-top:10px">To move this workout, untick everything you marked today (and unmark Session complete).</div>';
+ if(canPull(d)){const pp=pullPlan(d),T=DOWL[pd(pp.t).getDay()],F=DOWL[pd(pp.f).getDay()];
+  h+='<div style="margin-top:10px"><button class="sm" data-a="mvbk">\u2039 Pull to '+T+'</button> <span class="small faint">'+(pp.chain.length?'A workout is already planned for '+T+', so it and every workout before it shifts back one day, down to '+F+' (a free day). Only these days change, not future weeks.':T+' is a free day. Want this workout sooner? Pull it there.')+'</span></div>';}
  return h;
 }
 function pistolToday(plan){
@@ -881,12 +893,12 @@ function viewProgress(){
   else if(p.t==='rest')cls='rest';
   else if(dd<t0&&fl&&dd>=fl)cls=any?'part':'skip';
   else if(any&&dd<=t0)cls='part';
-  const tag=pt==='skill'?'S':pt==='leg'?'L':pt==='arm'?'A':pt==='core'?'C':'';
-  cells+='<div class="cd '+cls+(dd===t0?' today':'')+(jm&&dd===ui.jday?' sel':'')+'" data-a="'+(jm?'jsel':'pick')+'" data-d="'+dd+'">'+(L&&L.note&&L.note.trim()?'<i class="jb">J</i>':'')+i+'<small>'+tag+'</small></div>';
+  const tag=pt==='skill'?'SKL':pt==='leg'?'LEG':pt==='arm'?'ARM':pt==='core'?'MOB':'';
+  cells+='<div class="cd '+cls+(dd===t0?' today':'')+(jm&&dd===ui.jday?' sel':'')+'" data-a="'+(jm?'jsel':'pick')+'" data-d="'+dd+'">'+(L&&L.note&&L.note.trim()?'<i class="jb">J</i>':'')+i+'<small class="t-'+pt+'">'+tag+'</small></div>';
  }
   let h='<div class="ptabs"><h2 class="'+(jm?'':'on')+'" data-a="pview" data-v="progress">Progress</h2><h2 class="'+(jm?'on':'')+'" data-a="pview" data-v="journal">Journal</h2></div>';
  h+='<div class="card"><div class="cb" style="border:0;padding-top:12px"><div class="top" style="margin-bottom:10px"><button class="sm" data-a="mo" data-n="-1">‹</button><b>'+MONTHS[m]+' '+y+'</b><button class="sm" data-a="mo" data-n="1">›</button></div><div class="cal">'+cells+'</div>'+
-  '<div style="margin-top:10px"><span class="lg"><i style="background:rgba(123,201,111,.5)"></i>Completed</span><span class="lg"><i style="background:rgba(224,92,92,.5)"></i>Skipped</span><span class="lg"><i style="background:rgba(160,120,230,.5)"></i>Partial</span><span class="lg"><i style="background:rgba(79,109,150,.6)"></i>Rest</span></div><div class="small faint">S skill · L lower body + abs · A arms + abs · C mobility + core. Tap a day to open it. J marks a day with a journal note.</div></div></div>';
+  '<div style="margin-top:10px"><span class="lg"><i style="background:rgba(123,201,111,.5)"></i>Completed</span><span class="lg"><i style="background:rgba(224,92,92,.5)"></i>Skipped</span><span class="lg"><i style="background:rgba(160,120,230,.5)"></i>Partial</span><span class="lg"><i style="background:rgba(79,109,150,.6)"></i>Rest</span></div><div class="small faint">SKL skill · LEG lower body + abs · ARM arms + abs · MOB mobility + core. A day shows ARM if you swapped legs for arms. Tap a day to open it. J marks a day with a journal note.</div></div></div>';
  if(jm)return h+journalHTML(y,m,dim);
  const ws=wkStart(t0);let wd=0,wp=0;
  for(let i=0;i<7;i++){const dd=addD(ws,i);if(planFor(dd).t!=='rest')wp++;const L=peek(dd);if(L&&L.done)wd++;}
@@ -1149,6 +1161,12 @@ document.addEventListener('click',e=>{
    pairs.forEach(x=>{S.moves[x[0]]=x[1];S.mvg[x[0]]=gid;});
    save();render();
    toast('Workout moved to '+(pp.t===today()?'today':DOWL[pd(pp.t).getDay()])+(pp.chain.length?' and the days after it shifted':''),()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});break;}
+  case'mvbk':{const d=ui.date,pp=pullPlan(d);if(!pp||hasProgress(d)||planFor(d).t==='rest')break;
+   const snap=JSON.stringify([S.moves,S.mvg]),srcOf=x=>planFor(x).movedFrom||x;
+   const pairs=[[srcOf(d),pp.t]].concat(pp.chain.map(c=>[srcOf(c),addD(c,-1)])),gid='g'+Date.now();
+   pairs.forEach(x=>{S.moves[x[0]]=x[1];S.mvg[x[0]]=gid;});
+   save();render();
+   toast('Workout pulled to '+DOWL[pd(pp.t).getDay()]+(pp.chain.length?' and the days before it shifted':''),()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});break;}
   case'mvback':{const snap=JSON.stringify([S.moves,S.mvg]);const p=planFor(ui.date);const src=p.movedFrom||(p.movedTo?ui.date:null);
    if(src){const g=S.mvg[src];Object.keys(S.moves).forEach(k=>{if(k===src||(g&&S.mvg[k]===g&&S.moves[k]>=today()&&!hasProgress(S.moves[k])))delete S.moves[k];});pruneMoves();save();render();
     toast('Workout moved back',()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});}break;}
