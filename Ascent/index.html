@@ -91,6 +91,10 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 .cd.today{border-color:var(--ink)}
 .cd.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .jb{position:absolute;top:2px;left:3px;font-style:normal;font-weight:800;font-size:8px;line-height:1;padding:1px 2px;border:1px solid var(--accent);border-radius:3px;color:var(--accent);background:var(--bg,transparent)}
+#hclock{margin-right:10px;font-weight:800;font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.hr{display:flex;align-items:center}
+.rowtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.dh{font-size:11px;padding:4px 8px;white-space:nowrap;flex:0 0 auto}
 .mvrow{display:flex;gap:8px;margin-top:8px}
 .mvrow .sm{padding:5px 10px;font-size:12px}
 .ptabs{display:flex;gap:20px;align-items:baseline}
@@ -136,7 +140,7 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 </style>
 </head>
 <body>
-<header><div class="wrap"><div class="top"><span class="brand">ASCENT</span><span id="hchip"></span></div></div></header>
+<header><div class="wrap"><div class="top"><span class="brand">ASCENT</span><span class="hr"><span id="hclock"></span><span id="hchip"></span></span></div></div></header>
 <div class="wrap" id="main"></div>
 <div id="restbar"></div>
 <button id="beginbtn" data-a="begin">BEGIN</button>
@@ -344,7 +348,8 @@ legB:{n:'Lower Body B',sub:'Hinge + single-leg \u00b7 added work',intro:'Added w
 legPool:{n:'pool',rows:[
  Object.assign({id:'ssq',n:'Split squat (both feet on the floor)',r:[3,3],dose:'8–12 reps per leg',u:'reps',top:12,up:'slower lowering, then 15 lb → 35 lb in hand',note:'Replaces the Bulgarian split squat, which needs something to rest your rear foot on.'},R90),
  Object.assign({id:'csq',n:'Cossack squat (side lunge)',r:[3,3],dose:'6–10 reps per side',u:'reps',top:10,up:'deeper, then hold the 15 lb at your chest',note:'Replaces step-ups, which need a sturdy chair, box or step.'},R90),
- Object.assign({id:'sgb',n:'Single-leg glute bridge (floor)',r:[3,3],dose:'10–15 reps per leg',u:'reps',top:15,up:'pause 2 seconds at the top',note:'Replaces the hip thrust, which needs a bench or couch for your upper back.'},R90)]},
+ Object.assign({id:'sgb',n:'Single-leg glute bridge (floor)',r:[3,3],dose:'10–15 reps per leg',u:'reps',top:15,up:'pause 2 seconds at the top',note:'Replaces the hip thrust, which needs a bench or couch for your upper back.'},R90),
+ Object.assign({id:'slw',n:'Side-lying leg raise',r:[2,3],dose:'12–20 reps per side',u:'reps',top:20,up:'pause 2 seconds at the top, then add a pulse',note:'Replaces the banded lateral walk, which needs resistance bands.'},R90)]},
 absPool:{n:'pool',rows:[
  Object.assign({id:'hkr',n:'Hanging knee raise → hanging leg raise',r:[3,3],dose:'6–12 reps',u:'reps',top:12,up:'knees bent → straight legs',note:'Hang from your pull-up bar. Control the swing; pause at the top.'},R90),
  Object.assign({id:'rvc',n:'Reverse crunch (floor)',r:[3,3],dose:'10–15 reps',u:'reps',top:15,up:'slow 3-second lowering, then hips higher',note:'Shown because no pull-up bar or Swedish ladder is ticked in Equipment.'},R90),
@@ -352,7 +357,8 @@ absPool:{n:'pool',rows:[
  Object.assign({id:'rcs',n:'Roman chair sit-up (15 lb held at your chest)',r:[3,3],dose:'10–15 reps',u:'reps',top:15,up:'slow 3-second lowering, then a pause at the top; then the 35 lb',note:'Hook your feet, lower your torso only as far as your lower back stays flat (stop before it arches), then curl up. Chair will not allow it? Floor crunch holding the 15 lb.'},R90),
  Object.assign({id:'rsb',n:'Roman chair side bend (15 lb in one hand)',r:[3,3],dose:'10–15 reps per side',u:'reps',top:15,up:'35 lb in one hand, then a pause at the top',note:'Targets the obliques. Chair will not allow a side-on position? Standing dumbbell side bend instead.'},R90),
  Object.assign({id:'pln',n:'Plank (forearms)',r:[3,3],dose:'30–60 sec',u:'sec',top:60,up:'longer lever: forearms further forward, then lift one foot at a time',note:'Shown because Roman chair is not ticked in Equipment. Ribs down, glutes tight.'},R90),
- Object.assign({id:'spl',n:'Side plank',r:[3,3],dose:'20–45 sec per side',u:'sec',top:45,up:'top leg raised, then hip dips',note:'Shown because Roman chair is not ticked in Equipment.'},R90)]},
+ Object.assign({id:'spl',n:'Side plank',r:[3,3],dose:'20–45 sec per side',u:'sec',top:45,up:'top leg raised, then hip dips',note:'Shown because Roman chair is not ticked in Equipment.'},R90),
+ Object.assign({id:'lgr',n:'Lying straight-leg raise (floor)',r:[3,3],dose:'8–12 reps',u:'reps',top:12,up:'slow 3-second lowering, then hover the heels just off the floor',note:'Replaces the dip station knee raise, which needs a dip station. Press your lower back into the floor.'},R90)]},
 armA:{n:'Arms A',sub:'Biceps + triceps · swapped in for Lower Body A',intro:'Added work, not from the guide. Your dumbbells jump from 15 lb to 35 lb, so progress with tempo and pauses before changing weight. Foundation still runs today.',rows:[
  Object.assign({id:'acl',n:'Dumbbell curl (15 lb or 35 lb — whichever gives you 8 clean reps)',r:[3,3],dose:'8–12 reps per arm',u:'reps',top:12,up:'3-second lowering, then a 1-second pause halfway up'},R90),
  Object.assign({id:'oth',n:'Overhead dumbbell triceps extension (35 lb, both hands)',r:[3,3],dose:'8–12 reps',u:'reps',top:12,up:'3-second lowering, then a pause at the stretch'},R90),
@@ -378,7 +384,7 @@ function load(){
  try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):defState();}catch(e){S=defState();}
  const d=defState();
  S.set=Object.assign({},d.set,S.set||{});S.set.days=Object.assign({},d.set.days,S.set.days||{});S.set.eq=S.set.eq||{};
- S.logs=S.logs||{};S.chk=S.chk||{};S.prog=S.prog||{};S.moves=S.moves||{};S.mvg=S.mvg||{};
+ S.logs=S.logs||{};S.chk=S.chk||{};S.prog=S.prog||{};S.moves=S.moves||{};S.mvg=S.mvg||{};S.sub=S.sub||{};
  GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});
 }
 function save(){
@@ -603,7 +609,7 @@ function rowsHTML(d,g,rows,step,unitMain){
   const E=(peek(d)&&peek(d).ex[key])||{s:[]};
   const n=Math.max(r.r[0],E.s.length);
   const lb=lastBefore(key,d,step);
-  let h='<div class="row"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+'</div><div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>';
+  let h='<div class="row"><div class="rowtop"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+'</div>'+dhBtn(d,g,r)+'</div><div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>';
   if(r.feel)h+='<div class="small faint">'+esc(r.feel)+'</div>';
   if(r.note)h+='<div class="small muted">'+esc(r.note)+'</div>';
   if(lb)h+='<div class="small faint">Last time ('+lb.d.slice(5)+'): '+lb.E.s.map(s=>s.v!=null?s.v:(s.done?'\u2713':'\u2013')).join(', ')+'</div>';
@@ -636,9 +642,9 @@ function ladderCtl(g){
   (st<tot?'<button class="sm" data-a="step" data-g="'+g+'" data-n="1">\u25b2 Move up a step</button>':'')+
   (st===tot&&SK[g]&&g!=='pistol'?'<button class="sm'+(S.prog[g].solid?' on':'')+'" data-a="solid" data-g="'+g+'">'+(S.prog[g].solid?'Marked solid \u2713':'Mark skill solid')+'</button>':'')+'</div>';
 }
-function stepBlock(g){
+function stepBlock(g,d){
  const st=curStep(g),s=stepOf(g),tot=stepsOf(g).length;
- return'<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div><div class="small muted">'+esc(s[1])+'</div>'+altLine(s)+'</div>';
+ return'<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div><div class="small muted">'+esc(s[1])+'</div>'+altLine(s)+swapCtl(d,g,s)+'</div>';
 }
 
 /* ===== sections ===== */
@@ -673,9 +679,9 @@ function foundCard(d,plan){
  h+=(plan&&plan.t==='leg'&&!plan.arm)?fprepHTML(d):'';
  if(plan&&plan.t==='leg'&&!plan.arm){const Lw=(peek(d)||{w:{}}).w;if(!(Lw.fp1&&Lw.fp2))fd=false;}
  ['push','pull','dip'].forEach(g=>{
-  const rows=[{id:'main',main:1,r:[3,4],dose:'near-max reps/time',feel:''}];
+  const rows=foundRows(d,g);
   if(!rowsDone(d,g,rows))fd=false;
-  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div><div class="small muted">'+FOUND[g].trains+'</div>'+stepBlock(g)+'<div class="small">'+link(FOUND[g].vid,'Tutorial video')+'</div>'+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
+  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div><div class="small muted">'+FOUND[g].trains+'</div>'+stepBlock(g,d)+'<div class="small">'+link(FOUND[g].vid,'Tutorial video')+'</div>'+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
  });
  return card('found','Foundation \u2014 push \u00b7 pull \u00b7 dip','Current steps: '+['push','pull','dip'].map(g=>curStep(g)).join(' / '),h,false,fd);
 }
@@ -785,9 +791,44 @@ function legSet(k){
  const rows=e.rows.map(r=>LEGSUB[r.id]?EXT.legPool.rows.find(x=>x.id===LEGSUB[r.id]):r);
  return rows.some((r,i)=>r!==e.rows[i])?Object.assign({},e,{rows:rows,intro:e.intro+' No bench, chair or step is ticked in Equipment, so moves that need one are swapped for floor-based versions.'}):e;
 }
+const NEEDX={bss:'bench',stp:'bench',ht:'bench',lw:'band',hkr:'bar',dsk:'dip',rcs:'rom',rsb:'rom'};
+const SUBX={bss:'ssq',stp:'csq',ht:'sgb',lw:'slw',hkr:'rvc',dsk:'lgr',rcs:'pln',rsb:'spl'};
+const findPool=id=>EXT.legPool.rows.concat(EXT.absPool.rows).find(r=>r.id===id);
+function hasSets(d,key){const L=peek(d),E=L&&L.ex[key];return !!E&&(E.s||[]).some(x=>x&&(x.done||(x.v!=null&&x.v!=='')));}
+function applySub(d,rows){
+ const seen={};
+ return rows.map(r=>{
+  if(!S.sub[r.id]||!SUBX[r.id]||hasSets(d,'ext.'+r.id))return r;
+  const a=findPool(SUBX[r.id]);if(!a)return r;
+  return Object.assign({},a,{subOf:r.id});
+ }).filter(r=>{if(seen[r.id])return false;seen[r.id]=1;return true;});
+}
+function dhBtn(d,g,r){
+ if(g!=='ext'||hasSets(d,'ext.'+r.id))return'';
+ if(r.subOf)return'<button class="sm dh" data-a="havenow" data-k="'+r.subOf+'">Have it now</button>';
+ if(NEEDX[r.id]&&SUBX[r.id])return'<button class="sm dh" data-a="nohave" data-k="'+r.id+'">Don’t have: '+EQ[NEEDX[r.id]].split(/\s*[(,\/]/)[0]+'</button>';
+ return'';
+}
+const ALTROW={};
+['Band-Assisted Pull-Up','Negative Pull-Up','Full Pull-Up'].forEach(k=>{ALTROW[k]={n:'Inverted row (sturdy table)',dose:'near-max reps',u:'reps'};});
+['Band-Assisted Dip','Negative Dip','Full Dip'].forEach(k=>{ALTROW[k]={n:'Bench dip (straight legs)',dose:'near-max reps',u:'reps'};});
+ALTROW['Dead Hang']={n:'Farmer hold (35 lb dumbbell, one hand)',dose:'20–40 s per hand',u:'sec'};
+ALTROW['Scapular Pulls']={n:'Band pull-apart',dose:'10–15 slow reps',u:'reps'};
+function swapOn(d,g){const nm=stepOf(g)[0];return !!(S.sub[nm]&&ALTROW[nm]&&ALT[nm]&&!hasSets(d,g+'.main'));}
+function foundRows(d,g){
+ if(swapOn(d,g)){const nm=stepOf(g)[0];return[Object.assign({id:'alt',r:[3,4]},ALTROW[nm],{note:ALT[nm][1]})];}
+ return[{id:'main',main:1,r:[3,4],dose:'near-max reps/time',feel:''}];
+}
+function swapCtl(d,g,s){
+ const nm=s[0],a=ALT[nm];if(!d||!a||!ALTROW[nm])return'';
+ if(swapOn(d,g))return hasSets(d,g+'.alt')?'<div class="small altline"><span class="chip am">Swapped</span> Doing '+esc(ALTROW[nm].n)+' instead.</div>':'<div class="small altline"><span class="chip am">Swapped</span> Doing '+esc(ALTROW[nm].n)+' instead. <button class="sm dh" data-a="havenow" data-k="'+esc(nm)+'">Have it now</button></div>';
+ if(hasSets(d,g+'.main')||altLine(s))return'';
+ return'<div style="margin-top:6px"><button class="sm dh" data-a="nohave" data-k="'+esc(nm)+'">Don’t have: '+(a[0]==='bar'?'Pull-up bar':'Dip station')+'</button></div>';
+}
 function extCard(d,k){
  const e=k==='abs'?absSet():(k==='legA'||k==='legB')?legSet(k):EXT[k];
- return card('ext_'+k,e.n,e.sub,'<p class="small muted">'+e.intro+'</p>'+rowsHTML(d,'ext',e.rows,1,'reps'),true,rowsDone(d,'ext',e.rows));
+ const rows=applySub(d,e.rows);
+ return card('ext_'+k,e.n,e.sub,'<p class="small muted">'+e.intro+'</p>'+rowsHTML(d,'ext',rows,1,'reps'),true,rowsDone(d,'ext',rows));
 }
 function viewToday(){
  const d=ui.date,plan=planFor(d);
@@ -843,15 +884,24 @@ function walkCard(d){
 const clk=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
 const hhmm=ms=>{const x=new Date(ms),z=n=>(n<10?'0':'')+n;return z(x.getHours())+':'+z(x.getMinutes());};
 function lenTxt(ms){const m=Math.max(1,Math.round(ms/60000));return m<60?m+' min':Math.floor(m/60)+' h '+(m%60<10?'0':'')+(m%60)+' min';}
-function sessLine(L){
- if(!L||(!L.t0&&!L.t1))return'';
- let h='<div class="sess">';
- if(L.t0)h+='<label>Start <input type="time" data-a="t0" value="'+hhmm(L.t0)+'"></label>';
- if(L.t1)h+='<label>Stop <input type="time" data-a="t1" value="'+hhmm(L.t1)+'"></label>';
+function sessLine(L,d){
+ L=L||{};
+ let h='<div class="sess"><label>Start <input type="time" data-a="t0" value="'+(L.t0?hhmm(L.t0):'')+'"></label><label>Stop <input type="time" data-a="t1" value="'+(L.t1?hhmm(L.t1):'')+'"></label>';
  if(L.t0&&L.t1&&L.t1>=L.t0)h+='<b>'+lenTxt(L.t1-L.t0)+'</b>';
- else if(L.t0&&!L.t1)h+='<span class="faint">started '+clk(L.t0)+'</span>';
+ else if(L.t0&&!L.t1&&d===today())h+='<b data-live="1">'+lenTxt(Date.now()-L.t0)+'</b>';
+ else h+='<span class="small faint">Tap BEGIN to start the clock, or enter times by hand.</span>';
  return h+'</div>';
 }
+function clockTxt(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60,z=n=>(n<10?'0':'')+n;return(h?h+':'+z(m):m)+':'+z(x);}
+function paintClock(){
+ const el=document.getElementById('hclock');if(!el)return;
+ const L=S.logs&&S.logs[today()];
+ const run=!!(L&&L.t0&&!L.t1&&!L.done);
+ const t=run?'⏱ '+clockTxt(Date.now()-L.t0):'';
+ if(el.textContent!==t)el.textContent=t;
+ if(run)document.querySelectorAll('[data-live]').forEach(x=>{const v=lenTxt(Date.now()-L.t0);if(x.textContent!==v)x.textContent=v;});
+}
+setInterval(paintClock,1000);
 function flashDone(label,L){
  const b=$('#donebanner');if(!b)return;
  const len=(L&&L.t0&&L.t1&&L.t1>=L.t0)?' \u00b7 '+lenTxt(L.t1-L.t0):'';
@@ -863,7 +913,7 @@ function flashDone(label,L){
 function finishCard(d,plan){
  const L=peek(d)||{};
  let h='<div class="card" id="finishcard"><div class="cb" style="border:0;padding-top:14px"><textarea data-a="note" placeholder="Session notes (form cues, what felt off)" style="min-height:60px;font-size:14px">'+esc(L.note||'')+'</textarea>';
- if(plan.t!=='rest')h+='<button class="'+(L.done?'on':'pri')+'" data-a="finish" style="width:100%;margin-top:8px">'+(L.done?'Session complete \u2713':'Mark session complete')+'</button>'+sessLine(L);
+ if(plan.t!=='rest')h+='<button class="'+(L.done?'on':'pri')+'" data-a="finish" style="width:100%;margin-top:8px">'+(L.done?'Session complete \u2713':'Mark session complete')+'</button>'+sessLine(L,d);
  h+='<p class="small faint">Tip from the guide: film a set, even just propped against a wall \u2014 it shows form breakdowns you cannot feel and proves progress.</p></div></div>';
  return h;
 }
@@ -1025,6 +1075,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
+const BUILD='2026-11-16 \u00b7 6';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1045,6 +1096,7 @@ function viewMore(){
  h+=card('m_bk','Backup','Export / import your data',backupHTML(),false);
  h+=card('m_guide','Guide notes','Intro, mindset, overload, FAQ',guideNotes(),false);
  h+=card('m_flag','Notes on the guide itself','Gaps and contradictions I found',flagNotes(),false);
+ h+='<p class="small faint" style="text-align:center;margin:18px 0">Build '+BUILD+'</p>';
  return h;
 }
 function backupHTML(){
@@ -1089,7 +1141,7 @@ function render(){
  const T=[['today','Today'],['progress','Progress'],['path','Path'],['groove','Groove'],['more','More']];
  $('#tabs').innerHTML=T.map(t=>'<button class="'+(ui.tab===t[0]?'act':'')+'" data-a="tab" data-t="'+t[0]+'">'+t[1]+'</button>').join('');
  $('#beginbtn').style.display=(ui.tab==='today'&&ui.showBegin)?'block':'none';
- $('#hchip').innerHTML='<span class="chip am">Stage '+S.set.stage+'</span>';
+ paintClock();$('#hchip').innerHTML='<span class="chip am">Stage '+S.set.stage+'</span>';
  if(circ.ph!=='idle')circUpd();
 }
 
@@ -1168,6 +1220,8 @@ document.addEventListener('click',e=>{
    pairs.forEach(x=>{S.moves[x[0]]=x[1];S.mvg[x[0]]=gid;});
    save();render();
    toast('Workout moved to '+(pp.t===today()?'today':DOWL[pd(pp.t).getDay()])+(pp.chain.length?' and the days after it shifted':''),()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});break;}
+  case'nohave':{const k=t.dataset.k;S.sub[k]=true;save();render();toast('Swapped for an alternative',()=>{delete S.sub[k];save();render();});break;}
+  case'havenow':delete S.sub[t.dataset.k];save();render();break;
   case'mvbk':{const d=ui.date,pp=pullPlan(d);if(!pp||hasProgress(d)||planFor(d).t==='rest')break;
    const snap=JSON.stringify([S.moves,S.mvg]),srcOf=x=>planFor(x).movedFrom||x;
    const pairs=[[srcOf(d),pp.t]].concat(pp.chain.map(c=>[srcOf(c),addD(c,-1)])),gid='g'+Date.now();
@@ -1206,7 +1260,7 @@ document.addEventListener('click',e=>{
    break;
  }
 });
-function load2(){const d=defState();S.set=Object.assign({},d.set,S.set||{});S.set.days=Object.assign({},d.set.days,S.set.days||{});S.set.eq=S.set.eq||{};S.logs=S.logs||{};S.chk=S.chk||{};S.prog=S.prog||{};S.moves=S.moves||{};S.mvg=S.mvg||{};GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});}
+function load2(){const d=defState();S.set=Object.assign({},d.set,S.set||{});S.set.days=Object.assign({},d.set.days,S.set.days||{});S.set.eq=S.set.eq||{};S.logs=S.logs||{};S.chk=S.chk||{};S.prog=S.prog||{};S.moves=S.moves||{};S.mvg=S.mvg||{};S.sub=S.sub||{};GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});}
 document.addEventListener('change',e=>{
  const t=e.target;if(!t.dataset||!t.dataset.a)return;
  const a=t.dataset.a;
@@ -1215,7 +1269,9 @@ document.addEventListener('change',e=>{
   while(E.s.length<=i)E.s.push({v:null,done:false});
   E.s[i].v=t.value===''?null:parseFloat(t.value);save();
  }else if(a==='t0'||a==='t1'){
-  const L=peek(ui.date);if(L&&t.value){const hm=t.value.split(':'),x=pd(ui.date);x.setHours(+hm[0],+hm[1],0,0);let ms=x.getTime();
+  const L=wlog(ui.date);
+  if(!t.value){if(a==='t1'){delete L.t1;save();render();}else render();}
+  else{const hm=t.value.split(':'),x=pd(ui.date);x.setHours(+hm[0],+hm[1],0,0);let ms=x.getTime();
    if(a==='t1'&&L.t0&&ms<L.t0)ms+=864e5;L[a]=ms;if(a==='t0'&&L.t1&&L.t1<ms)L.t1+=864e5;save();render();}
  }else if(a==='note'){wlog(ui.date).note=t.value;save();}
  else if(a==='setday'){
