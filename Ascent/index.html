@@ -864,8 +864,7 @@ function nextRow(d,g){
  let wk=0;const ws=wkStart(d);
  for(let i=0;i<7;i++){const L=peek(addD(ws,i));if(L&&L.ex[g+'.next'])wk+=L.ex[g+'.next'].att||0;}
  return'<div class="row"><div class="rn">Once a week: try the next step</div><div class="small muted">'+esc(stepsOf(g)[st][0])+' \u00b7 '+(SK[g]&&SK[g].nextDose||'1\u20135 attempts')+' \u00b7 very hard, expect misses</div>'+
-  '<div class="set"><button class="sm" data-a="natt" data-g="'+g+'" data-n="-1">\u2212</button><b>'+(E.att||0)+'</b><button class="sm" data-a="natt" data-g="'+g+'" data-n="1">+</button><span class="muted small">attempts today (max '+max+') \u00b7 '+wk+' this week</span></div>'+
-  '<button class="sm" data-a="landed" data-g="'+g+'">Landed it \u2014 move to next step</button></div>';
+  '<div class="set"><button class="sm" data-a="natt" data-g="'+g+'" data-n="-1">\u2212</button><b>'+(E.att||0)+'</b><button class="sm" data-a="natt" data-g="'+g+'" data-n="1">+</button><span class="muted small">attempts today (max '+max+') \u00b7 '+wk+' this week</span></div></div>';
 }
 function ladderCtl(g,hideUp){
  const tot=stepsOf(g).length,st=curStep(g);
@@ -875,16 +874,14 @@ function ladderCtl(g,hideUp){
   (st===tot&&SK[g]&&g!=='pistol'?'<button class="sm'+(S.prog[g].solid?' on':'')+'" data-a="solid" data-g="'+g+'">'+(S.prog[g].solid?'Marked solid \u2713':'Mark skill solid')+'</button>':'')+'</div>';
 }
 function stepBlock(g,d){
- const st=curStep(g),s=stepOf(g),tot=stepsOf(g).length;
- const head='<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>';
+ const st=curStep(g),s=stepOf(g),tot=stepsOf(g).length,op=!!(ui.stepl&&ui.stepl[g]);
+ const chip='<button class="chip am stepchip" data-a="stepl" data-g="'+g+'">Step '+st+' of '+tot+' '+(op?'▴':'▾')+'</button>';
+ const list=op?'<div class="stepl">'+stepsOf(g).map((x,i)=>'<button class="stp'+(i+1===st?' cur':'')+'" data-a="gostep" data-g="'+g+'" data-n="'+(i+1)+'"><span class="faint">'+(i+1)+'</span>'+esc(x[0])+'</button>').join('')+'</div>':'';
+ const head='<div style="margin-top:10px">'+chip+needsChips(s[3])+list+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>';
  const tail=altLine(s)+swapCtl(d,g,s)+'</div>';
  if(FOUND[g]){
-  const op=!!(ui.stepl&&ui.stepl[g]);
-  const chip='<button class="chip am stepchip" data-a="stepl" data-g="'+g+'">Step '+st+' of '+tot+' '+(op?'\u25b4':'\u25be')+'</button>';
-  const list=op?'<div class="stepl">'+stepsOf(g).map((x,i)=>'<button class="stp'+(i+1===st?' cur':'')+'" data-a="gostep" data-g="'+g+'" data-n="'+(i+1)+'"><span class="faint">'+(i+1)+'</span>'+esc(x[0])+'</button>').join('')+'</div>':'';
-  const head2='<div style="margin-top:10px">'+chip+needsChips(s[3])+list+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>';
   const intro=FOUND[g].trains?'<div>Trains: '+esc(FOUND[g].trains)+'</div>':'';
-  return head2+how('st:'+g+':'+st,intro+'<div>'+esc(s[1])+'</div>',link(FOUND[g].vid,'Tutorial video'))+tail;
+  return head+how('st:'+g+':'+st,intro+'<div>'+esc(s[1])+'</div>',link(FOUND[g].vid,'Tutorial video'))+tail;
  }
  return head+'<div class="small muted">'+esc(s[1])+'</div>'+tail;
 }
@@ -938,7 +935,7 @@ function skillCard(d,g,plan){
  if(s.tips)h+='<details><summary>'+(g==='hand'?'Holding the Free Handstand':'Tips')+'</summary><ul>'+s.tips.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  h+='<div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>';
  h+=rowsHTML(d,g,s.rows,st,stepOf(g)[2]);
- h+=nextRow(d,g)+ladderCtl(g,true);
+ h+=nextRow(d,g)+ladderCtl(g);
  const sp=spark(hist(g));if(sp)h+='<div class="small muted" style="margin-top:10px">Best per session at this step</div>'+sp;
  return card('sk_'+g,s.n,'Step '+st+'/'+stepsOf(g).length+' \u00b7 '+esc(stepOf(g)[0]),h,true,rowsDone(d,g,s.rows));
 }
@@ -956,7 +953,7 @@ function chinCard(d){
 function pistolCard(d){
  let h='<p class="small muted">Maintain, do not chase. Guide: slot it in one place so it is not skipped.</p>';
  const s=SK.pistol;
- h+=stepBlock('pistol')+'<div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>'+rowsHTML(d,'pistol',s.rows,curStep('pistol'),'reps')+nextRow(d,'pistol')+ladderCtl('pistol',true);
+ h+=stepBlock('pistol')+'<div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>'+rowsHTML(d,'pistol',s.rows,curStep('pistol'),'reps')+nextRow(d,'pistol')+ladderCtl('pistol');
  return card('pistol','Pistol Squat (light add-on)','Step '+curStep('pistol')+'/5',h,false,rowsDone(d,'pistol',s.rows));
 }
 
@@ -1336,7 +1333,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 14';
+const BUILD='2026-11-20 \u00b7 15';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
