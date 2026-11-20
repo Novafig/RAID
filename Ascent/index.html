@@ -143,6 +143,14 @@ button.wchip.on{background:rgba(var(--accent-rgb),.18);border-color:var(--accent
 .chgbtn.opn{color:var(--accent);border-color:var(--accent)}
 .eqh{margin:12px 0 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .eqsum{font-size:12.5px;line-height:1.5;margin-top:6px;padding:9px 11px;background:var(--surface2);border-radius:8px}
+.wkrow{padding:9px 0;border-bottom:1px solid var(--line)}.wkrow:last-of-type{border-bottom:0}
+.wkrow .top{gap:8px;align-items:baseline}
+button.filmb{font-size:11.5px;padding:4px 10px;white-space:nowrap}
+button.filmb.fon{color:var(--accent);border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}
+.cd .fb{position:absolute;top:1px;right:3px;font-style:normal;color:var(--accent);line-height:1}
+.cd .fb svg{width:10px;height:10px}
+.banner.bkb{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px}
+.banner.bkb .sm{white-space:nowrap}
 .mvrow{display:flex;gap:8px;margin-top:8px}
 .mvrow .sm{padding:5px 10px;font-size:12px}
 .ptabs{display:flex;gap:20px;align-items:baseline}
@@ -558,6 +566,7 @@ function load(){
  GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});
 }
 function save(){
+ try{S.wk=S.wk||{};S.wk[wkStart(today())]={st:S.set.stage,sp:Object.fromEntries(GROUPS.map(g=>[g,curStep(g)]))};}catch(e){}
  try{const L=S.logs&&S.logs[today()];if(L&&!lastReal(segs(L))&&!L.done&&realProgress(L)){const sg=ensureSeg(L);sg.push([Date.now(),null]);sync(L);}}catch(e){}
  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
 }
@@ -1001,6 +1010,7 @@ function fprepHTML(d){
 function foundCard(d,plan){
  let h='<p class="small muted">Run your current step on each, before any skill work, every session. Guide: 3\u20134 sets, near-max reps. <span class="faint">Note: the guide\u2019s table says \u201cto failure\u201d but Chapter 6 quotes Isaac Lee against failing every set \u2014 if form breaks, stop the set.</span> No rest time is given for these, so the timer uses your default ('+S.set.rest+'s, change in More).</p>';
  let fd=true;
+ h+='<div style="margin:6px 0 2px;text-align:right">'+filmBtn(d,'found')+'</div>';
  h+=(plan&&plan.t==='leg'&&!plan.arm)?fprepHTML(d):'';
  if(plan&&plan.t==='leg'&&!plan.arm){const Lw=(peek(d)||{w:{}}).w;if(!(Lw.fp1&&Lw.fp2))fd=false;}
  ['push','pull','dip'].forEach(g=>{
@@ -1010,6 +1020,9 @@ function foundCard(d,plan){
  });
  return card('found','Foundation \u2014 push \u00b7 pull \u00b7 dip','Current steps: '+['push','pull','dip'].map(g=>curStep(g)).join(' / '),h,false,fd);
 }
+const CAM='<svg viewBox="0 0 24 24" width="14" height="14" style="vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>';
+function filmed(L){return !!(L&&L.film&&Object.keys(L.film).some(k=>L.film[k]));}
+function filmBtn(d,g){const L=peek(d),on=!!(L&&L.film&&L.film[g]);return'<button class="sm filmb'+(on?' fon':'')+'" data-a="film" data-g="'+g+'">'+CAM+' '+(on?'Filmed':'Mark filmed')+'</button>';}
 function skillCard(d,g,plan){
  const s=SK[g],st=curStep(g);
  let h='<p class="muted small">'+esc(s.why)+'</p>';
@@ -1019,7 +1032,7 @@ function skillCard(d,g,plan){
  h+=stepBlock(g);
  h+='<details><summary>Form &amp; Technique Cues</summary><ul>'+s.form.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  if(s.tips)h+='<details><summary>'+(g==='hand'?'Holding the Free Handstand':'Tips')+'</summary><ul>'+s.tips.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
- h+='<div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>';
+ h+='<div class="howrow linkrow" style="margin-top:6px"><div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>'+filmBtn(d,g)+'</div>';
  h+=rowsHTML(d,g,s.rows,st,stepOf(g)[2]);
  h+=nextRow(d,g)+ladderCtl(g);
  const sp=spark(hist(g));if(sp)h+='<div class="small muted" style="margin-top:10px">Best per session at this step</div>'+sp;
@@ -1107,6 +1120,7 @@ function dayHead(d,plan){
  h+='</div>';
  h+='<div class="hrow"><h2>'+esc(planLabel(plan))+'</h2>'+(plan.t==='leg'?'<div class="seg"><button class="'+(plan.arm?'':'on')+'" data-a="alt" data-v="leg">Legs</button><button class="'+(plan.arm?'on':'')+'" data-a="alt" data-v="arm">Arms</button></div>':'')+'</div><div class="muted small">'+(plan.t==='skill'?'Order: warmup \u2192 foundation \u2192 skill practice (30\u201345 min).':plan.t==='leg'?(plan.arm?'Order: warmup → foundation → arms → abs. Arms and abs are added work, not from the guide.':'Order: warmup → foundation → legs → abs. Legs and abs are added work, not from the guide.'):plan.t==='core'?'Prep the joints your skills load and train the deep core. Not a throwaway day.':'No structured session. Greasing-the-groove touches only, if you like.')+'</div>';
  h+=moveBar(d,plan);
+ h+=bkBanner();
  return h;
 }
 function hasSets(d,key){const L=peek(d),E=L&&L.ex[key];return !!E&&(E.s||[]).some(x=>x&&(x.done||(x.v!=null&&x.v!=='')));}
@@ -1292,11 +1306,11 @@ function viewProgress(){
   if(L)touches+=L.gtg.length;
   if(cls==='done')done++;
   const tag=pt==='skill'?'SKL':pt==='leg'?'LEG':pt==='arm'?'ARM':pt==='core'?'MOB':'';
-  cells+='<div class="cd '+cls+(dd===t0?' today':'')+(jm&&dd===ui.jday?' sel':'')+'" data-a="'+(jm?'jsel':'pick')+'" data-d="'+dd+'">'+(L&&L.note&&L.note.trim()?'<i class="jb">J</i>':'')+i+'<small class="t-'+pt+'">'+tag+'</small>'+(walkMet(L)?'<i class="wkl"></i>':'')+'</div>';
+  cells+='<div class="cd '+cls+(dd===t0?' today':'')+(jm&&dd===ui.jday?' sel':'')+'" data-a="'+(jm?'jsel':'pick')+'" data-d="'+dd+'">'+(L&&L.note&&L.note.trim()?'<i class="jb">J</i>':'')+(filmed(L)?'<i class="fb">'+CAM+'</i>':'')+i+'<small class="t-'+pt+'">'+tag+'</small>'+(walkMet(L)?'<i class="wkl"></i>':'')+'</div>';
  }
   let h='<div class="ptabs"><h2 class="'+(jm?'':'on')+'" data-a="pview" data-v="progress">Progress</h2><h2 class="'+(jm?'on':'')+'" data-a="pview" data-v="journal">Journal</h2></div>';
  h+='<div class="card"><div class="cb" style="border:0;padding-top:12px"><div class="top" style="margin-bottom:10px"><button class="sm" data-a="mo" data-n="-1">‹</button><b>'+MONTHS[m]+' '+y+'</b><button class="sm" data-a="mo" data-n="1">›</button></div><div class="cal">'+cells+'</div>'+
-  '<div style="margin-top:10px"><span class="lg"><i style="background:rgba(123,201,111,.5)"></i>Completed</span><span class="lg"><i style="background:rgba(224,92,92,.5)"></i>Skipped</span><span class="lg"><i style="background:rgba(160,120,230,.5)"></i>Partial</span>'+(S.set.walk?'<span class="lg"><i class="wkl lgw"></i>Walk goal met</span>':'')+'<span class="lg"><i style="background:rgba(79,109,150,.6)"></i>Rest</span></div><div class="small faint">SKL skill · LEG lower body + abs · ARM arms + abs · MOB mobility + core. A day shows ARM if you swapped legs for arms. Tap a day to open it. J marks a day with a journal note.</div></div></div>';
+  '<div style="margin-top:10px"><span class="lg"><i style="background:rgba(123,201,111,.5)"></i>Completed</span><span class="lg"><i style="background:rgba(224,92,92,.5)"></i>Skipped</span><span class="lg"><i style="background:rgba(160,120,230,.5)"></i>Partial</span><span class="lg" style="color:var(--accent)">'+CAM+'</span><span class="lg" style="margin-left:-6px">Filmed</span>'+(S.set.walk?'<span class="lg"><i class="wkl lgw"></i>Walk goal met</span>':'')+'<span class="lg"><i style="background:rgba(79,109,150,.6)"></i>Rest</span></div><div class="small faint">SKL skill · LEG lower body + abs · ARM arms + abs · MOB mobility + core. A day shows ARM if you swapped legs for arms. Tap a day to open it. J marks a day with a journal note.</div></div></div>';
  if(jm)return h+journalHTML(y,m,dim);
  const ws=wkStart(t0);let wd=0,wp=0;
  for(let i=0;i<7;i++){const dd=addD(ws,i);if(planFor(dd).t!=='rest')wp++;const L=peek(dd);if(L&&L.done)wd++;}
@@ -1335,7 +1349,7 @@ function journalHTML(y,m,dim){
  }
  show.forEach(d=>{
   const L=peek(d),pl=planFor(d),len=sessMs(L)>0?' \u00b7 '+lenTxt(sessMs(L)):'';
-  h+='<div class="card"><div class="cb" style="border:0;padding-top:12px"><div class="top"><div><b>'+esc(fmt(d))+'</b><div class="small muted">'+esc(planLabel(pl))+(L.done?' \u00b7 completed':'')+len+'</div></div><button class="sm" data-a="pick" data-d="'+d+'">Open</button></div><div class="jent">'+esc(L.note)+'</div></div></div>';
+  h+='<div class="card"><div class="cb" style="border:0;padding-top:12px"><div class="top"><div><b>'+esc(fmt(d))+'</b><div class="small muted">'+esc(planLabel(pl))+(L.done?' \u00b7 completed':'')+len+(filmed(L)?' \u00b7 filmed':'')+'</div></div><button class="sm" data-a="pick" data-d="'+d+'">Open</button></div><div class="jent">'+esc(L.note)+'</div></div></div>';
  });
  return h;
 }
@@ -1358,6 +1372,26 @@ function ladderBody(g){
  });
  return h+ladderCtl(g);
 }
+const SKG=['frog','crow','elbow','head','hand','lsit','pistol','chin'];
+function weekLogHTML(){
+ const cur=wkStart(today()),fl=firstLogDate();
+ let ws=cur,n=0,h='';
+ const stop=fl?wkStart(fl):cur;
+ while(ws>=stop&&n<12){
+  const days=[0,1,2,3,4,5,6].map(i=>addD(ws,i)),snap=(S.wk||{})[ws];
+  const tr={};let done=0,plan=0;
+  days.forEach(d=>{const L=peek(d),p=planFor(d);if(p.t!=='rest'&&d<=today())plan++;if(L&&L.done)done++;
+   if(L)SKG.forEach(g=>{const E=L.ex[g+'.main'];if(E&&(E.s||[]).some(x=>x&&x.done)){tr[g]=E.st||tr[g]||1;}});});
+  const st=snap?snap.st:(ws===cur?S.set.stage:null);
+  let sk=Object.keys(tr).map(g=>esc(nameOf(g))+' <span class="faint">step '+tr[g]+'</span>');
+  if(!sk.length&&ws===cur){const pl=[...new Set(dayPlan('s1').concat(dayPlan('s2')))];sk=pl.map(g=>'<span class="faint">'+esc(nameOf(g))+' (planned)</span>');}
+  const fd=snap&&snap.sp?['push','pull','dip'].map(g=>nameOf(g).replace(/s$/,'').replace('-ups','-up')+' '+snap.sp[g]).join(' · '):'';
+  h+='<div class="wkrow"><div class="top"><b>'+fmtS(ws)+' – '+fmtS(addD(ws,6)).replace(/^[A-Za-z]+ /,m=>fmtS(ws).slice(0,3)===m.trim()?'':m)+(ws===cur?' <span class="chip am">this week</span>':'')+'</b><span class="small muted">'+(st?'Stage '+st:'Stage —')+' · '+done+'/'+plan+' done</span></div><div class="small">'+(sk.length?sk.join(', '):'<span class="faint">No skill work logged</span>')+'</div>'+(fd?'<div class="small faint">Foundation steps: '+esc(fd)+'</div>':'')+'</div>';
+  ws=addD(ws,-7);n++;
+ }
+ return'<div class="card"><div class="cb" style="border:0;padding-top:6px">'+h+'<p class="small faint" style="margin-top:8px">Filled in automatically: the stage you were on, the skills you actually logged that week (with their step), and sessions completed. Weeks before this log existed show no stage.</p></div></div>';
+}
+const fmtS=d=>{const x=pd(d);return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][x.getMonth()]+' '+x.getDate();};
 function viewPath(){
  let h='<h2>Path</h2><p class="muted small">Work each ladder in order. Move up when the recommended work feels too easy \u2014 the next step, not more of the same.</p>';
  const sug=S.set.stage===1&&S.prog.frog.solid&&S.prog.crow.solid;
@@ -1365,6 +1399,7 @@ function viewPath(){
  [1,2,3].forEach(n=>{
   h+='<div class="card" style="border-color:'+(S.set.stage===n?'var(--accent)':'var(--line)')+'"><div class="cb" style="border:0;padding-top:12px"><div class="top"><b>'+STAGES[n][0]+'</b>'+(S.set.stage===n?'<span class="chip am">current</span>':'<button class="sm" data-a="stage" data-n="'+n+'">Switch</button>')+'</div><div class="small muted">'+STAGES[n][1]+'</div>'+(sug&&n===2?'<div class="small" style="color:var(--go)">Suggested: Frog and Crow are solid.</div>':'')+(n===2&&S.set.stage===1&&!(S.prog.frog.solid&&S.prog.crow.solid)?'<div class="small faint">Guide: not sure? Stay on Stage 1; there is no rush.</div>':'')+'</div></div>';
  });
+ h+='<h3>Weekly log (Ch.21)</h3>'+weekLogHTML();
  h+='<h3>Skill ladders</h3>';
  ['frog','crow','elbow','head','hand','lsit','pistol'].forEach(g=>{
   const lock=g==='crow'&&S.set.stage===1&&!S.prog.frog.solid;
@@ -1421,7 +1456,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 18';
+const BUILD='2026-11-20 \u00b7 19';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1437,7 +1472,7 @@ function viewMore(){
  s+='<h3>Equipment</h3>';
  s+=eqList(false);
  s+='<h4 class="eqh">What you get with this equipment</h4>'+eqSummary();
- s+='<div class="small faint">None are required. Ch.2: every skill can be learned with just your body and a patch of floor. Equipment decides which added leg, arm and abs exercises you get (best available option first), adds a foam-roller item to mobility day when ticked, and lights up the equipment chips and alternatives on the pull-up and dip ladders. Any single exercise can still be swapped with its \u201cDon\u2019t have\u201d button.</div>';
+ s+='<div class="small faint">None are required. Ch.2: every skill can be learned with just your body and a patch of floor. Equipment decides which added leg, arm and abs exercises you get (best available option first), adds a foam-roller item to mobility day when ticked, and lights up the equipment chips and alternatives on the pull-up and dip ladders. Any single exercise can still be swapped for the day with its \u201cChange\u201d button.</div>';
  s+='<p style="margin-top:12px"><button class="sm" data-a="setup">Re-run setup</button></p>';
  h+=card('m_set','Settings','Layout, timers, equipment',s,true);
  h+=card('m_bk','Backup','Export / import your data',backupHTML(),false);
@@ -1446,8 +1481,26 @@ function viewMore(){
  h+='<p class="small faint" style="text-align:center;margin:18px 0">Build '+BUILD+'</p>';
  return h;
 }
+function agoTxt(ms){const d=Math.floor((Date.now()-ms)/864e5);return d<=0?'today':d===1?'yesterday':d+' days ago';}
+function hasHistory(){return Object.keys(S.logs).some(d=>hasAny(S.logs[d])||(S.logs[d]&&S.logs[d].done));}
 function backupHTML(){
- return'<p class="small muted">Data lives in this browser\u2019s storage on your phone. Copy it somewhere safe now and then \u2014 clearing Safari data erases it.</p><textarea id="bk" readonly>'+esc(JSON.stringify(S))+'</textarea><p><button class="sm" data-a="bkcopy">Copy</button></p><p class="small muted">Import: paste a backup below.</p><textarea id="bki" placeholder="Paste backup JSON"></textarea><p><button class="sm" data-a="bkimp">Import</button> <button class="sm wn" data-a="reset" id="rst" style="color:var(--warn)">Reset all data</button></p>';
+ let h='<p class="small">Last backup: <b>'+(S.lastBk?agoTxt(S.lastBk):'never')+'</b></p>';
+ h+='<p class="small muted">Your history lives only in this browser on this phone. Your iPhone and Android copies are separate and never sync. Clearing site data wipes it. Save a file now and then; restoring it on another phone moves everything over.</p>';
+ h+='<p><button class="pri" data-a="bkfile" style="width:100%">Save backup file</button></p>';
+ if(ui.pendImp){const o=ui.pendImp.o,nd=Object.keys(o.logs||{}).length;h+='<div class="banner wn">Replace everything on this phone with <b>'+esc(ui.pendImp.name)+'</b> ('+nd+' logged days)? This cannot be undone. <div style="margin-top:8px;display:flex;gap:8px"><button class="sm" data-a="bkrep">Replace</button><button class="sm" data-a="bkcan">Cancel</button></div></div>';}
+ h+='<p class="small" style="margin-top:12px">Restore from a backup file</p><input type="file" accept=".json,application/json" data-a="bkfin" style="width:100%;font-size:13px">';
+ h+='<p class="small faint" id="pst" style="margin-top:10px"></p>';
+ h+='<details style="margin-top:8px"><summary class="small">Copy / paste instead</summary><textarea id="bk" readonly>'+esc(JSON.stringify(S))+'</textarea><p><button class="sm" data-a="bkcopy">Copy</button></p><p class="small muted">Import: paste a backup below.</p><textarea id="bki" placeholder="Paste backup JSON"></textarea><p><button class="sm" data-a="bkimp">Import</button></p></details>';
+ return h;
+}
+function paintPersist(){
+ const el=document.getElementById('pst');if(!el)return;
+ try{if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(v=>{el.textContent=v?'Storage on this phone is marked persistent, so the browser should not clear it on its own.':'The browser has not marked this storage persistent, so it may clear it if space runs low. Backups matter more here.';});}catch(e){}
+}
+function bkBanner(){
+ if(!hasHistory())return'';
+ const due=!S.lastBk||Date.now()-S.lastBk>7*864e5;if(!due||(S.bkSnooze&&S.bkSnooze>Date.now()))return'';
+ return'<div class="banner bkb"><span>Last backup: '+(S.lastBk?agoTxt(S.lastBk):'never')+'. Your history only lives on this phone.</span><span style="display:flex;gap:6px"><button class="sm" data-a="bkgo">Back up</button><button class="sm" data-a="bklater">Later</button></span></div>';
 }
 function guideNotes(){
  return'<h3>Intro</h3><p class="small">'+link('https://youtube.com/shorts/qfwZBZ3J5J4?is=Pcmky8QbHGh2NzEk','Author\u2019s intro-to-the-skills video')+'</p><p class="small">Seven skills: frog stand, crow stand, elbow lever, pistol squat, headstand, handstand, L-sit. Two take longer for different reasons: handstand is a balance problem, L-sit a compression problem. Three days a week: two skill days, one mobility + core day. Calisthenics overload = more reps or a harder variation, not more weight.</p>'+
@@ -1488,7 +1541,7 @@ function render(){
  const T=[['today','Today'],['progress','Progress'],['path','Path'],['groove','Groove'],['more','More']];
  $('#tabs').innerHTML=T.map(t=>'<button class="'+(ui.tab===t[0]?'act':'')+'" data-a="tab" data-t="'+t[0]+'">'+t[1]+'</button>').join('');
  $('#beginbtn').style.display=(ui.tab==='today'&&ui.showBegin)?'block':'none';
- paintClock();$('#hchip').innerHTML='<span class="chip am">Stage '+S.set.stage+'</span>';
+ paintClock();if(ui.tab==='more')setTimeout(paintPersist,0);$('#hchip').innerHTML='<span class="chip am">Stage '+S.set.stage+'</span>';
  if(circ.ph!=='idle')circUpd();
 }
 
@@ -1594,6 +1647,7 @@ document.addEventListener('click',e=>{
   case'pickx':{const L=wlog(ui.date);L.pick=L.pick||{};L.pick[t.dataset.k]=t.dataset.x;delete ui.chg[ui.date+'|'+t.dataset.k];save();render();break;}
   case'wto':ui.wopen[t.dataset.k]=!ui.wopen[t.dataset.k];if(t.dataset.s||$('#sheet').style.display==='block')showSetup();else render();break;
   case'wt':{const k=t.dataset.k;S.set.wt=S.set.wt||{};const w=(S.set.wt[k]||[]).slice(),i=w.indexOf(n);if(i>=0)w.splice(i,1);else w.push(n);S.set.wt[k]=w.sort((a,b)=>a-b);save();if(t.dataset.s)showSetup();else render();break;}
+  case'film':{const L=wlog(ui.date);L.film=L.film||{};L.film[g]=!L.film[g];if(!L.film[g])delete L.film[g];save();render();break;}
   case'stepl':ui.stepl[g]=!ui.stepl[g];render();break;
   case'gostep':{ui.stepl[g]=false;const c=curStep(g);if(n!==c)advance(g,n-c);else render();break;}
   case'how':ui.how[t.dataset.k]=!ui.how[t.dataset.k];render();break;
@@ -1626,7 +1680,19 @@ document.addEventListener('click',e=>{
   case'setup':showSetup();break;
   case'sstage':S.set.stage=n;save();showSetup();break;
   case'sdone':S.setup=true;save();$('#sheet').style.display='none';render();break;
-  case'bkcopy':{const x=$('#bk');x.select();try{navigator.clipboard.writeText(x.value);}catch(err){document.execCommand('copy');}toast('Backup copied');break;}
+  case'bkcopy':{const x=$('#bk');x.select();try{navigator.clipboard.writeText(x.value);}catch(err){document.execCommand('copy');}S.lastBk=Date.now();save();toast('Backup copied');break;}
+  case'bkfile':{
+   const txt=JSON.stringify(S),name='ascent-backup-'+today()+'.json';
+   const ok=()=>{S.lastBk=Date.now();save();render();toast('Backup saved');};
+   const dl=()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);ok();}catch(err){toast('Could not save the file — use Copy / paste instead');}};
+   let f=null;try{f=new File([txt],name,{type:'application/json'});}catch(err){}
+   if(f&&navigator.canShare&&navigator.share&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Ascent backup'}).then(ok).catch(err=>{if(!err||err.name!=='AbortError')dl();});}
+   else dl();
+   break;}
+  case'bkrep':{if(!ui.pendImp)break;S=ui.pendImp.o;ui.pendImp=null;load2();save();render();toast('Backup restored');break;}
+  case'bkcan':ui.pendImp=null;render();break;
+  case'bkgo':ui.tab='more';ui.open['m_bk']=true;render();setTimeout(()=>scrollToEl(document.querySelector('[data-card="m_bk"]')),50);break;
+  case'bklater':S.bkSnooze=Date.now()+3*864e5;save();render();break;
   case'bkimp':{try{const o=JSON.parse($('#bki').value);if(!o||!o.set||!o.prog)throw 0;S=o;load2();save();render();toast('Backup imported');}catch(err){toast('That is not a valid backup');}break;}
   case'reset':
    if(t.dataset.arm){S=defState();load2();save();location.reload();}
@@ -1651,6 +1717,11 @@ document.addEventListener('change',e=>{
    if(k===0&&sg[i][1]!=null&&sg[i][1]<ms)sg[i][1]+=864e5;
    sg[i][k]=ms;}
   sync(L);save();render();
+ }else if(a==='bkfin'){
+  const f=t.files&&t.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o||!o.set||!o.prog)throw 0;ui.pendImp={o,name:f.name};render();}catch(err){toast('That file is not an Ascent backup');}};
+  rd.readAsText(f);
  }else if(a==='note'){wlog(ui.date).note=t.value;save();}
  else if(a==='setday'){
   const r=t.dataset.r,nv=+t.value,D=S.set.days,old=D[r];
@@ -1688,6 +1759,7 @@ function applyTheme(){
 }
 /* ===== init ===== */
 load();pruneMoves();
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
 applyTheme();
 render();
 if(!S.setup)showSetup();
