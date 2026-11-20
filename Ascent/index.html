@@ -367,7 +367,7 @@ absPool:{n:'pool',rows:[
  Object.assign({id:'rvc',n:'Reverse crunch (floor)',r:[3,3],dose:'10–15 reps',u:'reps',top:15,up:'slow 3-second lowering, then hips higher',note:'Shown because no pull-up bar or Swedish ladder is ticked in Equipment.'},R90),
  Object.assign({id:'dsk',n:'Dip station knee raise (straight-arm support)',r:[3,3],dose:'6–12 reps',u:'reps',top:12,up:'knees bent → straight legs → tuck L-sit holds',note:'Doubles as groundwork for the guide’s L-sit. Press down hard, shoulders away from your ears.'},R90),
  Object.assign({id:'rcs',n:'Roman chair sit-up (15 lb held at your chest)',r:[3,3],dose:'10–15 reps',u:'reps',top:15,up:'slow 3-second lowering, then a pause at the top; then the 35 lb',note:'Hook your feet, lower your torso only as far as your lower back stays flat (stop before it arches), then curl up. Chair will not allow it? Floor crunch holding the 15 lb.'},R90),
- Object.assign({id:'rsb',n:'Roman chair side bend (15 lb in one hand)',r:[3,3],dose:'10–15 reps per side',u:'reps',top:15,up:'35 lb in one hand, then a pause at the top',note:'Targets the obliques. Chair will not allow a side-on position? Standing dumbbell side bend instead.'},R90),
+ Object.assign({id:'rut',n:'Russian twist (15 lb dumbbell)',r:[3,3],dose:'12–20 twists per side',u:'reps',top:20,up:'feet off the floor, then the 35 lb',note:'Targets the obliques. Sit tilted back with a flat back, feet down to start. Rotate your ribcage, not just your arms, and tap the weight to the floor each side. No dumbbell handy? Use a book or a water jug.'},R90),
  Object.assign({id:'pln',n:'Plank (forearms)',r:[3,3],dose:'30–60 sec',u:'sec',top:60,up:'longer lever: forearms further forward, then lift one foot at a time',note:'Shown because Roman chair is not ticked in Equipment. Ribs down, glutes tight.'},R90),
  Object.assign({id:'spl',n:'Side plank',r:[3,3],dose:'20–45 sec per side',u:'sec',top:45,up:'top leg raised, then hip dips',note:'Shown because Roman chair is not ticked in Equipment.'},R90),
  Object.assign({id:'lgr',n:'Lying straight-leg raise (floor)',r:[3,3],dose:'8–12 reps',u:'reps',top:12,up:'slow 3-second lowering, then hover the heels just off the floor',note:'Replaces the dip station knee raise, which needs a dip station. Press your lower back into the floor.'},R90)]},
@@ -605,7 +605,7 @@ function absSet(){
  const pick=id=>EXT.absPool.rows.find(r=>r.id===id);
  const ids=[has('bar')?'hkr':'rvc'];
  if(has('dip'))ids.push('dsk');
- if(S.set.eq.rom===true)ids.push('rcs','rsb');else ids.push('pln','spl');
+ if(S.set.eq.rom===true)ids.push('rcs','rut');else ids.push('pln','spl');
  return{n:'Abs',sub:'Added work · follows your equipment',intro:'Added work, not from the guide. Different from the '+DOWL[S.set.days.core]+' core circuit so you are not repeating the same moves. The moves follow your ticks under More › Settings › Equipment: pull-up bar or Swedish ladder, dip station, Roman chair (planks if you do not have one).',rows:ids.map(pick)};
 }
 function eqRow(k,setup){
@@ -802,8 +802,8 @@ function legSet(k){
  const rows=e.rows.map(r=>LEGSUB[r.id]?EXT.legPool.rows.find(x=>x.id===LEGSUB[r.id]):r);
  return rows.some((r,i)=>r!==e.rows[i])?Object.assign({},e,{rows:rows,intro:e.intro+' No bench, chair or step is ticked in Equipment, so moves that need one are swapped for floor-based versions.'}):e;
 }
-const NEEDX={bss:'bench',stp:'bench',ht:'bench',lw:'band',hkr:'bar',dsk:'dip',rcs:'rom',rsb:'rom'};
-const SUBX={bss:'ssq',stp:'csq',ht:'sgb',lw:'slw',hkr:'rvc',dsk:'lgr',rcs:'pln',rsb:'spl'};
+const NEEDX={bss:'bench',stp:'bench',ht:'bench',lw:'band',hkr:'bar',dsk:'dip',rcs:'rom'};
+const SUBX={bss:'ssq',stp:'csq',ht:'sgb',lw:'slw',hkr:'rvc',dsk:'lgr',rcs:'pln'};
 const findPool=id=>EXT.legPool.rows.concat(EXT.absPool.rows).find(r=>r.id===id);
 function hasSets(d,key){const L=peek(d),E=L&&L.ex[key];return !!E&&(E.s||[]).some(x=>x&&(x.done||(x.v!=null&&x.v!=='')));}
 function applySub(d,rows){
@@ -1118,7 +1118,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
-const BUILD='2026-11-19 \u00b7 9';
+const BUILD='2026-11-20 \u00b7 10';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
