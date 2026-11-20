@@ -136,6 +136,11 @@ details summary{cursor:pointer;color:var(--accent);margin:8px 0}
 button.wdc.on{color:var(--ink);border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}
 .wdc.on i{background:var(--accent);border-color:var(--accent);color:var(--onacc)}
 .wdc.t-s small{color:var(--accent)}.wdc.t-l small{color:#5FD0B4}.wdc.t-core small{color:#BDA3F0}
+.wtrow{display:flex;align-items:center;gap:10px;margin:-4px 0 6px 44px}
+.wchips{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:0 0 8px 44px}
+button.wchip{min-width:38px;padding:5px 6px;border-radius:7px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);font-size:12px;font-weight:700}
+button.wchip.on{background:rgba(var(--accent-rgb),.18);border-color:var(--accent);color:var(--ink)}
+.chgbtn.opn{color:var(--accent);border-color:var(--accent)}
 .eqh{margin:12px 0 2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .eqsum{font-size:12.5px;line-height:1.5;margin-top:6px;padding:9px 11px;background:var(--surface2);border-radius:8px}
 .mvrow{display:flex;gap:8px;margin-top:8px}
@@ -209,10 +214,10 @@ const today=()=>dkey(new Date());
 const fmt=s=>{const d=pd(s);return DOWL[d.getDay()]+', '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getDate();};
 
 /* ===== guide data ===== */
-const EQ={bar:'Pull-up bar',dip:'Dip station',swl:'Swedish ladder',rings:'Gymnastic rings',par:'Parallettes',bench:'Bench or sturdy step',rom:'Roman chair',db:'Dumbbells',kb:'Kettlebell',vest:'Weighted vest',band:'Resistance bands',loop:'Mini loop bands',abw:'Ab wheel',roll:'Foam roller',mat:'Yoga mat',wrap:'Wrist wraps'};
+const EQ={bar:'Pull-up bar',dip:'Dip station',swl:'Swedish ladder',rings:'Gymnastic rings',par:'Parallettes',bench:'Bench or sturdy step',rom:'Roman chair',db:'Dumbbells',kb:'Kettlebell',mb:'Medicine ball',vest:'Weighted vest',band:'Resistance bands',loop:'Mini loop bands',abw:'Ab wheel',roll:'Foam roller',mat:'Yoga mat',wrap:'Wrist wraps'};
 const EQSUB={swl:'includes a pull-up bar and dip station',bench:'a sturdy chair or box works',band:'long bands with handles or loops',loop:'short bands that go around your legs',mat:'or any soft surface',wrap:'optional',rings:'hung from a bar, beam or door anchor'};
-const EQS={bar:'Pull-up bar',dip:'Dip station',swl:'Swedish ladder',rings:'Rings',par:'Parallettes',bench:'Bench',rom:'Roman chair',db:'Dumbbells',kb:'Kettlebell',vest:'Vest',band:'Bands',loop:'Loop bands',abw:'Ab wheel',roll:'Foam roller',mat:'Mat',wrap:'Wraps'};
-const EQCAT=[['Bars & stations',['bar','dip','swl','rings','par']],['Benches',['bench','rom']],['Weights',['db','kb','vest']],['Bands & small gear',['band','loop','abw','roll','mat','wrap']]];
+const EQS={bar:'Pull-up bar',dip:'Dip station',swl:'Swedish ladder',rings:'Rings',par:'Parallettes',bench:'Bench',rom:'Roman chair',db:'Dumbbells',kb:'Kettlebell',mb:'Med ball',vest:'Vest',band:'Bands',loop:'Loop bands',abw:'Ab wheel',roll:'Foam roller',mat:'Mat',wrap:'Wraps'};
+const EQCAT=[['Bars & stations',['bar','dip','swl','rings','par']],['Benches',['bench','rom']],['Weights',['db','kb','mb','vest']],['Bands & small gear',['band','loop','abw','roll','mat','wrap']]];
 
 const FOUND={
 push:{n:'Push-ups',vid:'https://www.youtube.com/watch?v=1Bj5PPxgEwo',trains:'Chest, front shoulders, triceps; core stays braced to hold a straight line.',
@@ -437,9 +442,15 @@ X.rsb=Object.assign({id:'rsb',n:'Roman chair side bend',r:[3,3],dose:'10–15 re
  {id:'bpd',n:'Band triceps pushdown',r:[3,3],dose:'12–20 reps',u:'reps',top:20,up:'heavier band, then a pause at the bottom'},
  {id:'rir',n:'Ring row (underhand)',r:[3,3],dose:'8–12 reps',u:'reps',top:12,up:'walk your feet forward, then raise them'},
  {id:'abr',n:'Ab wheel rollout (from the knees)',r:[3,3],dose:'6–12 reps',u:'reps',top:12,up:'roll further out, then from your feet'},
+ {id:'mbs',n:'Medicine ball squat (ball at your chest)',r:[3,4],dose:'12–15 reps',u:'reps',top:15,up:'slower lowering, then a heavier ball'},
+ {id:'dbc',n:'Weighted crunch (dumbbell or med ball at your chest)',r:[3,3],dose:'10–15 reps',u:'reps',top:15,up:'slow 3-second lowering, then a heavier weight'},
+ {id:'bdb',n:'Banded dead bug',r:[3,3],dose:'6–10 reps per side',u:'reps',top:10,up:'heavier band, then slower reaches'},
+ {id:'mlr',n:'Med ball leg raise (ball between your feet)',r:[3,3],dose:'8–12 reps',u:'reps',top:12,up:'slower lowering, then a heavier ball'},
+ {id:'mbt',n:'Medicine ball Russian twist (floor)',r:[3,3],dose:'12–20 twists per side',u:'reps',top:20,up:'feet off the floor, then a heavier ball'},
+ {id:'kbw',n:'Kettlebell windmill',r:[3,3],dose:'5–8 reps per side',u:'reps',top:8,up:'slower, then a heavier bell'},
  {id:'pal',n:'Pallof press',r:[3,3],dose:'10–12 reps per side',u:'reps',top:12,up:'step further from the anchor, then a heavier band'}
 ].forEach(r=>{X[r.id]=Object.assign(r,R90);});
-const XREQ={gob:['db|kb'],vsq:['vest'],bss:['bench'],rdl:['db|kb'],bgm:['band'],lgb:['loop'],stp:['bench'],ht:['bench'],lw:['loop|band'],acl:['db|kb'],rbc:['rings'],bcl:['band'],oth:['db|kb'],bte:['band'],wcu:['db'],ham:['db'],cng:['bar|rings'],bhc:['band'],fte:['db'],rtx:['rings'],bpd:['band'],rir:['rings'],rwc:['db'],hkr:['bar|rings'],dsk:['dip'],rcs:['rom'],abr:['abw'],rut:['rom'],pal:['band'],rsb:['rom']};
+const XREQ={gob:['db|kb'],vsq:['vest'],bss:['bench'],rdl:['db|kb'],bgm:['band'],lgb:['loop'],stp:['bench'],ht:['bench'],lw:['loop|band'],acl:['db|kb'],rbc:['rings'],bcl:['band'],oth:['db|kb'],bte:['band'],wcu:['db'],ham:['db'],cng:['bar|rings'],bhc:['band'],fte:['db'],rtx:['rings'],bpd:['band'],rir:['rings'],rwc:['db'],hkr:['bar|rings'],dsk:['dip'],rcs:['rom'],abr:['abw'],rut:['rom'],pal:['band'],rsb:['rom'],mbs:['mb'],dbc:['db|mb'],bdb:['band'],mlr:['mb'],mbt:['mb'],kbw:['kb']};
 Object.keys(XREQ).forEach(id=>{X[id].req=XREQ[id];});
 Object.assign(X.gob,{n:'Goblet squat (dumbbell or kettlebell)'});
 Object.assign(X.rdl,{n:'Romanian deadlift (dumbbell or kettlebell)'});
@@ -452,30 +463,80 @@ Object.assign(X.rwc,{n:'Reverse wrist curl (light dumbbell)'});
 Object.assign(X.uir,{n:'Underhand inverted row (sturdy table or low bar)'});
 Object.assign(X.rcs,{n:'Roman chair sit-up (weight held at your chest)'});
 Object.assign(X.rut,{n:'Roman chair Russian twist (weight held at your chest)'});
+const XLOAD={gob:{cls:'heavy',eq:['db','kb'],min:{db:20,kb:18}},rdl:{cls:'heavy',eq:['db','kb'],min:{db:20,kb:18}},mbs:{cls:'heavy',eq:['mb'],min:{mb:8}},vsq:{cls:'heavy',eq:['vest']},
+ acl:{cls:'mid',eq:['db','kb'],tgt:20,pair:1},ham:{cls:'mid',eq:['db'],tgt:20,pair:1},oth:{cls:'mid',eq:['db','kb'],tgt:25},fte:{cls:'mid',eq:['db'],tgt:15,pair:1},
+ wcu:{cls:'light',eq:['db']},rwc:{cls:'light',eq:['db']},rcs:{cls:'mid',eq:['db','mb','kb'],tgt:15,opt:1},rut:{cls:'mid',eq:['db','mb','kb'],tgt:15,opt:1},
+ dbc:{cls:'mid',eq:['db','mb'],tgt:15},mlr:{cls:'light',eq:['mb']},mbt:{cls:'mid',eq:['mb'],tgt:8},kbw:{cls:'light',eq:['kb']}};
+Object.keys(XLOAD).forEach(id=>{X[id].load=XLOAD[id];});
+const XUP={bss:'bodyweight → light dumbbells → heavier dumbbells in hand',calf:'hold a dumbbell, then a heavier one; pause at the top',rlg:'hold dumbbells, light then heavier',slr:'bodyweight → light dumbbell → heavier dumbbell',ssq:'slower lowering, then dumbbells in hand (light → heavier)',csq:'deeper, then hold a light weight at your chest',rcs:'slow 3-second lowering, then a pause at the top; then a heavier weight',rut:'slow the twist and pause each side, then a heavier weight'};
+Object.keys(XUP).forEach(id=>{X[id].up=XUP[id];});
 Object.keys(X).forEach(id=>{const r=X[id];if(r.note){const t=r.note.replace(/(Shown because[^.]*\.|Replaces[^.]*\.)\s*/g,'').trim();if(t)r.note=t;else delete r.note;}});
 const EXT={
- legA:{n:XOLD.legA.n,sub:XOLD.legA.sub,intro:XOLD.legA.intro.replace(/Loads assume.*?own\.\s*/,'Exercises follow your equipment (More › Settings › Equipment). '),slots:[['gob','vsq','tsq'],['bss','ssq'],['rdl','bgm','hwo'],['lgb','gbr'],['calf']]},
+ legA:{n:XOLD.legA.n,sub:XOLD.legA.sub,intro:XOLD.legA.intro.replace(/Loads assume.*?own\.\s*/,'Exercises follow your equipment (More › Settings › Equipment). '),slots:[['gob','vsq','mbs','tsq'],['bss','ssq'],['rdl','bgm','hwo'],['lgb','gbr'],['calf']]},
  legB:{n:XOLD.legB.n,sub:XOLD.legB.sub,intro:XOLD.legB.intro,slots:[['rlg'],['slr'],['stp','csq'],['ht','sgb'],['lw','slw']]},
- armA:{n:XOLD.armA.n,sub:XOLD.armA.sub,intro:XOLD.armA.intro,slots:[['acl','rbc','bcl','tic'],['oth','bte','ntx'],['cpu'],['wcu','twr']]},
+ armA:{n:XOLD.armA.n,sub:XOLD.armA.sub,intro:'Added work, not from the guide. Progress with tempo and pauses before moving to a heavier weight. Foundation still runs today.',slots:[['acl','rbc','bcl','tic'],['oth','bte','ntx'],['cpu'],['wcu','twr']]},
  armB:{n:XOLD.armB.n,sub:XOLD.armB.sub,intro:XOLD.armB.intro,slots:[['ham','cng','bhc','tic'],['fte','rtx','bpd','ntx'],['rir','uir'],['rwc','twr']]},
- abs:{n:'Abs',sub:'Added work · follows your equipment',slots:[['hkr','rvc'],['dsk','lgr'],['rcs','abr','pln'],['rut','pal','spl','rsb']]}
+ abs:{n:'Abs',sub:'Added work · rotates through your equipment',slots:[['hkr','dsk','mlr','rvc'],['rcs','dbc','lgr'],['abr','bdb','pln'],['rut','pal','mbt','kbw','spl','rsb']]}
 };
 const reqOK=req=>(req||[]).every(gp=>gp.split('|').some(k=>has(k)));
-function pickSlot(d,ids,used){
- if(d){const lg=ids.find(id=>!used[id]&&hasSets(d,'ext.'+id));if(lg)return{id:lg};}
- let subOf=null;
- for(const id of ids){
-  const x=X[id];if(!x||x.legacy||used[id]||!reqOK(x.req))continue;
-  if(S.sub[id]&&(x.req||[]).length){if(!subOf)subOf=id;continue;}
-  return{id,subOf};
+function loadOK(x){
+ const L=x.load;if(!L||!L.min)return true;
+ return L.eq.some(k=>{if(!has(k))return false;const w=wts(k);return !w.length||L.min[k]==null||w[w.length-1]>=L.min[k];});
+}
+const avail=x=>reqOK(x.req)&&loadOK(x);
+function loadLine(r){
+ const L=r.load;if(!L)return'';
+ for(const k of L.eq){
+  if(!has(k))continue;const w=wts(k);if(!w.length)continue;
+  let v;if(L.cls==='heavy')v=w[w.length-1];else if(L.cls==='light')v=w[0];else{const le=w.filter(x=>x<=L.tgt);v=le.length?le[le.length-1]:w[0];}
+  if(L.min&&L.min[k]!=null&&v<L.min[k])continue;
+  return'<div class="small" style="color:var(--accent)">'+(L.opt?'Hold: ':'Load: ')+v+' lb '+WUNIT[k]+(L.pair&&k==='db'?'s':'')+(L.cls==='heavy'&&w.length>1?' (your heaviest)':'')+'</div>';
  }
- return null;
+ return'';
+}
+function weekIdx(d){return Math.round((pd(wkStart(d)).getTime()-new Date(2024,0,1).getTime())/864e5/7);}
+function absIdx(d){
+ const D=S.set.days,ld=[D.l1,D.l2].filter(x=>x>=0).sort((a,b)=>((a+6)%7)-((b+6)%7));
+ const pos=Math.max(0,ld.indexOf(pd(d).getDay()));
+ return weekIdx(d)*Math.max(1,ld.length)+pos;
+}
+function slotOK(k,si,used){return EXT[k].slots[si].filter(id=>{const x=X[id];return x&&!x.legacy&&!(used&&used[id])&&avail(x)&&!S.sub[id];});}
+function pickSlot(d,k,si,used){
+ const ids=EXT[k].slots[si];
+ if(d){
+  const lg=ids.find(id=>!used[id]&&hasSets(d,'ext.'+id));if(lg)return{id:lg};
+  const L=peek(d),pk=L&&L.pick&&L.pick[k+'.'+si];
+  if(pk&&!used[pk]&&X[pk]&&avail(X[pk]))return{id:pk};
+ }
+ const ok=slotOK(k,si,used);if(!ok.length)return null;
+ if(k==='abs'&&d){const eqp=ok.filter(id=>(X[id].req||[]).length),pool=eqp.length?eqp:ok;return{id:pool[((absIdx(d)%pool.length)+pool.length)%pool.length]};}
+ return{id:ok[0]};
 }
 function extSet(k,d){
  const e=EXT[k],used={},rows=[];
- e.slots.forEach(ids=>{const pk=pickSlot(d,ids,used);if(pk){used[pk.id]=1;rows.push(Object.assign({},X[pk.id],pk.subOf?{subOf:pk.subOf}:{}));}});
- const intro=k==='abs'?'Added work, not from the guide. Different from the '+DOWL[S.set.days.core]+' core circuit so you are not repeating the same moves. The moves follow your equipment (More › Settings › Equipment).':e.intro;
+ e.slots.forEach((ids,si)=>{const pk=pickSlot(d,k,si,used);if(pk){used[pk.id]=1;rows.push(Object.assign({},X[pk.id],{_k:k,_si:si}));}});
+ const intro=k==='abs'?'Added work, not from the guide. Different from the '+DOWL[S.set.days.core]+' core circuit so you are not repeating the same moves. With more than one option for a slot, abs days rotate through them; use Change to pick a different one.':e.intro;
  return{n:e.n,sub:e.sub,intro,rows};
+}
+function chgOpts(r){
+ const key=r._k+'.'+r._si,alt=slotOK(r._k,r._si).filter(id=>id!==r.id);
+ const back=EXT[r._k].slots[r._si].filter(id=>S.sub[id]&&X[id]&&!X[id].legacy&&reqOK(X[id].req));
+ return{key,alt,back,dh:!!(r.req&&r.req.length)};
+}
+function chgBtn(d,g,r){
+ if(g!=='ext'||!r._k||hasSets(d,'ext.'+r.id))return'';
+ const o=chgOpts(r);if(!o.alt.length&&!o.back.length&&!o.dh)return'';
+ const op=!!ui.chg[d+'|'+o.key];
+ return'<button class="sm dh chgbtn'+(op?' opn':'')+'" data-a="chg" data-k="'+o.key+'">Change '+(op?'▴':'▾')+'</button>';
+}
+function chgList(d,g,r){
+ if(g!=='ext'||!r._k||hasSets(d,'ext.'+r.id))return'';
+ const o=chgOpts(r);if(!ui.chg[d+'|'+o.key])return'';
+ let h='<div class="stepl">';
+ o.alt.forEach(id=>{h+='<button class="stp" data-a="pickx" data-k="'+o.key+'" data-x="'+id+'">'+esc(X[id].n)+((X[id].req||[]).length?'':' <span class="faint">· no equipment</span>')+'</button>';});
+ if(o.dh){const gp=r.req[0].split('|'),k=gp.find(x=>has(x))||gp[0];h+='<button class="stp" data-a="nohave" data-k="'+r.id+'"><span class="faint">✕</span>Don’t have '+esc(EQ[k])+' for this — stop suggesting it</button>';}
+ o.back.forEach(id=>{h+='<button class="stp" data-a="havenow" data-k="'+id+'"><span class="faint">↺</span>Have it now: '+esc(X[id].n)+'</button>';});
+ return h+'</div>';
 }
 const extRow=id=>X[id]||{r:[3,3]};
 const STAGES={1:['Stage 1 \u2014 One skill at a time','Frog Stand first. Add nothing until it feels solid, then Crow Stand becomes the single focus. Handstand day-one work (scapular push-ups) still runs.'],
@@ -491,7 +552,7 @@ function load(){
  try{const r=localStorage.getItem(KEY);S=r?JSON.parse(r):defState();}catch(e){S=defState();}
  const d=defState();
  S.set=Object.assign({},d.set,S.set||{});S.set.days=Object.assign({},d.set.days,S.set.days||{});S.set.eq=S.set.eq||{};
- if(S.setup&&!S.set.eqv){if(S.set.eq.db===undefined)S.set.eq.db=true;if(S.set.eq.band===undefined)S.set.eq.band=true;}S.set.eqv=2;
+ if(S.setup&&!S.set.eqv){if(S.set.eq.db===undefined)S.set.eq.db=true;if(S.set.eq.band===undefined)S.set.eq.band=true;}S.set.wt=S.set.wt||{};if(S.setup&&(S.set.eqv||0)<3&&S.set.eq.db===true&&!S.set.wt.db)S.set.wt.db=[15,35];S.set.eqv=3;
  if(!Array.isArray(S.set.on)){S.set.on=onFromDays();if(S.set.week===3){S.set.days.l1=-1;S.set.days.l2=-1;}}
  S.logs=S.logs||{};S.chk=S.chk||{};S.prog=S.prog||{};S.moves=S.moves||{};S.mvg=S.mvg||{};S.sub=S.sub||{};
  GROUPS.forEach(k=>{if(!S.prog[k])S.prog[k]={step:1,solid:false};});
@@ -502,7 +563,7 @@ function save(){
 }
 const peek=d=>S.logs[d];
 function wlog(d){return S.logs[d]||(S.logs[d]={w:{},m:{},ex:{},gtg:[],core:0,walk:0,done:false,note:''});}
-const ui={tab:'today',date:today(),open:{},how:{},stepl:{},monthOff:0,toast:null};
+const ui={tab:'today',date:today(),open:{},how:{},stepl:{},wopen:{},chg:{},monthOff:0,toast:null};
 
 /* ===== plan logic ===== */
 const stepsOf=g=>FOUND[g]?FOUND[g].steps:(g==='chin'?CHIN.steps:SK[g].steps);
@@ -705,6 +766,12 @@ const HOWX={
  ham:[`Stand tall with a dumbbell in each hand, palms facing each other (thumbs up), elbows at your sides.`,`Curl the weights toward your shoulders keeping your palms facing in, then lower slowly.`,`Swinging, shoulders rolling forward, elbows drifting.`],
  fte:[`Lie on your back with a dumbbell in each hand, arms straight above your chest, palms facing each other.`,`Bend only at the elbows to lower the weights toward the sides of your head, then straighten your arms. Upper arms stay still and vertical.`,`Elbows flaring out, letting the weights drift over your face, using too much weight.`],
  uir:[`Lie under a sturdy table or bar and grip it with your palms facing you. Body straight, heels on the floor.`,`Pull your chest toward the bar or table edge, squeeze your shoulder blades together, then lower with control.`,`Sagging hips, using a table that can slide or tip.`],
+ mbs:[`Hold the medicine ball against your chest with both hands. Feet a little wider than shoulders, toes slightly out.`,`Sit down between your knees with your chest tall until your thighs are about parallel, then stand.`,`Heels lifting, knees caving in, the ball drifting away from your chest.`],
+ dbc:[`Lie on your back, knees bent, feet flat. Hold the dumbbell or ball on your chest with both hands.`,`Curl your shoulders off the floor by tightening your abs, pause, then lower slowly. Small range, chin slightly tucked.`,`Yanking with your neck, sitting all the way up with your hip flexors.`],
+ bdb:[`Anchor a band low behind your head. Lie on your back holding it with straight arms over your chest, knees bent over your hips. Press your lower back into the floor.`,`Keeping the arms still against the pull, slowly extend one leg until it hovers above the floor, return, then switch.`,`Lower back arching, arms drifting.`],
+ mlr:[`Lie on your back with the medicine ball held between your feet, legs straight. Hands under your hips or by your sides.`,`Raise your legs to vertical, then lower slowly until the ball hovers just above the floor.`,`Lower back lifting off the floor. Bend your knees a little if it does.`],
+ mbt:[`Sit on the floor with knees bent, lean back with a flat back and hold the ball at your chest. Feet down to start.`,`Rotate your ribcage to one side and tap the ball beside your hip, then the other side.`,`Swinging only your arms, rounding your back.`],
+ kbw:[`Press a light kettlebell overhead with one arm. Feet wider than hips, both turned slightly away from the bell.`,`Keep your eyes on the bell and your arm locked straight. Push your hips toward the bell side and lower your free hand down your leg as far as is comfortable, then stand back up.`,`Bending the overhead elbow, letting the bell drift. Start light.`],
  vsq:[`Put the vest on snug. Feet shoulder-width apart, toes slightly out.`,`Sit your hips back and down until your thighs are about parallel, chest tall, then stand. Lower with control so it stays quiet.`,`Heels lifting, knees caving in, rounding your back.`],
  tsq:[`Feet shoulder-width apart, toes slightly out, arms straight in front for balance.`,`Lower for a slow count of three, pause for one second at the bottom, then stand up smoothly.`,`Dropping fast, heels lifting, knees caving in.`],
  bgm:[`Stand on the band with feet hip-width apart and loop the other end across your upper back (on the shoulders, never the neck), holding it in place with your hands.`,`With soft knees and a flat back, push your hips back until you feel the back of your legs stretch, then squeeze your glutes to stand tall.`,`Rounding your back, bending forward from the waist instead of the hips.`],
@@ -828,7 +895,17 @@ function eqRow(k,setup){
  const imp=(k==='bar'||k==='dip')&&S.set.eq.swl===true;
  return'<div class="chk"><button class="sm'+(has(k)?' on':'')+(imp?' dim':'')+'"'+(imp?'':' data-a="eq" data-k="'+k+'"'+(setup?' data-s="1"':''))+'>✓</button><div>'+EQ[k]+(imp?' <span class="small faint">— included with the ladder</span>':(EQSUB[k]?' <span class="small faint">— '+EQSUB[k]+'</span>':''))+'</div></div>';
 }
-function eqList(setup){return EQCAT.map(c=>'<h4 class="eqh">'+c[0]+'</h4>'+c[1].map(k=>eqRow(k,setup)).join('')).join('');}
+const WTOPT={db:[5,8,10,12,15,20,25,30,35,40,45,50,55,60],kb:[9,13,18,26,35,44,53,62,70],mb:[4,6,8,10,12,14,16,20],vest:[10,15,20,30,40,50]};
+const WUNIT={db:'dumbbell',kb:'kettlebell',mb:'medicine ball',vest:'vest'};
+const wts=k=>((S.set.wt||{})[k]||[]).slice().sort((a,b)=>a-b);
+function wtRow(k,setup){
+ if(!WTOPT[k]||!has(k))return'';
+ const o=!!(ui.wopen&&ui.wopen[k]),w=wts(k);
+ let h='<div class="wtrow"><button class="how" data-a="wto" data-k="'+k+'">Weights '+(o?'▴':'▾')+'</button><span class="small faint">'+(w.length?w.join(', ')+' lb':'none picked — exercises assume a usable weight')+'</span></div>';
+ if(o)h+='<div class="wchips">'+WTOPT[k].map(v=>'<button class="wchip'+(w.includes(v)?' on':'')+'" data-a="wt" data-k="'+k+'" data-n="'+v+'"'+(setup?' data-s="1"':'')+'>'+v+'</button>').join('')+'<span class="small faint">lb</span></div>';
+ return h;
+}
+function eqList(setup){return EQCAT.map(c=>'<h4 class="eqh">'+c[0]+'</h4>'+c[1].map(k=>eqRow(k,setup)+wtRow(k,setup)).join('')).join('');}
 function eqSummary(){
  const lab={legA:'Lower A',legB:'Lower B',armA:'Arms A',armB:'Arms B',abs:'Abs'};
  return'<div class="eqsum">'+Object.keys(lab).map(k=>'<div><span class="faint">'+lab[k]+':</span> '+extSet(k,null).rows.map(r=>esc(r.n.split(' (')[0])).join(' · ')+'</div>').join('')+'</div>';
@@ -842,7 +919,7 @@ function rowsHTML(d,g,rows,step,unitMain){
   const n=Math.max(r.r[0],E.s.length);
   const lb=lastBefore(key,d,step);
   const allSkip=u!=='chk'&&E.s.length>=r.r[0]&&E.s.every(isSkipSet);
-  let h='<div class="row"><div class="rowtop"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+(allSkip?' <span class="chip sk">Skipped</span>':'')+'</div>'+dhBtn(d,g,r)+'</div><div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>';
+  let h='<div class="row"><div class="rowtop"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+(allSkip?' <span class="chip sk">Skipped</span>':'')+'</div>'+chgBtn(d,g,r)+'</div>'+chgList(d,g,r)+'<div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>'+(g==='ext'?loadLine(r):'');
   if(g==='ext'||r.id==='alt'){
    const hk=r.id==='alt'?'alt:'+r.n:g+'.'+r.id;
    let bh=howHTML(g==='ext'?HOWX[r.id]:HOWALT[r.n]);
@@ -1033,12 +1110,6 @@ function dayHead(d,plan){
  return h;
 }
 function hasSets(d,key){const L=peek(d),E=L&&L.ex[key];return !!E&&(E.s||[]).some(x=>x&&(x.done||(x.v!=null&&x.v!=='')));}
-function dhBtn(d,g,r){
- if(g!=='ext'||hasSets(d,'ext.'+r.id))return'';
- if(r.subOf)return'<button class="sm dh" data-a="havenow" data-k="'+r.subOf+'">Have it now</button>';
- if(r.req&&r.req.length){const gp=r.req[0].split('|'),k=gp.find(x=>has(x))||gp[0];return'<button class="sm dh" data-a="nohave" data-k="'+r.id+'">Don’t have: '+(EQS[k]||EQ[k])+'</button>';}
- return'';
-}
 const ALTROW={};
 ['Band-Assisted Pull-Up','Negative Pull-Up','Full Pull-Up'].forEach(k=>{ALTROW[k]={n:'Inverted row (sturdy table)',dose:'near-max reps',u:'reps'};});
 ['Band-Assisted Dip','Negative Dip','Full Dip'].forEach(k=>{ALTROW[k]={n:'Bench dip (straight legs)',dose:'near-max reps',u:'reps'};});
@@ -1061,7 +1132,7 @@ function extCard(d,k){
 }
 function viewToday(){
  const d=ui.date,plan=planFor(d);
- {const L0=peek(d);ui.pre=plan.t==='rest'||(d===today()&&!(L0&&(L0.begun||L0.done))&&!hasProgress(d));ui.showBegin=plan.t!=='rest'&&ui.pre;}
+ {const L0=peek(d);ui.pre=plan.t==='rest'||(d>today()&&!hasProgress(d))||(d===today()&&!(L0&&(L0.begun||L0.done))&&!hasProgress(d));ui.showBegin=plan.t!=='rest'&&ui.pre&&d===today();}
  let h=dayHead(d,plan);
  if(plan.t==='skill'){
   if(S.set.stage===1&&S.prog.frog.solid&&S.prog.crow.solid)h+='<div class="banner go">Frog and Crow are both marked solid — the guide’s next move is Stage 2. <button class="sm" data-a="stage" data-n="2">Switch to Stage 2</button></div>';
@@ -1175,7 +1246,8 @@ function finishCard(d,plan){
  const L=peek(d)||{};
  let h='<div class="card" id="finishcard"><div class="cb" style="border:0;padding-top:14px"><textarea data-a="note" placeholder="Session notes (form cues, what felt off)" style="min-height:60px;font-size:14px">'+esc(L.note||'')+'</textarea>';
  if((L.gtg||[]).length)h+='<div class="small muted" style="margin-top:8px">Greasing the groove: '+L.gtg.length+' touch'+(L.gtg.length===1?'':'es')+' logged on the Groove tab.</div>';
- if(plan.t!=='rest'&&ui.showBegin&&d===ui.date)h+='<div class="small faint" style="margin-top:8px">Session complete, the timer and session times show up here once you tap BEGIN.</div>';
+ if(plan.t!=='rest'&&d>today()&&!(L.done||hasAny(L)))h+='';
+ else if(plan.t!=='rest'&&ui.showBegin&&d===ui.date)h+='<div class="small faint" style="margin-top:8px">Session complete, the timer and session times show up here once you tap BEGIN.</div>';
  else if(plan.t!=='rest')h+='<button class="'+(L.done?'on':'pri')+'" data-a="finish" style="width:100%;margin-top:8px">'+(L.done?'Session complete \u2713':'Mark session complete')+'</button>'+sessLine(L,d)+((L.begun||L.done||L.t0||L.t1||(L.seg&&L.seg.length)||hasAny(L))?'<div style="margin-top:10px"><button class="sm" data-a="resetday">Reset day</button> <span class="small faint">Clears this day\u2019s log and times and brings back BEGIN.</span></div>':'');
  h+='<p class="small faint">Tip from the guide: film a set, even just propped against a wall \u2014 it shows form breakdowns you cannot feel and proves progress.</p></div></div>';
  return h;
@@ -1349,7 +1421,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 17';
+const BUILD='2026-11-20 \u00b7 18';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1518,6 +1590,10 @@ document.addEventListener('click',e=>{
    else{if(on.length>=5){toast('Up to 5 training days — keep at least two rest days for recovery.');break;}on.push(n);}
    S.set.on=on;S.set.days=assignWeek(on);S.set.week=on.length;const rm=pruneMoves();save();
    if($('#sheet').style.display==='block')showSetup();else render();if(rm)toast('Moved workouts that no longer fit were put back');break;}
+  case'chg':{const k=ui.date+'|'+t.dataset.k;ui.chg[k]=!ui.chg[k];render();break;}
+  case'pickx':{const L=wlog(ui.date);L.pick=L.pick||{};L.pick[t.dataset.k]=t.dataset.x;delete ui.chg[ui.date+'|'+t.dataset.k];save();render();break;}
+  case'wto':ui.wopen[t.dataset.k]=!ui.wopen[t.dataset.k];if(t.dataset.s||$('#sheet').style.display==='block')showSetup();else render();break;
+  case'wt':{const k=t.dataset.k;S.set.wt=S.set.wt||{};const w=(S.set.wt[k]||[]).slice(),i=w.indexOf(n);if(i>=0)w.splice(i,1);else w.push(n);S.set.wt[k]=w.sort((a,b)=>a-b);save();if(t.dataset.s)showSetup();else render();break;}
   case'stepl':ui.stepl[g]=!ui.stepl[g];render();break;
   case'gostep':{ui.stepl[g]=false;const c=curStep(g);if(n!==c)advance(g,n-c);else render();break;}
   case'how':ui.how[t.dataset.k]=!ui.how[t.dataset.k];render();break;
