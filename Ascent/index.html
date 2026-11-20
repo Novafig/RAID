@@ -30,6 +30,12 @@ p{margin:6px 0}
 .muted{color:var(--muted)}.faint{color:var(--faint)}.small{font-size:12.5px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:10px 0;overflow:hidden}
 .ch{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px}
+.how{display:block;width:auto;white-space:nowrap;background:none;border:0;color:var(--accent);font-size:12px;font-weight:700;padding:6px 0;text-align:left;cursor:pointer;letter-spacing:.02em}
+.howbody{margin:2px 0 8px;padding:9px 11px;background:var(--surface2);border-radius:8px;line-height:1.45;font-size:13px;color:var(--muted)}
+.howbody div+div{margin-top:5px}
+.skipb{font-size:11px;padding:3px 9px;flex:0 0 auto}
+.card.skipped{opacity:.62}
+.chip.sk{background:rgba(160,120,230,.22);color:#BDA3F0}
 .ch .t{font-weight:700}.ch .s{font-size:12.5px;color:var(--muted)}
 .cb{padding:0 14px 14px;border-top:1px solid var(--line)}
 .arrow{color:var(--faint);transition:transform .15s}.open .arrow{transform:rotate(90deg)}
@@ -303,7 +309,7 @@ const CHIN={n:'Chin Stand (bonus)',vid:null,
  ['Extend the hold','Gradually build hold time.','sec']]};
 
 const WARM=[
- {g:'General (optional)',note:'Skip if you are already warm from earlier in the day.',items:[['gen','Light cardio \u2014 jump rope, jog in place or jumping jacks','3\u20135 min']]},
+ {g:'General (optional)',note:'Quiet and low-impact: no jumping, no stomping. Skip if you are already warm from earlier in the day.',items:[['g1','Quiet march in place','60 seconds'],['g2','Slow shadow boxing','60 seconds'],['g3','Soft step-touch side to side','60 seconds'],['g4','Arm swings and torso twists','30 seconds each']]},
  {g:'Wrist',note:'Your wrists take real weight in almost every skill here.',items:[['w1','Wrist circles, both directions','10 reps each way'],['w2','Wrist flexor and extensor stretches','palm down and back, then flip to the top of the hand'],['w3','Light weight-bearing rocks in a wall push-up position','shift forward and back']]},
  {g:'Shoulder',items:[['s1','Arm circles','small to large, both directions'],['s2','Shoulder rolls','forward and backward'],['s3','Band pull-aparts','10\u201315 reps'],['s4','Scapular push-ups','a few slow reps']]},
  {g:'Back mobility',items:[['b1','Cat-cow','8\u201310 reps, slow and controlled'],['b2','Child\u2019s pose into cobra stretch','hold each for a breath or two'],['b3','Thoracic rotations (open books)','a few per side']]},
@@ -405,7 +411,7 @@ function save(){
 }
 const peek=d=>S.logs[d];
 function wlog(d){return S.logs[d]||(S.logs[d]={w:{},m:{},ex:{},gtg:[],core:0,walk:0,done:false,note:''});}
-const ui={tab:'today',date:today(),open:{},monthOff:0,toast:null};
+const ui={tab:'today',date:today(),open:{},how:{},monthOff:0,toast:null};
 
 /* ===== plan logic ===== */
 const stepsOf=g=>FOUND[g]?FOUND[g].steps:(g==='chin'?CHIN.steps:SK[g].steps);
@@ -549,13 +555,91 @@ function toast(msg,undo){
  t.innerHTML='<span>'+esc(msg)+'</span>'+(undo?'<button class="sm" data-a="undo">Undo</button>':'');
  t.style.display='flex';clearTimeout(toast.h);toast.h=setTimeout(()=>{t.style.display='none';ui.toast=null;},5000);
 }
+const HOWX={
+ gob:[`Hold one end of the dumbbell vertically against your chest with both hands, elbows pointing down. Feet a little wider than shoulders, toes turned out slightly.`,`Sit down between your knees, keeping your chest tall, until your thighs are about parallel or as low as you can go with your heels flat. Push the floor away to stand.`,`Heels lifting, knees caving inward, chest folding forward.`],
+ bss:[`Stand a long stride in front of a bench or sturdy chair. Rest the top of one back foot on it behind you. Keep the front foot flat.`,`Lower straight down until the front thigh is about parallel, then drive up through the front foot. Most of your weight stays on the front leg.`,`Front knee caving in, leaning far forward, pushing off the back foot. If your balance is shaky, hold a wall with one hand.`],
+ rdl:[`Stand tall holding the dumbbell in front of your thighs, feet hip-width apart, knees slightly bent.`,`Push your hips straight back, sliding the weight down your thighs with a flat back, until you feel a stretch in the back of your legs (around mid-shin). Squeeze your glutes to stand up.`,`Rounding your back, squatting down instead of hinging, letting the weight drift away from your legs.`],
+ gbr:[`Lie on your back with knees bent and feet flat, hip-width apart, heels fairly close to your butt. Arms rest by your sides.`,`Press through your heels to lift your hips until your body is a straight line from shoulders to knees. Squeeze your glutes at the top, then lower slowly.`,`Arching your lower back, pushing through your toes, letting your knees drift apart.`],
+ calf:[`Stand on one foot beside a wall or sturdy support for balance. The other foot is lifted off the floor.`,`Rise as high as you can onto the ball of your foot, pause for a moment, then lower slowly all the way down.`,`Bouncing, letting the ankle roll outward, cutting the range short.`],
+ rlg:[`Stand tall with feet hip-width apart.`,`Step one foot back and lower until both knees are bent about 90 degrees, back knee hovering just above the floor. Push through the front heel to stand. Lower softly so the back knee never thuds.`,`Front heel lifting, torso folding forward, front knee collapsing inward.`],
+ slr:[`Stand on one foot with a soft bend in the knee. Hold a light dumbbell, or nothing at first. Keep a fingertip on a wall or chair if you wobble.`,`Hinge forward at the hips while the other leg extends straight behind you, like a seesaw. Keep your back flat until you feel the back of the standing leg stretch, then squeeze your glute to come up.`,`Opening the hips to the side, rounding your back, locking the standing knee.`],
+ stp:[`Face a sturdy chair, box or step, low enough that your knee is no higher than hip level when your foot is on it. Place your whole foot on top.`,`Drive through that heel to stand tall, then lower slowly with control, tapping the other foot down softly.`,`Pushing off the bottom foot, letting the knee cave inward, using a chair that can wobble or slide.`],
+ ht:[`Sit on the floor with your upper back (just below the shoulder blades) against a couch or bench. Knees bent, feet flat on the floor.`,`Drive your heels down and lift your hips until your body is flat from shoulders to knees. Squeeze your glutes at the top, then lower slowly. Hold a dumbbell on your hips once it feels easy.`,`Over-arching your lower back, ribs flaring up, pushing through your toes.`],
+ lw:[`Put the band around your legs just above the knees (lower, near the ankles, is harder). Stand in a small quarter-squat with feet hip-width apart, toes forward.`,`Step sideways with one foot, then bring the other foot in so the band stays tight the whole time. Take 12 to 15 steps one way, then come back.`,`Standing up tall, knees caving in, letting the band go slack, dragging your feet noisily.`],
+ ssq:[`Stand in a long stride with the front foot forward and the back heel lifted. Both feet stay on the floor.`,`Lower straight down until the back knee hovers just above the floor and the front thigh is about parallel. Drive up through the front foot.`,`Leaning forward, front knee caving in, stepping too short so the heel lifts.`],
+ csq:[`Stand with your feet wide apart, toes turned out slightly.`,`Shift your weight to one side and sit down onto that leg, bending that knee while the other leg stays straight. Keep your chest tall and the bent leg's heel on the floor, then push back to the middle.`,`Heel lifting, knee caving inward. Reduce depth if your knee or groin complains.`],
+ sgb:[`Lie on your back with one foot flat on the floor and the other leg either straight out or pulled in toward your chest.`,`Drive through the planted heel to lift your hips until your body is straight from shoulders to knee. Keep your hips level, pause, and lower slowly.`,`Hips tilting to one side, arching your lower back.`],
+ slw:[`Lie on your side with legs straight and body in one line, resting your head on your lower arm. Top hand on the floor in front of you for balance.`,`Lift the top leg to about 45 degrees with the toes pointing forward, then lower slowly.`,`Rolling your hips backward, swinging the leg with momentum.`],
+ hkr:[`Hang from the bar with straight arms, using the same grip as your dead hang. Pull your shoulder blades down slightly so you are not hanging by your shoulders.`,`Curl your hips up and bring your knees toward your chest, pause, then lower slowly. As it gets easier, straighten the legs.`,`Swinging, using momentum, shrugging up to your ears.`],
+ rvc:[`Lie on your back with knees bent over your hips. Arms by your sides, pressing into the floor.`,`Curl your hips a few inches off the floor by tightening your abs, bringing your knees toward your chest. Lower slowly.`,`Swinging your legs, using momentum, letting your lower back peel off the floor on the way down.`],
+ dsk:[`Hold yourself up on the dip bars with straight arms, pressing down hard so your shoulders stay away from your ears.`,`Raise your knees toward your chest, pause, then lower with control.`,`Swinging, letting your shoulders shrug up, bending your elbows.`],
+ rcs:[`Adjust the Roman chair so your thighs are supported and your feet are hooked in. Hold the dumbbell against your chest.`,`Lower your torso only as far as your lower back stays flat, then curl back up using your abs.`,`Arching your lower back at the bottom, yanking with your neck or hip flexors.`],
+ rut:[`Set the seat to a 45 degree decline. Sit with your torso perpendicular to the seat and hold the dumbbell against your chest.`,`Rotate your ribcage to one side, return through the middle, then rotate to the other side. Each side counts as one twist.`,`Swinging your arms without turning your ribcage, arching your lower back. Stop if your lower back hurts.`],
+ pln:[`Forearms on the floor with elbows under your shoulders, legs straight behind you.`,`Make a straight line from head to heels. Squeeze your glutes and abs, keep your ribs pulled down and breathe.`,`Hips sagging or piking up, neck dropping, holding your breath.`],
+ spl:[`Lie on your side with your forearm on the floor, elbow under your shoulder. Stack your feet, or put the top foot in front for more balance.`,`Lift your hips so your body is one straight line from head to feet. Hold, breathe, then switch sides.`,`Hips dropping, rolling forward or backward, shoulder shrugging.`],
+ lgr:[`Lie on your back with your legs straight and together. Press your lower back into the floor and rest your hands under your hips or by your sides.`,`Raise your legs to vertical, then lower slowly until they hover just above the floor.`,`Lower back lifting off the floor. If it does, bend your knees slightly or stop higher.`],
+ acl:[`Stand tall with a dumbbell in each hand, palms facing forward, elbows pinned at your sides.`,`Curl the weights up toward your shoulders, then lower slowly until your arms are straight.`,`Swinging your body, letting your elbows drift forward, dropping the weight fast.`],
+ oth:[`Hold one dumbbell with both hands overhead, cupping the top plate. Elbows point forward, close to your ears.`,`Bend your elbows to lower the weight behind your head, then straighten your arms to lift it back up.`,`Elbows flaring out, arching your lower back (keep your ribs down).`],
+ cpu:[`Set up for a push-up at your current push-up step, with your hands under your chest, about shoulder-width or a little narrower.`,`Lower your chest while your elbows brush back along your sides, then press up.`,`Elbows flaring wide, hips sagging, head dropping forward.`],
+ wcu:[`Sit with your forearm resting on your thigh, palm up, wrist hanging past your knee. Hold a light dumbbell.`,`Curl the weight up using only your wrist, then lower slowly.`,`Lifting your forearm off your leg, going too heavy.`],
+ ham:[`Stand tall with a dumbbell in each hand, palms facing each other (thumbs up), elbows at your sides.`,`Curl the weights toward your shoulders keeping your palms facing in, then lower slowly.`,`Swinging, shoulders rolling forward, elbows drifting.`],
+ fte:[`Lie on your back with a dumbbell in each hand, arms straight above your chest, palms facing each other.`,`Bend only at the elbows to lower the weights toward the sides of your head, then straighten your arms. Upper arms stay still and vertical.`,`Elbows flaring out, letting the weights drift over your face, using too much weight.`],
+ uir:[`Lie under a sturdy table or bar and grip it with your palms facing you. Body straight, heels on the floor.`,`Pull your chest toward the bar or table edge, squeeze your shoulder blades together, then lower with control.`,`Sagging hips, using a table that can slide or tip.`],
+ rwc:[`Sit with your forearm resting on your thigh, palm down, wrist hanging past your knee. Hold a light dumbbell.`,`Lift the back of your hand up using only your wrist, then lower slowly.`,`Lifting your forearm off your leg, going too heavy.`]
+};
+const HOWALT={
+ 'Inverted row (sturdy table)':[`Lie on the floor under a very sturdy table and grip the edge, hands shoulder-width apart. Keep your body straight with your heels on the floor.`,`Pull your chest up toward the table edge, then lower with control. Walk your feet further forward to make it harder.`,`Sagging hips, a table that can move.`],
+ 'Bench dip (straight legs)':[`Sit on the edge of a sturdy chair or bench with your hands beside your hips, fingers pointing forward. Slide your hips off the edge with legs straight out.`,`Bend your elbows straight back to lower yourself, then press back up.`,`Elbows flaring, shoulders rolling forward, dropping too deep.`],
+ 'Farmer hold (35 lb dumbbell, one hand)':[`Pick up the dumbbell with one hand and stand tall, shoulders back and down.`,`Hold it at your side for the time, squeezing the handle. Then switch hands.`,`Leaning to one side, shrugging.`],
+ 'Band pull-apart':[`Hold a light band in front of your chest with your arms straight, hands shoulder-width apart.`,`Squeeze your shoulder blades together and pull the band apart until your hands are out to the sides, then return slowly.`,`Shrugging, arching your back.`]
+};
+const HOWW={
+ g1:[`Stand tall on a mat or carpet if you have one.`,`Lift one knee to about hip height, then lower that foot gently, ball of the foot first and then the heel, so you can barely hear it. Swing the opposite arm.`,`If you can hear your foot land, slow down.`],
+ g2:[`Stand with your feet about shoulder-width apart, or one foot a little in front, with your fists up by your chin.`,`Throw slow, relaxed punches and turn your hips with each one. Pivot on the ball of your foot instead of stepping.`,`Locking your elbows at full extension, stomping.`],
+ g3:[`Stand with your feet together.`,`Step one foot out to the side, bring the other foot to touch it down lightly, then step back the other way. Let your arms swing naturally.`,`Hopping or landing hard.`],
+ g4:[`Stand with your feet shoulder-width apart.`,`Swing your arms across your chest in a big hug and back open, then turn your torso gently left and right with your arms loose.`,`Forcing the turn.`],
+ w1:[`Make loose fists or interlace your fingers.`,`Draw slow circles with your hands, keeping your forearms still. Do 10 each way.`,`Rushing, or moving your whole arm.`],
+ w2:[`Arm straight out in front of you, elbow straight.`,`Flexor stretch: palm up, gently pull your fingers back toward the floor with the other hand. Extensor stretch: palm down, gently pull the back of your hand toward you so the fingers curl under. Hold each for 15 to 20 seconds.`,`Forcing it or stretching into pain.`],
+ w3:[`Stand an arm's length from a wall with your hands flat at shoulder height, fingers pointing up.`,`Gently shift your weight forward so your wrists bend more, then back. Keep it small and pain-free.`,`Pushing into sharp pain.`],
+ s1:[`Arms out to your sides at shoulder height.`,`Draw small circles that get larger, then reverse direction.`,`Shrugging your shoulders up.`],
+ s2:[`Stand tall with relaxed arms.`,`Roll your shoulders up, back and down in big slow circles, then reverse.`,`Tensing your neck.`],
+ s3:[`Hold a light band in front of your chest, arms straight, hands shoulder-width apart.`,`Squeeze your shoulder blades together and pull the band apart, then return slowly.`,`Shrugging, arching your back.`],
+ s4:[`Get into a high plank (or stand facing a wall) with straight arms.`,`Without bending your elbows, let your chest sink between your shoulder blades, then push the floor away so your shoulder blades spread apart. Small, slow movement.`,`Bending your elbows, sagging your hips.`],
+ b1:[`On hands and knees with wrists under shoulders and knees under hips.`,`Inhale as you drop your belly and lift your chest and tailbone (cow). Exhale as you round your spine up toward the ceiling and tuck your chin (cat). Move slowly.`,`Rushing, forcing the end ranges.`],
+ b2:[`Child's pose: sit your hips back toward your heels with your arms long on the floor and your forehead down.`,`Breathe for a moment. Then slide forward, lower your belly to the floor with your hands under your shoulders, and gently press up into a cobra, keeping your hips on the floor.`,`Pushing up so high that your lower back pinches.`],
+ b3:[`Lie on your side with your knees bent and stacked, arms straight out in front, palms together.`,`Open the top arm like a book, turning your chest toward the ceiling and following your hand with your eyes, then return. Keep your knees together.`,`Letting your knees come apart.`],
+ h1:[`Stand with your hands on your hips and your feet shoulder-width apart.`,`Draw big, slow circles with your hips, both directions.`,`Moving your shoulders instead of your hips.`],
+ h2:[`Sit on the floor with both knees bent about 90 degrees, one shin in front of you and the other off to the side.`,`Rotate your knees over to the other side and switch. Stay tall and use your hands on the floor if you need support.`,`Slumping, forcing the switch.`],
+ lw1:[`Stand with your feet shoulder-width apart, toes slightly out.`,`Sit your hips back and down with your chest tall, then stand. Lower and rise with control so it stays quiet.`,`Heels lifting, knees caving in.`],
+ lw2:HOWX.gbr,
+ lw3:[`Ankle circles: lift one foot and draw slow circles. Ankle rocks: stand in a lunge position with the front foot flat.`,`For rocks, gently drive the front knee forward over your toes with the heel staying down, then back. 10 each way or per side.`,`Letting the heel come up.`],
+ cp1:[`Lie on your back with your arms straight up and your knees bent over your hips. Press your lower back into the floor.`,`Slowly extend the opposite arm and leg toward the floor without letting your back arch, then return and switch sides.`,`Back arching, moving fast.`],
+ cp2:null,
+ ap1:[`Stand on the middle of the band holding the ends, palms forward, elbows at your sides.`,`Curl your hands to your shoulders, then lower slowly.`,`Swinging, elbows drifting.`],
+ ap2:[`Anchor the band under your foot and hold the other end overhead with your elbows bent behind your head.`,`Straighten your arms overhead, then lower slowly, keeping your elbows close to your ears.`,`Elbows flaring, arching your back.`],
+ fp1:null,fp2:null,
+ mal:[`Stand with feet a little wider than hip-width and toes turned out.`,`Squat down as low as is comfortable, hands together at your chest, using your elbows to gently press your knees apart. Hold for a few breaths.`,`Heels lifting: put a rolled towel under them or hold a doorframe.`],
+ ank:null,cmp:null,brg:null
+};
+HOWW.cp2=HOWW.b1;HOWW.fp1=HOWW.w3;HOWW.fp2=HOWW.s4;HOWW.ank=HOWW.lw3;
+const HOWLBL=['Set up: ','Do: ','Avoid: '];
+function howHTML(a){return a?a.map((t,i)=>'<div>'+HOWLBL[i]+esc(t)+'</div>').join(''):'';}
+function how(k,html){
+ if(!html)return'';
+ const o=!!ui.how[k];
+ return'<button class="how" data-a="how" data-k="'+esc(k)+'">How to '+(o?'▴':'▾')+'</button>'+(o?'<div class="howbody">'+html+'</div>':'');
+}
+function isSkipped(d,key){const L=peek(d);return !!(L&&L.skip&&L.skip[key]);}
 function card(key,title,sub,body,def,done){
  const uk=(ui.tab==='today'?ui.date+'|':'')+key;
  const tr=ui.tab==='today'&&ui.reg&&done!==undefined;
+ const skp=tr&&isSkipped(ui.date,key);
+ const dn=!!done||skp;
  const prevDone=tr?ui.reg.every(c=>c.done):false;
- if(tr)ui.reg.push({k:key,uk:uk,done:!!done});
- const o=ui.open[uk]!==undefined?ui.open[uk]:(tr?(!ui.pre&&!done&&prevDone):(!!def&&!done));
- return'<div class="card'+(o?' open':'')+(done?' done':'')+'" data-card="'+key+'"><div class="ch" data-a="tog" data-k="'+key+'"><div><div class="t">'+title+(done?' <span class="chip go">Done</span>':'')+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div><span class="arrow">▶</span></div>'+(o?'<div class="cb">'+body+'</div>':'')+'</div>';
+ if(tr)ui.reg.push({k:key,uk:uk,done:dn});
+ const o=skp?false:(ui.open[uk]!==undefined?ui.open[uk]:(tr?(!ui.pre&&!dn&&prevDone):(!!def&&!dn)));
+ const sb=tr?'<button class="sm skipb" data-a="skipcard" data-k="'+key+'">'+(skp?'Undo skip':'Skip')+'</button>':'';
+ return'<div class="card'+(o?' open':'')+(skp?' skipped':(dn?' done':''))+'" data-card="'+key+'"><div class="ch" data-a="tog" data-k="'+key+'"><div style="flex:1;min-width:0"><div class="t">'+title+(skp?' <span class="chip sk">Skipped</span>':(dn?' <span class="chip go">Done</span>':''))+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div>'+sb+'<span class="arrow">▶</span></div>'+(o?'<div class="cb">'+body+'</div>':'')+'</div>';
 }
 function rowsDone(d,g,rows){
  const L=peek(d);
@@ -621,8 +705,12 @@ function rowsHTML(d,g,rows,step,unitMain){
   const n=Math.max(r.r[0],E.s.length);
   const lb=lastBefore(key,d,step);
   let h='<div class="row"><div class="rowtop"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+'</div>'+dhBtn(d,g,r)+'</div><div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>';
-  if(r.feel)h+='<div class="small faint">'+esc(r.feel)+'</div>';
-  if(r.note)h+='<div class="small muted">'+esc(r.note)+'</div>';
+  {const hk=r.id==='alt'?'alt:'+r.n:g+'.'+r.id;
+   const base=g==='ext'?HOWX[r.id]:(r.id==='alt'?HOWALT[r.n]:null);
+   let bh=howHTML(base);
+   if(r.feel)bh+='<div>'+esc(r.feel)+'</div>';
+   if(r.note)bh+='<div>Note: '+esc(r.note)+'</div>';
+   h+=how('row:'+hk,bh);}
   if(lb)h+='<div class="small faint">Last time ('+lb.d.slice(5)+'): '+lb.E.s.map(s=>s.v!=null?s.v:(s.done?'\u2713':'\u2013')).join(', ')+'</div>';
   if(r.up)h+='<div class="small faint">To progress: '+esc(r.up)+'</div>';
   if(r.top&&lb&&lb.E.s.length>=r.r[0]&&lb.E.s.every(x=>x.done&&+x.v>=r.top))h+='<div class="small" style="color:var(--go)">Hit the top of the range last time \u2192 make it harder now.</div>';
@@ -655,7 +743,8 @@ function ladderCtl(g){
 }
 function stepBlock(g,d){
  const st=curStep(g),s=stepOf(g),tot=stepsOf(g).length;
- return'<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div><div class="small muted">'+esc(s[1])+'</div>'+altLine(s)+swapCtl(d,g,s)+'</div>';
+ const intro=(FOUND[g]&&FOUND[g].trains)?'<div>Trains: '+esc(FOUND[g].trains)+'</div>':(SK[g]&&SK[g].why?'<div>'+esc(SK[g].why)+'</div>':'');
+ return'<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>'+how('st:'+g+':'+st,intro+'<div>'+esc(s[1])+'</div>')+altLine(s)+swapCtl(d,g,s)+'</div>';
 }
 
 /* ===== sections ===== */
@@ -667,7 +756,7 @@ function warmCard(d,plan){
  let h='<p class="small muted">'+intro+(plan.t==='leg'&&!plan.arm?'':link(WARMVID,'Video: wrist + shoulder warmup'))+'</p>';
  gs.forEach(g=>{
   h+='<h3>'+g.g+'</h3>'+(g.note?'<div class="small faint">'+g.note+'</div>':'');
-  g.items.forEach(it=>{tot++;const on=!!L.w[it[0]];if(on)dn++;h+='<div class="chk"><button class="sm'+(on?' on':'')+'" data-a="wchk" data-k="'+it[0]+'">✓</button><div><div>'+it[1]+'</div><div class="small muted">'+it[2]+'</div></div></div>';});
+  g.items.forEach(it=>{tot++;const on=!!L.w[it[0]];if(on)dn++;h+='<div class="chk"><button class="sm'+(on?' on':'')+'" data-a="wchk" data-k="'+it[0]+'">✓</button><div><div>'+it[1]+'</div><div class="small muted">'+it[2]+'</div>'+how('wu:'+it[0],howHTML(HOWW[it[0]]))+'</div></div>';});
  });
  if(plan.t==='skill'){
   h+='<h3>Skill-specific progression</h3><div class="small muted">Before working sets, run one or two easier variations of today’s skill, working up toward your level.</div>';
@@ -682,7 +771,7 @@ function warmCard(d,plan){
 }
 function fprepHTML(d){
  const L=peek(d)||{w:{}};
- return'<div class="row"><div class="rn">Prep for push · pull · dip</div><div class="small muted">Two quick items from the guide’s warmup — foundation runs today even though the main warmup is for legs.</div>'+FPREP.map(it=>'<div class="chk"><button class="sm'+(L.w[it[0]]?' on':'')+'" data-a="wchk" data-k="'+it[0]+'">✓</button><div><div>'+it[1]+'</div><div class="small muted">'+it[2]+'</div></div></div>').join('')+'</div>';
+ return'<div class="row"><div class="rn">Prep for push · pull · dip</div><div class="small muted">Two quick items from the guide’s warmup — foundation runs today even though the main warmup is for legs.</div>'+FPREP.map(it=>'<div class="chk"><button class="sm'+(L.w[it[0]]?' on':'')+'" data-a="wchk" data-k="'+it[0]+'">✓</button><div><div>'+it[1]+'</div><div class="small muted">'+it[2]+'</div>'+how('wu:'+it[0],howHTML(HOWW[it[0]]))+'</div></div>').join('')+'</div>';
 }
 function foundCard(d,plan){
  let h='<p class="small muted">Run your current step on each, before any skill work, every session. Guide: 3\u20134 sets, near-max reps. <span class="faint">Note: the guide\u2019s table says \u201cto failure\u201d but Chapter 6 quotes Isaac Lee against failing every set \u2014 if form breaks, stop the set.</span> No rest time is given for these, so the timer uses your default ('+S.set.rest+'s, change in More).</p>';
@@ -692,13 +781,13 @@ function foundCard(d,plan){
  ['push','pull','dip'].forEach(g=>{
   const rows=foundRows(d,g);
   if(!rowsDone(d,g,rows))fd=false;
-  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div><div class="small muted">'+FOUND[g].trains+'</div>'+stepBlock(g,d)+'<div class="small">'+link(FOUND[g].vid,'Tutorial video')+'</div>'+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
+  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div>'+stepBlock(g,d)+'<div class="small">'+link(FOUND[g].vid,'Tutorial video')+'</div>'+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
  });
  return card('found','Foundation \u2014 push \u00b7 pull \u00b7 dip','Current steps: '+['push','pull','dip'].map(g=>curStep(g)).join(' / '),h,false,fd);
 }
 function skillCard(d,g,plan){
  const s=SK[g],st=curStep(g);
- let h='<p class="muted small">'+esc(s.why)+'</p>';
+ let h='';
  if(g==='lsit')h+='<div class="banner">Compression is slow. Do not measure this one the way you measure the others.</div>';
  const hn=hint(g);if(hn)h+='<div class="banner go">'+esc(hn)+(st<stepsOf(g).length?' <button class="sm" data-a="step" data-g="'+g+'" data-n="1">Move up</button>':'')+'</div>';
  if(stallCheck(g))h+='<div class="banner wn">Heuristic from your logs: no improvement in your best hold at this step over ~2 weeks. Per Ch.6/Ch.23 that can be a plateau or early overtraining \u2014 drop a set, take an extra rest day, or spend a session on an easier step you have mastered. See the overtraining signs at the bottom of the Path tab.</div>';
@@ -881,7 +970,7 @@ function mobBody(d){
   ['ank','Ankle mobility work','2\u20133 rounds of 10 reps per leg \u2014 prep for the pistol squat.']];
  if(S.prog.elbow.solid||S.prog.chin.on)it.push(['brg','Bridge holds and cobra stretches','Back flexibility for the optional chin stand.']);
  let h='<p class="small muted">The guide only prescribes the core circuit for this day; these are the mobility items it mentions elsewhere. Do the Warmup card above in full.</p>';
- it.forEach(x=>{h+='<div class="chk"><button class="sm'+(L.m[x[0]]?' on':'')+'" data-a="mchk" data-k="'+x[0]+'">\u2713</button><div><div>'+x[1]+'</div><div class="small muted">'+x[2]+'</div></div></div>';});
+ it.forEach(x=>{h+='<div class="chk"><button class="sm'+(L.m[x[0]]?' on':'')+'" data-a="mchk" data-k="'+x[0]+'">\u2713</button><div><div>'+x[1]+'</div>'+how('mob:'+x[0],'<div>'+esc(x[2])+'</div>'+howHTML(HOWW[x[0]]))+'</div></div>';});
  return h;
 }
 function grooveMini(d){
@@ -1118,7 +1207,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
-const BUILD='2026-11-20 \u00b7 11';
+const BUILD='2026-11-20 \u00b7 12';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1276,11 +1365,13 @@ document.addEventListener('click',e=>{
     toast('Workout moved back',()=>{const o=JSON.parse(snap);S.moves=o[0];S.mvg=o[1];save();render();});}break;}
   case'pview':ui.pview=t.dataset.v;ui.jday=null;render();break;
   case'jsel':ui.jday=ui.jday===t.dataset.d?null:t.dataset.d;render();break;
-  case'begin':{const L=wlog(ui.date);L.begun=true;delete L.stopped;if(ui.date!==today())toast('The timer only runs on today\u2019s date. Switch to today to time this workout.');if(ui.date===today()){const sg=ensureSeg(L);if(!lastReal(sg)){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);}}save();render();scrollToEl(ui.reg&&ui.reg[0]?document.querySelector('[data-card="'+ui.reg[0].k+'"]'):null);break;}
+  case'begin':{const L=wlog(ui.date);L.begun=true;delete L.stopped;if(ui.date!==today())toast('The timer only runs on today\u2019s date. Switch to today to time this workout.');if(ui.date===today()){const sg=ensureSeg(L);if(!lastReal(sg)){L.seg=sg.filter(x=>x[0]!=null||x[1]!=null);L.seg.push([Date.now(),null]);sync(L);}}save();render();{const fc=ui.reg&&(ui.reg.find(c=>!c.done)||ui.reg[0]);scrollToEl(fc?document.querySelector('[data-card="'+fc.k+'"]'):null);}break;}
   case'alt':{const L=wlog(ui.date);L.alt=t.dataset.v==='arm'?'arm':'';if(L.done){const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;}save();render();break;}
   case'finish':{const L=wlog(ui.date);L.done=!L.done;const pp=planFor(ui.date);L.pt=pp.arm?'arm':pp.t;
    if(L.done){const sg=ensureSeg(L),lr=lastReal(sg);if(ui.date===today()){if(lr&&lr[1]==null)lr[1]=Date.now();else if(!lr)L.t1=Date.now();}sync(L);}else delete L.t1;
    save();render();if(L.done)flashDone(planLabel(pp),L);break;}
+  case'how':ui.how[t.dataset.k]=!ui.how[t.dataset.k];render();break;
+  case'skipcard':{const k=t.dataset.k,L=wlog(ui.date),prev=snapDone();L.skip=L.skip||{};if(L.skip[k])delete L.skip[k];else L.skip[k]=true;save();render();if(L.skip[k])advanceFrom(prev);break;}
   case'stop':{const L=wlog(today());if(L.done)break;const lr=lastReal(ensureSeg(L));if(lr&&lr[1]==null)lr[1]=Date.now();L.stopped=true;sync(L);save();render();break;}
   case'resetday':{
    if(t.dataset.arm!=='1'){t.dataset.arm='1';t.textContent='Tap again to reset this day';setTimeout(()=>{if(t.isConnected){t.dataset.arm='';t.textContent='Reset day';}},4000);break;}
