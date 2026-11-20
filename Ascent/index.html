@@ -13,7 +13,8 @@
 <style>
 :root{--bg:#0A1018;--surface:#101A29;--surface2:#192638;--line:#243449;--ink:#E8F0FA;--muted:#8A9BB0;--faint:#5E7087;--accent:#2E93FF;--accent-rgb:46,147,255;--bg-rgb:10,16,24;--onacc:#04101F;--go:#7BC96F;--warn:#E07856;--rose:#D98BA6;--r:14px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;overscroll-behavior-y:none}
+html,body{margin:0;padding:0;overscroll-behavior-y:none;overflow-anchor:none}
+button,a,input,select,textarea,[data-a]{touch-action:manipulation}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;padding-bottom:calc(170px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.4}
 .wrap{max-width:560px;margin:0 auto;padding:0 16px}
 #main{min-height:100vh;min-height:100dvh}
@@ -1468,7 +1469,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 20';
+const BUILD='2026-11-20 \u00b7 21';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1547,7 +1548,7 @@ function showSetup(){
 
 /* ===== render ===== */
 function render(){
- const m=$('#main');
+ const m=$('#main'),y0=window.scrollY||0;
  ui.reg=[];
  m.innerHTML=ui.tab==='today'?viewToday():ui.tab==='progress'?viewProgress():ui.tab==='path'?viewPath():ui.tab==='groove'?viewGroove():viewMore();
  const T=[['today','Today'],['progress','Progress'],['path','Path'],['groove','Groove'],['more','More']];
@@ -1555,6 +1556,7 @@ function render(){
  $('#beginbtn').style.display=(ui.tab==='today'&&ui.showBegin)?'block':'none';
  paintClock();if(ui.tab==='more')setTimeout(paintPersist,0);$('#hchip').innerHTML='<span class="chip am">Stage '+S.set.stage+'</span>';
  if(circ.ph!=='idle')circUpd();
+ if(Math.abs((window.scrollY||0)-y0)>0.5)window.scrollTo(0,y0);
 }
 
 /* ===== audio + rest ===== */
