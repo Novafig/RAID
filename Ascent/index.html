@@ -31,6 +31,8 @@ p{margin:6px 0}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin:10px 0;overflow:hidden}
 .ch{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px}
 .how{display:block;width:auto;white-space:nowrap;background:none;border:0;color:var(--accent);font-size:12px;font-weight:700;padding:6px 0;text-align:left;cursor:pointer;letter-spacing:.02em}
+.howrow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.howrow a{font-size:12px;font-weight:700;white-space:nowrap}
 .howbody{margin:2px 0 8px;padding:9px 11px;background:var(--surface2);border-radius:8px;line-height:1.45;font-size:13px;color:var(--muted)}
 .howbody div+div{margin-top:5px}
 .skipb{font-size:11px;padding:3px 9px;flex:0 0 auto}
@@ -624,10 +626,10 @@ const HOWW={
 HOWW.cp2=HOWW.b1;HOWW.fp1=HOWW.w3;HOWW.fp2=HOWW.s4;HOWW.ank=HOWW.lw3;
 const HOWLBL=['Set up: ','Do: ','Avoid: '];
 function howHTML(a){return a?a.map((t,i)=>'<div>'+HOWLBL[i]+esc(t)+'</div>').join(''):'';}
-function how(k,html){
+function how(k,html,right){
  if(!html)return'';
  const o=!!ui.how[k];
- return'<button class="how" data-a="how" data-k="'+esc(k)+'">How to '+(o?'▴':'▾')+'</button>'+(o?'<div class="howbody">'+html+'</div>':'');
+ return'<div class="howrow"><button class="how" data-a="how" data-k="'+esc(k)+'">Form '+(o?'\u25b4':'\u25be')+'</button>'+(right||'')+'</div>'+(o?'<div class="howbody">'+html+'</div>':'');
 }
 function isSkipped(d,key){const L=peek(d);return !!(L&&L.skip&&L.skip[key]);}
 function card(key,title,sub,body,def,done){
@@ -705,12 +707,16 @@ function rowsHTML(d,g,rows,step,unitMain){
   const n=Math.max(r.r[0],E.s.length);
   const lb=lastBefore(key,d,step);
   let h='<div class="row"><div class="rowtop"><div class="rn">'+esc(r.main?'Current step: '+stepOf(g)[0]:r.n)+'</div>'+dhBtn(d,g,r)+'</div><div class="small muted">'+r.r[0]+(r.r[1]!==r.r[0]?'\u2013'+r.r[1]:'')+' rounds \u00d7 '+esc(r.dose)+(r.restTxt?' \u00b7 rest '+r.restTxt:'')+'</div>';
-  {const hk=r.id==='alt'?'alt:'+r.n:g+'.'+r.id;
-   const base=g==='ext'?HOWX[r.id]:(r.id==='alt'?HOWALT[r.n]:null);
-   let bh=howHTML(base);
+  if(g==='ext'||r.id==='alt'){
+   const hk=r.id==='alt'?'alt:'+r.n:g+'.'+r.id;
+   let bh=howHTML(g==='ext'?HOWX[r.id]:HOWALT[r.n]);
    if(r.feel)bh+='<div>'+esc(r.feel)+'</div>';
    if(r.note)bh+='<div>Note: '+esc(r.note)+'</div>';
-   h+=how('row:'+hk,bh);}
+   h+=how('row:'+hk,bh);
+  }else{
+   if(r.feel)h+='<div class="small faint">'+esc(r.feel)+'</div>';
+   if(r.note)h+='<div class="small muted">'+esc(r.note)+'</div>';
+  }
   if(lb)h+='<div class="small faint">Last time ('+lb.d.slice(5)+'): '+lb.E.s.map(s=>s.v!=null?s.v:(s.done?'\u2713':'\u2013')).join(', ')+'</div>';
   if(r.up)h+='<div class="small faint">To progress: '+esc(r.up)+'</div>';
   if(r.top&&lb&&lb.E.s.length>=r.r[0]&&lb.E.s.every(x=>x.done&&+x.v>=r.top))h+='<div class="small" style="color:var(--go)">Hit the top of the range last time \u2192 make it harder now.</div>';
@@ -743,8 +749,13 @@ function ladderCtl(g){
 }
 function stepBlock(g,d){
  const st=curStep(g),s=stepOf(g),tot=stepsOf(g).length;
- const intro=(FOUND[g]&&FOUND[g].trains)?'<div>Trains: '+esc(FOUND[g].trains)+'</div>':(SK[g]&&SK[g].why?'<div>'+esc(SK[g].why)+'</div>':'');
- return'<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>'+how('st:'+g+':'+st,intro+'<div>'+esc(s[1])+'</div>')+altLine(s)+swapCtl(d,g,s)+'</div>';
+ const head='<div style="margin-top:10px"><span class="chip am">Step '+st+' of '+tot+'</span>'+needsChips(s[3])+'<div class="rn" style="margin-top:4px">'+esc(s[0])+'</div>';
+ const tail=altLine(s)+swapCtl(d,g,s)+'</div>';
+ if(FOUND[g]){
+  const intro=FOUND[g].trains?'<div>Trains: '+esc(FOUND[g].trains)+'</div>':'';
+  return head+how('st:'+g+':'+st,intro+'<div>'+esc(s[1])+'</div>',link(FOUND[g].vid,'Tutorial video'))+tail;
+ }
+ return head+'<div class="small muted">'+esc(s[1])+'</div>'+tail;
 }
 
 /* ===== sections ===== */
@@ -781,19 +792,19 @@ function foundCard(d,plan){
  ['push','pull','dip'].forEach(g=>{
   const rows=foundRows(d,g);
   if(!rowsDone(d,g,rows))fd=false;
-  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div>'+stepBlock(g,d)+'<div class="small">'+link(FOUND[g].vid,'Tutorial video')+'</div>'+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
+  h+='<div class="row"><div class="rn" style="font-size:16px">'+FOUND[g].n+'</div>'+stepBlock(g,d)+rowsHTML(d,g,rows,curStep(g),stepOf(g)[2])+ladderCtl(g)+(curStep(g)===stepsOf(g).length?nextRow(d,g):'')+'</div>';
  });
  return card('found','Foundation \u2014 push \u00b7 pull \u00b7 dip','Current steps: '+['push','pull','dip'].map(g=>curStep(g)).join(' / '),h,false,fd);
 }
 function skillCard(d,g,plan){
  const s=SK[g],st=curStep(g);
- let h='';
+ let h='<p class="muted small">'+esc(s.why)+'</p>';
  if(g==='lsit')h+='<div class="banner">Compression is slow. Do not measure this one the way you measure the others.</div>';
  const hn=hint(g);if(hn)h+='<div class="banner go">'+esc(hn)+(st<stepsOf(g).length?' <button class="sm" data-a="step" data-g="'+g+'" data-n="1">Move up</button>':'')+'</div>';
  if(stallCheck(g))h+='<div class="banner wn">Heuristic from your logs: no improvement in your best hold at this step over ~2 weeks. Per Ch.6/Ch.23 that can be a plateau or early overtraining \u2014 drop a set, take an extra rest day, or spend a session on an easier step you have mastered. See the overtraining signs at the bottom of the Path tab.</div>';
  h+=stepBlock(g);
- h+='<details><summary>Form &amp; technique cues</summary><ul>'+s.form.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
- if(s.tips)h+='<details><summary>'+(g==='hand'?'Holding the free handstand':'Tips')+'</summary><ul>'+s.tips.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
+ h+='<details><summary>Form &amp; Technique Cues</summary><ul>'+s.form.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
+ if(s.tips)h+='<details><summary>'+(g==='hand'?'Holding the Free Handstand':'Tips')+'</summary><ul>'+s.tips.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details>';
  h+='<div class="small">'+link(s.vid,'Author\u2019s cue video')+' \u00b7 '+link(s.tut,'Outside tutorial')+'</div>';
  h+=rowsHTML(d,g,s.rows,st,stepOf(g)[2]);
  h+=nextRow(d,g)+ladderCtl(g);
@@ -1207,7 +1218,7 @@ function weekSel(){
  h+=row('core','Mobility + Core');
  return h+'<div class="small faint">Foundation (push/pull/dip) runs on every training day. Days you do not pick are rest days. On Today, a Legs/Arms toggle swaps a lower-body day for an arms day.</div>';
 }
-const BUILD='2026-11-20 \u00b7 12';
+const BUILD='2026-11-20 \u00b7 13';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
