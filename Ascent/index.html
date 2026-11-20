@@ -1021,7 +1021,7 @@ function cgo(){
 /* ===== Today views ===== */
 function dayHead(d,plan){
  const wk=wkStart(d);
- let h='<div class="top" style="margin-top:6px"><button class="sm" data-a="day" data-n="-1">\u2039</button><div class="ctr"><b'+(d===today()?' class="todaybox"':'')+'>'+fmt(d)+'</b>'+(d===today()?'':' <button class="sm iconbtn" data-a="gotoday" aria-label="Jump to today" title="Jump to today"><svg viewBox="0 0 20 20" width="18" height="18" style="display:block"><rect x="3" y="4.5" width="14" height="12.5" rx="2.5" style="fill:none;stroke:currentColor;stroke-width:1.6"/><path d="M3 8.5h14" style="fill:none;stroke:currentColor;stroke-width:1.6"/><circle cx="10" cy="12.8" r="1.7" style="fill:currentColor"/></svg></button>')+'</div><button class="sm" data-a="day" data-n="1">\u203a</button></div>';
+ let h='<div class="top" style="margin-top:6px"><button class="sm" data-a="day" data-n="-7" aria-label="Previous week" title="Previous week">\u2039</button><div class="ctr"><b'+(d===today()?' class="todaybox"':'')+'>'+fmt(d)+'</b>'+(d===today()?'':' <button class="sm iconbtn" data-a="gotoday" aria-label="Jump to today" title="Jump to today"><svg viewBox="0 0 20 20" width="18" height="18" style="display:block"><rect x="3" y="4.5" width="14" height="12.5" rx="2.5" style="fill:none;stroke:currentColor;stroke-width:1.6"/><path d="M3 8.5h14" style="fill:none;stroke:currentColor;stroke-width:1.6"/><circle cx="10" cy="12.8" r="1.7" style="fill:currentColor"/></svg></button>')+'</div><button class="sm" data-a="day" data-n="7" aria-label="Next week" title="Next week">\u203a</button></div>';
  h+='<div class="week">';
  for(let i=0;i<7;i++){
   const dd=addD(wk,i),p=planFor(dd),L=peek(dd);
@@ -1061,7 +1061,7 @@ function extCard(d,k){
 }
 function viewToday(){
  const d=ui.date,plan=planFor(d);
- {const L0=peek(d);ui.pre=plan.t==='rest'||!(L0&&(L0.begun||L0.done))&&!hasProgress(d);ui.showBegin=plan.t!=='rest'&&ui.pre;}
+ {const L0=peek(d);ui.pre=plan.t==='rest'||(d===today()&&!(L0&&(L0.begun||L0.done))&&!hasProgress(d));ui.showBegin=plan.t!=='rest'&&ui.pre;}
  let h=dayHead(d,plan);
  if(plan.t==='skill'){
   if(S.set.stage===1&&S.prog.frog.solid&&S.prog.crow.solid)h+='<div class="banner go">Frog and Crow are both marked solid — the guide’s next move is Stage 2. <button class="sm" data-a="stage" data-n="2">Switch to Stage 2</button></div>';
@@ -1175,7 +1175,8 @@ function finishCard(d,plan){
  const L=peek(d)||{};
  let h='<div class="card" id="finishcard"><div class="cb" style="border:0;padding-top:14px"><textarea data-a="note" placeholder="Session notes (form cues, what felt off)" style="min-height:60px;font-size:14px">'+esc(L.note||'')+'</textarea>';
  if((L.gtg||[]).length)h+='<div class="small muted" style="margin-top:8px">Greasing the groove: '+L.gtg.length+' touch'+(L.gtg.length===1?'':'es')+' logged on the Groove tab.</div>';
- if(plan.t!=='rest')h+='<button class="'+(L.done?'on':'pri')+'" data-a="finish" style="width:100%;margin-top:8px">'+(L.done?'Session complete \u2713':'Mark session complete')+'</button>'+sessLine(L,d)+((L.begun||L.done||L.t0||L.t1||(L.seg&&L.seg.length)||hasAny(L))?'<div style="margin-top:10px"><button class="sm" data-a="resetday">Reset day</button> <span class="small faint">Clears this day\u2019s log and times and brings back BEGIN.</span></div>':'');
+ if(plan.t!=='rest'&&ui.showBegin&&d===ui.date)h+='<div class="small faint" style="margin-top:8px">Session complete, the timer and session times show up here once you tap BEGIN.</div>';
+ else if(plan.t!=='rest')h+='<button class="'+(L.done?'on':'pri')+'" data-a="finish" style="width:100%;margin-top:8px">'+(L.done?'Session complete \u2713':'Mark session complete')+'</button>'+sessLine(L,d)+((L.begun||L.done||L.t0||L.t1||(L.seg&&L.seg.length)||hasAny(L))?'<div style="margin-top:10px"><button class="sm" data-a="resetday">Reset day</button> <span class="small faint">Clears this day\u2019s log and times and brings back BEGIN.</span></div>':'');
  h+='<p class="small faint">Tip from the guide: film a set, even just propped against a wall \u2014 it shows form breakdowns you cannot feel and proves progress.</p></div></div>';
  return h;
 }
@@ -1348,7 +1349,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 16';
+const BUILD='2026-11-20 \u00b7 17';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
