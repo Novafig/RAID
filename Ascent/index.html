@@ -182,6 +182,14 @@ button.filmb.fon{color:var(--accent);border-color:var(--accent);background:rgba(
 :root[data-palette="rose"]{--bg:#150B10;--surface:#21121A;--surface2:#2F1A25;--line:#43263A;--ink:#FAEAF0;--muted:#B592A2;--faint:#7F5F6D;--accent:#FB7185;--accent-rgb:251,113,133;--bg-rgb:21,11,16;--onacc:#2A0710}
 :root[data-palette="amber"]{--bg:#14110F;--surface:#1E1A17;--surface2:#2A2521;--line:#332D28;--ink:#F2EBE3;--muted:#9A8F84;--faint:#6B635B;--accent:#E8A13C;--accent-rgb:232,161,60;--bg-rgb:20,17,15;--onacc:#1A1209}
 :root[data-palette="graphite"]{--bg:#0E0E10;--surface:#17171A;--surface2:#222226;--line:#303036;--ink:#F0F0F2;--muted:#98989F;--faint:#66666C;--accent:#E4E4E7;--accent-rgb:228,228,231;--bg-rgb:14,14,16;--onacc:#111113}
+:root[data-palette="indigo"]{--bg:#0B0C19;--surface:#111327;--surface2:#1B1D37;--line:#252846;--ink:#E7E8F9;--muted:#8A8DAD;--faint:#5F6386;--accent:#818CF8;--accent-rgb:129,140,248;--bg-rgb:11,12,25;--onacc:#05071A}
+:root[data-palette="magenta"]{--bg:#170B19;--surface:#241127;--surface2:#331B37;--line:#412546;--ink:#F6E7F9;--muted:#A98AAD;--faint:#815F86;--accent:#E879F9;--accent-rgb:232,121,249;--bg-rgb:23,11,25;--onacc:#17051A}
+:root[data-palette="teal"]{--bg:#0B1917;--surface:#112724;--surface2:#1B3733;--line:#254642;--ink:#E7F9F7;--muted:#8AADA9;--faint:#5F8681;--accent:#2DD4BF;--accent-rgb:45,212,191;--bg-rgb:11,25,23;--onacc:#051A17}
+:root[data-palette="lime"]{--bg:#14190B;--surface:#1F2711;--surface2:#2C371B;--line:#394625;--ink:#F2F9E7;--muted:#A0AD8A;--faint:#77865F;--accent:#A3E635;--accent-rgb:163,230,53;--bg-rgb:20,25,11;--onacc:#121A05}
+:root[data-palette="gold"]{--bg:#19160B;--surface:#272311;--surface2:#37311B;--line:#463F25;--ink:#F9F5E7;--muted:#ADA68A;--faint:#867E5F;--accent:#FACC15;--accent-rgb:250,204,21;--bg-rgb:25,22,11;--onacc:#1A1605}
+:root[data-palette="ember"]{--bg:#19110B;--surface:#271B11;--surface2:#37271B;--line:#463425;--ink:#F9EFE7;--muted:#AD9A8A;--faint:#86715F;--accent:#FB923C;--accent-rgb:251,146,60;--bg-rgb:25,17,11;--onacc:#1A0E05}
+:root[data-palette="coral"]{--bg:#190D0B;--surface:#271511;--surface2:#37201B;--line:#462B25;--ink:#F9EAE7;--muted:#AD908A;--faint:#86665F;--accent:#FF8A70;--accent-rgb:255,138,112;--bg-rgb:25,13,11;--onacc:#1A0805}
+:root[data-palette="ice"]{--bg:#0B1319;--surface:#111E27;--surface2:#1B2B37;--line:#253846;--ink:#E7F1F9;--muted:#8A9EAD;--faint:#5F7586;--accent:#A5D8FF;--accent-rgb:165,216,255;--bg-rgb:11,19,25;--onacc:#05111A}
 .pals{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .pal{display:inline-flex;align-items:center;gap:8px;padding:8px 12px}
 .pal i{width:14px;height:14px;border-radius:50%;display:inline-block}
@@ -1469,7 +1477,7 @@ function weekSel(){
  h+='<div class="small muted" style="margin-top:6px">'+lst.join(' · ')+'</div>';
  return h+'<div class="small faint" style="margin-top:4px">Tick 3–5 training days. 3 = the guide only (two skill days + mobility/core). 4 adds one lower-body day that alternates A and B each week. 5 adds both. Types are placed so skill days and leg days never land back to back. Foundation (push/pull/dip) runs on every training day; on Today, a Legs/Arms toggle swaps a lower-body day for arms.</div>';
 }
-const BUILD='2026-11-20 \u00b7 21';
+const BUILD='2026-11-20 \u00b7 22';
 function viewMore(){
  let h='<h2>More</h2>';
  const sel=(r)=>'<select data-a="setday" data-r="'+r+'">'+DOWL.map((n,i)=>'<option value="'+i+'"'+(S.set.days[r]===i?' selected':'')+'>'+n+'</option>').join('')+'</select>';
@@ -1753,7 +1761,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){ui.date=ui.date;}});
 
 /* ===== themes ===== */
-const PAL=[['azure','Azure','#2E93FF','#0A1018'],['cyan','Cyan','#22D3EE','#08131A'],['violet','Violet','#A78BFA','#0E0B16'],['rose','Rose','#FB7185','#150B10'],['amber','Amber','#E8A13C','#14110F'],['graphite','Graphite','#E4E4E7','#0E0E10']];
+const PAL=[['azure','Azure','#2E93FF','#0A1018'],['cyan','Cyan','#22D3EE','#08131A'],['violet','Violet','#A78BFA','#0E0B16'],['rose','Rose','#FB7185','#150B10'],['amber','Amber','#E8A13C','#14110F'],['graphite','Graphite','#E4E4E7','#0E0E10'],['indigo','Indigo','#818CF8','#0B0C19'],['magenta','Magenta','#E879F9','#170B19'],['teal','Teal','#2DD4BF','#0B1917'],['lime','Lime','#A3E635','#14190B'],['gold','Gold','#FACC15','#19160B'],['ember','Ember','#FB923C','#19110B'],['coral','Coral','#FF8A70','#190D0B'],['ice','Ice','#A5D8FF','#0B1319']];
 function palInfo(){return PAL.find(x=>x[0]===S.set.palette)||PAL[0];}
 function palChips(){return'<div class="pals">'+PAL.map(p=>'<button class="pal'+(S.set.palette===p[0]?' on':'')+'" data-a="pal" data-p="'+p[0]+'"><i style="background:'+p[2]+'"></i>'+p[1]+'</button>').join('')+'</div>';}
 function drawIcon(){
